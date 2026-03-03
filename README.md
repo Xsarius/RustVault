@@ -1,5 +1,6 @@
 <div align="center">
-  <h1>🔐 RustVault</h1>
+  <img src="docs/logo.svg" alt="RustVault logo" width="120" />
+  <h1>RustVault</h1>
   <p><strong>Self-hosted personal finance platform built in Rust</strong></p>
   <p>Take full control of your financial data. No cloud dependency. No subscriptions. Your server, your data.</p>
 
