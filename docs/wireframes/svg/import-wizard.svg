@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-60 -50 2920 612"
+     width="2920" height="612"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-60" y="-50" width="2920" height="612" fill="#ffffff"/>
+    <text x="0" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Step 1 — Upload File</text>
+    <rect x="-40" y="-10" width="720" height="540" rx="0" ry="0" fill="#F3F4F6" stroke="none" stroke-width="1" opacity="0.4" />
+    <rect x="0" y="0" width="640" height="520" rx="12" ry="12" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="24" y="36.4" font-size="20" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Import Transactions</text>
+    <text x="600" y="34.76" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">✕</text>
+    <ellipse cx="50.0" cy="66.0" rx="10.0" ry="10.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0"/>
+    <text x="46" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">●</text>
+    <text x="36" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">Upload</text>
+    <path d="M64,66 L176,66" fill="none" stroke="#2563EB" stroke-width="2" opacity="1.0" />
+    <ellipse cx="190.0" cy="66.0" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0"/>
+    <text x="186" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">○</text>
+    <text x="176" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Configure</text>
+    <path d="M204,66 L316,66" fill="none" stroke="#D1D5DB" stroke-width="2" opacity="1.0" />
+    <ellipse cx="330.0" cy="66.0" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0"/>
+    <text x="326" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">○</text>
+    <text x="316" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Preview</text>
+    <path d="M344,66 L456,66" fill="none" stroke="#D1D5DB" stroke-width="2" opacity="1.0" />
+    <ellipse cx="470.0" cy="66.0" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0"/>
+    <text x="466" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">○</text>
+    <text x="456" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Done</text>
+    <rect x="40" y="110" width="560" height="160" rx="12" ry="12" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="2" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="220" y="182.8" font-size="40" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">📄</text>
+    <text x="180" y="212.3" font-size="15" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Drop file here or click to browse</text>
+    <text x="140" y="237.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">CSV · MT940 · OFX · QIF · CAMT.053 · XLSX · JSON</text>
+    <text x="40" y="317.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Account:</text>
+    <rect x="120" y="300" width="260" height="36" rx="9.0" ry="9.0" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="132" y="317.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Revolut · Main PLN ▾</text>
+    <text x="40" y="373.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Encoding:</text>
+    <rect x="120" y="356" width="140" height="36" rx="9.0" ry="9.0" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="132" y="373.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">UTF-8 (auto) ▾</text>
+    <rect x="440" y="414" width="80" height="40" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="460" y="437.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Cancel</text>
+    <rect x="540" y="414" width="80" height="40" rx="10.0" ry="10.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="554" y="437.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">Next →</text>
+    <text x="720" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Step 2 — Configure Mapping</text>
+    <rect x="680" y="-10" width="720" height="540" rx="0" ry="0" fill="#F3F4F6" stroke="none" stroke-width="1" opacity="0.4" />
+    <rect x="720" y="0" width="640" height="520" rx="12" ry="12" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="744" y="36.4" font-size="20" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Import Transactions</text>
+    <text x="1320" y="34.76" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">✕</text>
+    <ellipse cx="770.0" cy="66.0" rx="10.0" ry="10.0" fill="#16A34A" stroke="#16A34A" stroke-width="1" opacity="1.0"/>
+    <text x="766" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">✓</text>
+    <text x="756" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">Upload</text>
+    <path d="M784,66 L896,66" fill="none" stroke="#16A34A" stroke-width="2" opacity="1.0" />
+    <ellipse cx="910.0" cy="66.0" rx="10.0" ry="10.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0"/>
+    <text x="906" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">●</text>
+    <text x="896" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">Configure</text>
+    <path d="M924,66 L1036,66" fill="none" stroke="#2563EB" stroke-width="2" opacity="1.0" />
+    <ellipse cx="1050.0" cy="66.0" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0"/>
+    <text x="1046" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">○</text>
+    <text x="1036" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Preview</text>
+    <path d="M1064,66 L1176,66" fill="none" stroke="#D1D5DB" stroke-width="2" opacity="1.0" />
+    <ellipse cx="1190.0" cy="66.0" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0"/>
+    <text x="1186" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">○</text>
+    <text x="1176" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Done</text>
+    <text x="760" y="121.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">File: revolut_march2026.csv (127 rows)</text>
+    <text x="760" y="137.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">Detected format: CSV (semicolon delimited)</text>
+    <text x="760" y="168.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Delimiter:</text>
+    <rect x="840" y="152" width="80" height="32" rx="8.0" ry="8.0" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="852" y="166.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">; (auto) ▾</text>
+    <text x="960" y="168.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Date format:</text>
+    <rect x="1050" y="152" width="140" height="32" rx="8.0" ry="8.0" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="1062" y="166.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">YYYY-MM-DD ▾</text>
+    <text x="760" y="207.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">COLUMN MAPPING</text>
+    <text x="776" y="236.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Date</text>
+    <text x="880" y="236.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">→</text>
+    <rect x="910" y="220" width="280" height="30" rx="7.5" ry="7.5" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="922" y="235.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Column 1: &quot;Date&quot;</text>
+    <text x="776" y="272.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Description</text>
+    <text x="880" y="272.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">→</text>
+    <rect x="910" y="256" width="280" height="30" rx="7.5" ry="7.5" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="922" y="271.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Column 3: &quot;Description&quot;</text>
+    <text x="776" y="308.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Amount</text>
+    <text x="880" y="308.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">→</text>
+    <rect x="910" y="292" width="280" height="30" rx="7.5" ry="7.5" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="922" y="307.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Column 4: &quot;Amount&quot;</text>
+    <text x="776" y="344.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Currency</text>
+    <text x="880" y="344.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">→</text>
+    <rect x="910" y="328" width="280" height="30" rx="7.5" ry="7.5" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="922" y="343.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Column 5: &quot;Currency&quot;</text>
+    <text x="776" y="380.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Category</text>
+    <text x="880" y="380.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">→</text>
+    <rect x="910" y="364" width="280" height="30" rx="7.5" ry="7.5" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="922" y="379.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">— Skip —</text>
+    <text x="776" y="416.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Notes</text>
+    <text x="880" y="416.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">→</text>
+    <rect x="910" y="400" width="280" height="30" rx="7.5" ry="7.5" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="922" y="415.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Column 7: &quot;Notes&quot;</text>
+    <text x="760" y="453.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">PREVIEW (ROW 1)</text>
+    <rect x="760" y="462" width="560" height="28" rx="7.0" ry="7.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="772" y="477.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">2026-03-02  |  SPOTIFY AB  |  -9.99  |  PLN</text>
+    <rect x="1060" y="502" width="80" height="40" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="1076" y="525.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">← Back</text>
+    <rect x="1160" y="502" width="80" height="40" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="1180" y="525.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Cancel</text>
+    <rect x="1260" y="502" width="80" height="40" rx="10.0" ry="10.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="1274" y="525.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">Next →</text>
+    <text x="1440" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Step 3 — Preview &amp; Review</text>
+    <rect x="1400" y="-10" width="720" height="540" rx="0" ry="0" fill="#F3F4F6" stroke="none" stroke-width="1" opacity="0.4" />
+    <rect x="1440" y="0" width="640" height="520" rx="12" ry="12" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="1464" y="36.4" font-size="20" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Import Transactions</text>
+    <text x="2040" y="34.76" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">✕</text>
+    <ellipse cx="1490.0" cy="66.0" rx="10.0" ry="10.0" fill="#16A34A" stroke="#16A34A" stroke-width="1" opacity="1.0"/>
+    <text x="1486" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">✓</text>
+    <text x="1476" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">Upload</text>
+    <path d="M1504,66 L1616,66" fill="none" stroke="#16A34A" stroke-width="2" opacity="1.0" />
+    <ellipse cx="1630.0" cy="66.0" rx="10.0" ry="10.0" fill="#16A34A" stroke="#16A34A" stroke-width="1" opacity="1.0"/>
+    <text x="1626" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">✓</text>
+    <text x="1616" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">Configure</text>
+    <path d="M1644,66 L1756,66" fill="none" stroke="#16A34A" stroke-width="2" opacity="1.0" />
+    <ellipse cx="1770.0" cy="66.0" rx="10.0" ry="10.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0"/>
+    <text x="1766" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">●</text>
+    <text x="1756" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">Preview</text>
+    <path d="M1784,66 L1896,66" fill="none" stroke="#2563EB" stroke-width="2" opacity="1.0" />
+    <ellipse cx="1910.0" cy="66.0" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0"/>
+    <text x="1906" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">○</text>
+    <text x="1896" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Done</text>
+    <text x="1480" y="121.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">127 transactions parsed. Review before importing:</text>
+    <rect x="1480" y="138" width="180" height="28" rx="7.0" ry="7.0" fill="#FEF3C7" stroke="#D97706" stroke-width="1" opacity="1.0" />
+    <text x="1490" y="153.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">⚠ 3 potential duplicates</text>
+    <rect x="1680" y="138" width="220" height="28" rx="7.0" ry="7.0" fill="#FEF9C3" stroke="#D97706" stroke-width="1" opacity="1.0" />
+    <text x="1690" y="153.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">🟡 2 new categories created</text>
+    <rect x="1480" y="178" width="560" height="28" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="1488" y="193.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Date</text>
+    <text x="1550" y="193.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Description</text>
+    <text x="1760" y="193.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Category</text>
+    <text x="1920" y="193.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Amount</text>
+    <rect x="1480" y="206" width="560" height="28" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="1488" y="221.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0"> </text>
+    <text x="1506" y="221.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">02.03</text>
+    <text x="1550" y="221.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">SPOTIFY AB</text>
+    <text x="1760" y="221.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🎵 Subs</text>
+    <text x="1920" y="221.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-9.99</text>
+    <rect x="1480" y="234" width="560" height="28" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="1488" y="249.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0"> </text>
+    <text x="1506" y="249.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">02.03</text>
+    <text x="1550" y="249.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">BIEDRONKA</text>
+    <text x="1760" y="249.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🛒 Food</text>
+    <text x="1920" y="249.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-87.30</text>
+    <rect x="1480" y="262" width="560" height="28" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="1484" y="277.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">🟡</text>
+    <text x="1506" y="277.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">02.03</text>
+    <text x="1550" y="277.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">EMPIK SCHOOL</text>
+    <text x="1760" y="277.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">📚 Education</text>
+    <text x="1920" y="277.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-45.00</text>
+    <rect x="1480" y="290" width="560" height="28" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="1484" y="305.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">🟠</text>
+    <text x="1506" y="305.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">01.03</text>
+    <text x="1550" y="305.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">SALARY</text>
+    <text x="1760" y="305.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">💰 Income</text>
+    <text x="1920" y="305.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">+12,500</text>
+    <text x="1550" y="329.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">⚠ Possible duplicate (existing: Mar 01)</text>
+    <text x="1480" y="360.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">☑ Auto-link detected transfers (2 found)</text>
+    <text x="1480" y="384.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">☐ Skip potential duplicates (3 found)</text>
+    <text x="1480" y="408.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">☑ Apply matching rules (5 rules)</text>
+    <rect x="1780" y="430" width="80" height="40" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="1796" y="453.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">← Back</text>
+    <rect x="1880" y="430" width="80" height="40" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="1900" y="453.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Cancel</text>
+    <rect x="1980" y="430" width="80" height="40" rx="10.0" ry="10.0" fill="#16A34A" stroke="#16A34A" stroke-width="1" opacity="1.0" />
+    <text x="1996" y="453.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">Import</text>
+    <text x="2160" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Step 4 — Import Complete</text>
+    <rect x="2120" y="-10" width="720" height="540" rx="0" ry="0" fill="#F3F4F6" stroke="none" stroke-width="1" opacity="0.4" />
+    <rect x="2160" y="0" width="640" height="520" rx="12" ry="12" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="2184" y="36.4" font-size="20" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Import Transactions</text>
+    <text x="2760" y="34.76" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">✕</text>
+    <ellipse cx="2210.0" cy="66.0" rx="10.0" ry="10.0" fill="#16A34A" stroke="#16A34A" stroke-width="1" opacity="1.0"/>
+    <text x="2206" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">✓</text>
+    <text x="2196" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">Upload</text>
+    <path d="M2224,66 L2336,66" fill="none" stroke="#16A34A" stroke-width="2" opacity="1.0" />
+    <ellipse cx="2350.0" cy="66.0" rx="10.0" ry="10.0" fill="#16A34A" stroke="#16A34A" stroke-width="1" opacity="1.0"/>
+    <text x="2346" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">✓</text>
+    <text x="2336" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">Configure</text>
+    <path d="M2364,66 L2476,66" fill="none" stroke="#16A34A" stroke-width="2" opacity="1.0" />
+    <ellipse cx="2490.0" cy="66.0" rx="10.0" ry="10.0" fill="#16A34A" stroke="#16A34A" stroke-width="1" opacity="1.0"/>
+    <text x="2486" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">✓</text>
+    <text x="2476" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">Preview</text>
+    <path d="M2504,66 L2616,66" fill="none" stroke="#16A34A" stroke-width="2" opacity="1.0" />
+    <ellipse cx="2630.0" cy="66.0" rx="10.0" ry="10.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0"/>
+    <text x="2626" y="67.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">●</text>
+    <text x="2616" y="91.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">Done</text>
+    <ellipse cx="2480.0" cy="160.0" rx="30.0" ry="30.0" fill="#F0FDF4" stroke="#16A34A" stroke-width="2" opacity="1.0"/>
+    <text x="2468" y="166.96" font-size="28" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">✓</text>
+    <text x="2380" y="226.4" font-size="20" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Import Successful!</text>
+    <text x="2340" y="256.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Transactions imported</text>
+    <text x="2580" y="257.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">124</text>
+    <text x="2340" y="282.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Duplicates skipped</text>
+    <text x="2580" y="283.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">3</text>
+    <text x="2340" y="308.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">New categories created</text>
+    <text x="2580" y="309.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">2</text>
+    <text x="2340" y="334.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Transfers auto-linked</text>
+    <text x="2580" y="335.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">2</text>
+    <text x="2340" y="360.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Rules applied</text>
+    <text x="2580" y="361.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">18</text>
+    <rect x="2200" y="392" width="560" height="36" rx="9.0" ry="9.0" fill="#EFF6FF" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="2216" y="411.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">ℹ You can undo this import from Transactions → menu</text>
+    <rect x="2320" y="444" width="140" height="40" rx="10.0" ry="10.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="2352" y="467.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Import Another</text>
+    <rect x="2490" y="444" width="150" height="40" rx="10.0" ry="10.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="2504" y="467.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">View Transactions</text>
+</svg>

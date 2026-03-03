@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-20 -50 2680 870"
+     width="2680" height="870"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-20" y="-50" width="2680" height="870" fill="#ffffff"/>
+    <rect x="0" y="0" width="1280" height="800" rx="0" ry="0" fill="none" stroke="#D1D5DB" stroke-width="2" opacity="1.0" />
+    <rect x="0" y="0" width="1280" height="48" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <path d="M16,14 L36,14" fill="none" stroke="#6B7280" stroke-width="2" opacity="1.0" />
+    <path d="M16,22 L36,22" fill="none" stroke="#6B7280" stroke-width="2" opacity="1.0" />
+    <path d="M16,30 L36,30" fill="none" stroke="#6B7280" stroke-width="2" opacity="1.0" />
+    <text x="52" y="28.4" font-size="20" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">RustVault</text>
+    <rect x="1080" y="8" width="32" height="32" rx="8.0" ry="8.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="1086" y="28.759999999999998" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">+</text>
+    <text x="1130" y="28.759999999999998" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">🔔</text>
+    <ellipse cx="1194.0" cy="24.0" rx="14.0" ry="14.0" fill="#DBEAFE" stroke="#2563EB" stroke-width="1" opacity="1.0"/>
+    <text x="1186" y="25.479999999999997" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">JD</text>
+    <rect x="0" y="48" width="220" height="752" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="0" y="68" width="220" height="36" rx="0" ry="0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <path d="M0,68 L0,104" fill="none" stroke="#2563EB" stroke-width="3" opacity="1.0" />
+    <text x="20" y="83.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🏠  Dashboard</text>
+    <text x="20" y="123.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📋  Transactions</text>
+    <text x="20" y="163.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">💰  Budget</text>
+    <text x="20" y="203.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📊  Reports</text>
+    <path d="M16,544 L204,544" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="8" y="552" width="204" height="28" rx="7.0" ry="7.0" fill="#F3F4F6" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="20" y="567.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">▼  SETTINGS</text>
+    <text x="36" y="594.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">⚙️  General</text>
+    <text x="36" y="630.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">🏦  Banks &amp; Accounts</text>
+    <text x="36" y="666.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">📁  Categories</text>
+    <text x="36" y="702.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">🏷️  Tags</text>
+    <text x="36" y="738.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">⚡  Rules</text>
+    <text x="20" y="780.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">v0.1.0</text>
+    <path d="M220,48 L220,800" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="252" y="91.68" font-size="24" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Dashboard</text>
+    <rect x="252" y="120" width="996" height="648" rx="12" ry="12" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="670" y="447.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Page Content Area</text>
+    <text x="540" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Desktop Shell Layout (1280×800)</text>
+    <text x="4" y="60.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">SIDEBAR (220px)</text>
+    <text x="230" y="60.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">MAIN CONTENT</text>
+    <text x="1880" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Shell — Quick Add Menu Open</text>
+    <rect x="1360" y="0" width="1280" height="800" rx="0" ry="0" fill="none" stroke="#D1D5DB" stroke-width="2" opacity="1.0" />
+    <rect x="1360" y="0" width="1280" height="48" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <path d="M1376,14 L1396,14" fill="none" stroke="#6B7280" stroke-width="2" opacity="1.0" />
+    <path d="M1376,22 L1396,22" fill="none" stroke="#6B7280" stroke-width="2" opacity="1.0" />
+    <path d="M1376,30 L1396,30" fill="none" stroke="#6B7280" stroke-width="2" opacity="1.0" />
+    <text x="1412" y="28.4" font-size="20" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">RustVault</text>
+    <rect x="2440" y="8" width="32" height="32" rx="8.0" ry="8.0" fill="#1D4ED8" stroke="#1D4ED8" stroke-width="1" opacity="1.0" />
+    <text x="2446" y="28.759999999999998" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">+</text>
+    <text x="2490" y="28.759999999999998" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">🔔</text>
+    <ellipse cx="2554.0" cy="24.0" rx="14.0" ry="14.0" fill="#DBEAFE" stroke="#2563EB" stroke-width="1" opacity="1.0"/>
+    <text x="2546" y="25.479999999999997" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">JD</text>
+    <rect x="1360" y="48" width="220" height="752" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="1380" y="83.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">🏠  Dashboard</text>
+    <text x="1380" y="123.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">📋  Transactions</text>
+    <text x="1380" y="163.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">💰  Budget</text>
+    <text x="1380" y="203.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">📊  Reports</text>
+    <path d="M1580,48 L1580,800" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="1612" y="120" width="996" height="648" rx="12" ry="12" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="0.4" stroke-dasharray="8 4"/>
+    <text x="2030" y="447.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Page Content Area</text>
+    <rect x="1580" y="48" width="1060" height="752" rx="0" ry="0" fill="#000000" stroke="none" stroke-width="1" opacity="0.08" />
+    <rect x="2383" y="59" width="220" height="228" rx="12" ry="12" fill="#E5E7EB" stroke="none" stroke-width="1" opacity="0.3" />
+    <rect x="2380" y="56" width="220" height="228" rx="12" ry="12" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <path d="M2548,56 L2556,50 L2564,56" fill="none" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <rect x="2386" y="64" width="208" height="36" rx="9.0" ry="9.0" fill="#F3F4F6" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="2400" y="83.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📥  Import Data File</text>
+    <rect x="2392" y="104" width="196" height="52" rx="12" ry="12" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="2430" y="123.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">📄 Drop file here</text>
+    <text x="2422" y="142.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">CSV · MT940 · OFX · QIF</text>
+    <path d="M2396,182 L2474,182" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="2482" y="184.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">or</text>
+    <path d="M2506,182 L2584,182" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="2400" y="215.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📋  Add Transaction</text>
+    <text x="2400" y="255.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🏦  Add Account</text>
+</svg>

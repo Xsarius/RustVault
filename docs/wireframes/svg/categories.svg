@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-20 -50 1000 602"
+     width="1000" height="602"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-20" y="-50" width="1000" height="602" fill="#ffffff"/>
+    <text x="0" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Categories Page</text>
+    <text x="0" y="19.68" font-size="24" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Categories</text>
+    <rect x="800" y="-4" width="160" height="36" rx="9.0" ry="9.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="816" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">+ Add Category</text>
+    <rect x="0" y="52" width="100" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="20" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Expense</text>
+    <rect x="108" y="52" width="96" height="36" rx="9.0" ry="9.0" fill="#DBEAFE" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="128" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">Income</text>
+    <rect x="0" y="108" width="960" height="40" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="128.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">▼</text>
+    <text x="36" y="129.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🛒 Food &amp; Groceries</text>
+    <text x="780" y="129.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 2,130</text>
+    <text x="910" y="133.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="148" width="960" height="36" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="60" y="166.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🥖 Groceries</text>
+    <text x="780" y="166.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 1,680</text>
+    <text x="910" y="169.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="184" width="960" height="36" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="60" y="202.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🍔 Takeaway</text>
+    <text x="780" y="202.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 280</text>
+    <text x="910" y="205.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="220" width="960" height="36" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="60" y="238.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">☕ Coffee</text>
+    <text x="780" y="238.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 170</text>
+    <text x="910" y="241.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <text x="60" y="269.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">+ Add sub-category</text>
+    <rect x="0" y="284" width="960" height="40" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="304.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">▶</text>
+    <text x="36" y="305.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🏠 Housing</text>
+    <text x="780" y="305.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 3,000</text>
+    <text x="910" y="309.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="324" width="960" height="40" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="344.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">▶</text>
+    <text x="36" y="345.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🚗 Transport</text>
+    <text x="780" y="345.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 520</text>
+    <text x="910" y="349.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="364" width="960" height="40" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="384.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0"> </text>
+    <text x="36" y="385.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🎵 Subscriptions</text>
+    <text x="780" y="385.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 180</text>
+    <text x="910" y="389.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="404" width="960" height="40" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="424.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0"> </text>
+    <text x="36" y="425.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📦 Shopping</text>
+    <text x="780" y="425.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 670</text>
+    <text x="910" y="429.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="444" width="960" height="40" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="464.2" font-size="10" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0"> </text>
+    <text x="36" y="465.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🎭 Entertainment</text>
+    <text x="780" y="465.48" font-size="14" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 150</text>
+    <text x="910" y="469.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">⋯</text>
+    <rect x="0" y="492" width="960" height="40" rx="10.0" ry="10.0" fill="#FEF3C7" stroke="#D97706" stroke-width="1" opacity="1.0" />
+    <text x="16" y="512.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">⚠ 12 uncategorized transactions this month</text>
+</svg>

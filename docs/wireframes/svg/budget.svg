@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-20 -50 1000 614"
+     width="1000" height="614"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-20" y="-50" width="1000" height="614" fill="#ffffff"/>
+    <text x="0" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Budget Page</text>
+    <text x="0" y="19.68" font-size="24" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Budget</text>
+    <text x="360" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">◂ February 2026</text>
+    <rect x="460" y="-4" width="140" height="36" rx="9.0" ry="9.0" fill="#DBEAFE" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="472" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">March 2026</text>
+    <text x="620" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">April 2026 ▸</text>
+    <rect x="0" y="52" width="228" height="64" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="16" y="71.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Planned</text>
+    <text x="16" y="96.76" font-size="18" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 10,000</text>
+    <rect x="244" y="52" width="228" height="64" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="260" y="71.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Spent</text>
+    <text x="260" y="96.76" font-size="18" font-family="'Cascadia', 'Fira Code', monospace" fill="#D97706" text-anchor="start" opacity="1.0">PLN 7,230</text>
+    <rect x="488" y="52" width="228" height="64" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="504" y="71.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Remaining</text>
+    <text x="504" y="96.76" font-size="18" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">PLN 2,770</text>
+    <rect x="732" y="52" width="228" height="64" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="748" y="71.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Savings Rate</text>
+    <text x="748" y="96.76" font-size="18" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">27.7%</text>
+    <rect x="0" y="136" width="960" height="32" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="16" y="153.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Category</text>
+    <text x="300" y="153.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Planned</text>
+    <text x="420" y="153.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Spent</text>
+    <text x="540" y="153.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Remaining</text>
+    <text x="660" y="153.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Progress</text>
+    <rect x="0" y="168" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="188.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🛒 Food</text>
+    <text x="300" y="188.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">2,500</text>
+    <text x="420" y="188.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">2,130</text>
+    <text x="540" y="188.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">370</text>
+    <rect x="660" y="178" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="178" width="170" height="14" rx="3.5" ry="3.5" fill="#D97706" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="187.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#D97706" text-anchor="start" opacity="1.0">85%</text>
+    <rect x="0" y="204" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="224.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🏠 Housing</text>
+    <text x="300" y="224.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">3,000</text>
+    <text x="420" y="224.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">3,000</text>
+    <text x="540" y="224.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">0</text>
+    <rect x="660" y="214" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="214" width="200" height="14" rx="3.5" ry="3.5" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="223.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">100%</text>
+    <rect x="0" y="240" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="260.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🚗 Transport</text>
+    <text x="300" y="260.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">800</text>
+    <text x="420" y="260.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">520</text>
+    <text x="540" y="260.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">280</text>
+    <rect x="660" y="250" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="250" width="130" height="14" rx="3.5" ry="3.5" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="259.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">65%</text>
+    <rect x="0" y="276" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="296.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🎵 Subscriptions</text>
+    <text x="300" y="296.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">200</text>
+    <text x="420" y="296.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">180</text>
+    <text x="540" y="296.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">20</text>
+    <rect x="660" y="286" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="286" width="180" height="14" rx="3.5" ry="3.5" fill="#D97706" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="295.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#D97706" text-anchor="start" opacity="1.0">90%</text>
+    <rect x="0" y="312" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="332.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📦 Shopping</text>
+    <text x="300" y="332.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">500</text>
+    <text x="420" y="332.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">670</text>
+    <text x="540" y="332.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-170</text>
+    <rect x="660" y="322" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="322" width="200" height="14" rx="3.5" ry="3.5" fill="#DC2626" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="331.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">134%</text>
+    <text x="930" y="331.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#DC2626" text-anchor="start" opacity="1.0">⚠</text>
+    <rect x="0" y="348" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="368.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">☕ Dining</text>
+    <text x="300" y="368.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">400</text>
+    <text x="420" y="368.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">230</text>
+    <text x="540" y="368.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">170</text>
+    <rect x="660" y="358" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="358" width="115" height="14" rx="3.5" ry="3.5" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="367.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">57%</text>
+    <rect x="0" y="384" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="404.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🎭 Entertainment</text>
+    <text x="300" y="404.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">300</text>
+    <text x="420" y="404.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">150</text>
+    <text x="540" y="404.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">150</text>
+    <rect x="660" y="394" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="394" width="100" height="14" rx="3.5" ry="3.5" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="403.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">50%</text>
+    <rect x="0" y="420" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="16" y="440.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">💡 Utilities</text>
+    <text x="300" y="440.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">500</text>
+    <text x="420" y="440.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">350</text>
+    <text x="540" y="440.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">150</text>
+    <rect x="660" y="430" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="430" width="140" height="14" rx="3.5" ry="3.5" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="439.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">70%</text>
+    <rect x="0" y="456" width="960" height="36" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="16" y="476.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Total</text>
+    <text x="300" y="476.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">10,000</text>
+    <text x="420" y="476.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">7,230</text>
+    <text x="540" y="476.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">2,770</text>
+    <rect x="660" y="466" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="660" y="466" width="144" height="14" rx="3.5" ry="3.5" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="868" y="475.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">72%</text>
+    <rect x="0" y="508" width="110" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="12" y="528.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Edit budget</text>
+    <rect x="124" y="508" width="170" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="136" y="528.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Copy to next month</text>
+</svg>

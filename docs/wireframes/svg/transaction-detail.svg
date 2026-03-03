@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-20 -50 420 750"
+     width="420" height="750"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-20" y="-50" width="420" height="750" fill="#ffffff"/>
+    <text x="0" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Transaction Detail — Side Panel</text>
+    <rect x="0" y="0" width="380" height="680" rx="12" ry="12" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="20" y="29.119999999999997" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Transaction Detail</text>
+    <text x="344" y="30.759999999999998" font-size="18" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">✕</text>
+    <path d="M16,52 L364,52" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="20" y="81.12" font-size="16" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">SPOTIFY AB STOCKHOLM SE</text>
+    <text x="20" y="109.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Amount</text>
+    <text x="140" y="110.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">PLN -9.99</text>
+    <text x="20" y="141.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Date</text>
+    <text x="140" y="142.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">March 2, 2026</text>
+    <text x="20" y="173.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Account</text>
+    <text x="140" y="174.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Revolut · Main PLN</text>
+    <text x="20" y="205.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Category</text>
+    <rect x="140" y="192" width="180" height="28" rx="7.0" ry="7.0" fill="#DBEAFE" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="152" y="206.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🎵 Subscriptions ▾</text>
+    <text x="20" y="241.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Tags</text>
+    <rect x="140" y="228" width="110" height="26" rx="6.5" ry="6.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="148" y="241.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">entertainment</text>
+    <rect x="260" y="228" width="50" height="26" rx="6.5" ry="6.5" fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="272" y="241.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">+ add</text>
+    <text x="20" y="277.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Payee</text>
+    <text x="140" y="278.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Spotify</text>
+    <text x="20" y="309.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Status</text>
+    <text x="140" y="310.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">✓ Reviewed</text>
+    <path d="M16,340 L364,340" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="20" y="361.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">NOTES</text>
+    <text x="20" y="382.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Monthly music subscription</text>
+    <path d="M16,404 L364,404" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="20" y="425.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">ORIGINAL DESCRIPTION</text>
+    <text x="20" y="445.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">SPOTIFY AB STOCKHOLM SE</text>
+    <text x="20" y="463.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">POS 2026-03-02</text>
+    <path d="M16,484 L364,484" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="20" y="505.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">HISTORY</text>
+    <text x="20" y="525.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 02 15:30  Imported (batch #47)</text>
+    <text x="20" y="545.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 02 15:31  Category set → Subs</text>
+    <rect x="16" y="572" width="348" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="28" y="592.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">⚡ Create rule from this</text>
+    <rect x="16" y="616" width="348" height="36" rx="9.0" ry="9.0" fill="#FEF2F2" stroke="#DC2626" stroke-width="1" opacity="1.0" />
+    <text x="28" y="636.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#DC2626" text-anchor="start" opacity="1.0">🗑 Delete</text>
+</svg>

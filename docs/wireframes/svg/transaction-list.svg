@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-20 -50 1000 702"
+     width="1000" height="702"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-20" y="-50" width="1000" height="702" fill="#ffffff"/>
+    <text x="0" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Transaction List — Desktop View</text>
+    <text x="0" y="19.68" font-size="24" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Transactions</text>
+    <rect x="790" y="-4" width="80" height="36" rx="9.0" ry="9.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="806" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">+ Add</text>
+    <rect x="880" y="-4" width="80" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="894" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Import</text>
+    <rect x="0" y="48" width="960" height="48" rx="12.0" ry="12.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="16" y="56" width="65" height="32" rx="8.0" ry="8.0" fill="#ffffff" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="26" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">All ▾</text>
+    <rect x="93" y="56" width="110" height="32" rx="8.0" ry="8.0" fill="#ffffff" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="103" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 2026 ▾</text>
+    <rect x="215" y="56" width="146" height="32" rx="8.0" ry="8.0" fill="#ffffff" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="225" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">All accounts ▾</text>
+    <rect x="373" y="56" width="119" height="32" rx="8.0" ry="8.0" fill="#ffffff" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="383" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">🔍 Search...</text>
+    <rect x="0" y="112" width="960" height="36" rx="0" ry="0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="12" y="131.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="131.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Date</text>
+    <text x="114" y="131.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Description</text>
+    <text x="364" y="131.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Category</text>
+    <text x="474" y="131.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Account</text>
+    <text x="864" y="131.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Amount</text>
+    <rect x="0" y="148" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="167.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="168.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 02</text>
+    <text x="114" y="168.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">SPOTIFY AB</text>
+    <rect x="364" y="154" width="64" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="167.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🎵 Subs</text>
+    <text x="474" y="168.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Revolut</text>
+    <text x="870" y="168.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-9.99</text>
+    <rect x="0" y="184" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="203.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="204.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 02</text>
+    <text x="114" y="204.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">BIEDRONKA</text>
+    <rect x="364" y="190" width="64" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="203.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🛒 Food</text>
+    <text x="474" y="204.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Lunar</text>
+    <text x="870" y="204.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-87.30</text>
+    <rect x="0" y="220" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="239.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="240.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 01</text>
+    <text x="114" y="240.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">SALARY MARCH</text>
+    <rect x="364" y="226" width="80" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="239.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">💰 Income</text>
+    <text x="474" y="240.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Lunar</text>
+    <text x="870" y="240.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#16A34A" text-anchor="start" opacity="1.0">+12,500</text>
+    <rect x="0" y="256" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="275.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">●</text>
+    <text x="44" y="276.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 01</text>
+    <text x="114" y="276.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">TRANSFER TO ZEN</text>
+    <rect x="364" y="262" width="96" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="275.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">↔ Transfer</text>
+    <text x="474" y="276.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Revolut</text>
+    <text x="870" y="276.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#7C3AED" text-anchor="start" opacity="1.0">-500.00</text>
+    <text x="114" y="303.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#7C3AED" text-anchor="start" opacity="1.0">→ Zen PLN</text>
+    <rect x="0" y="316" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="335.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="336.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Feb 28</text>
+    <text x="114" y="336.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">ALLEGRO ORDER #123</text>
+    <rect x="364" y="322" width="64" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="335.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">📦 Shop</text>
+    <text x="474" y="336.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Revolut</text>
+    <text x="870" y="336.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-149.00</text>
+    <rect x="0" y="352" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="371.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">●</text>
+    <text x="44" y="372.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Feb 28</text>
+    <text x="114" y="372.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">STARBUCKS WARSZAWA</text>
+    <rect x="364" y="358" width="80" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="371.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">(uncat.)</text>
+    <text x="474" y="372.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Revolut</text>
+    <text x="870" y="372.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-24.50</text>
+    <text x="114" y="399.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">✨ AI suggests: ☕ Dining</text>
+    <rect x="0" y="412" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="431.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="432.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Feb 27</text>
+    <text x="114" y="432.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">UBER TRIP</text>
+    <rect x="364" y="418" width="80" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="431.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🚗 Transp</text>
+    <text x="474" y="432.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Revolut</text>
+    <text x="870" y="432.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-32.00</text>
+    <rect x="0" y="448" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="467.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="468.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Feb 27</text>
+    <text x="114" y="468.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">NETFLIX</text>
+    <rect x="364" y="454" width="64" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="467.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🎵 Subs</text>
+    <text x="474" y="468.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Revolut</text>
+    <text x="870" y="468.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-49.99</text>
+    <rect x="0" y="484" width="960" height="36" rx="0" ry="0" fill="#ffffff" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" />
+    <text x="12" y="503.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">□</text>
+    <text x="44" y="504.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Feb 26</text>
+    <text x="114" y="504.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">ZABKA #2137</text>
+    <rect x="364" y="490" width="64" height="24" rx="6.0" ry="6.0" fill="#DBEAFE" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="372" y="503.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🛒 Food</text>
+    <text x="474" y="504.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Lunar</text>
+    <text x="870" y="504.66" font-size="13" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-12.40</text>
+    <path d="M100,528 L860,528" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="420" y="541.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">loading more...</text>
+    <text x="300" y="565.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">── Showing 127 of 1,842 transactions ── Filtered: Mar 2026 ──</text>
+    <rect x="0" y="588" width="960" height="44" rx="11.0" ry="11.0" fill="#09090B" stroke="#09090B" stroke-width="1" opacity="1.0" />
+    <text x="16" y="612.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">3 selected</text>
+    <rect x="140" y="596" width="142" height="28" rx="7.0" ry="7.0" fill="none" stroke="#4B5563" stroke-width="1" opacity="1.0" />
+    <text x="148" y="611.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">Set category ▾</text>
+    <rect x="294" y="596" width="97" height="28" rx="7.0" ry="7.0" fill="none" stroke="#4B5563" stroke-width="1" opacity="1.0" />
+    <text x="302" y="611.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">Add tag ▾</text>
+    <rect x="403" y="596" width="106" height="28" rx="7.0" ry="7.0" fill="none" stroke="#4B5563" stroke-width="1" opacity="1.0" />
+    <text x="411" y="611.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">✓ Reviewed</text>
+    <rect x="521" y="596" width="25" height="28" rx="6.25" ry="6.25" fill="none" stroke="#4B5563" stroke-width="1" opacity="1.0" />
+    <text x="529" y="611.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D1D5DB" text-anchor="start" opacity="1.0">🗑</text>
+</svg>

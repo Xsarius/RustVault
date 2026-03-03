@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-20 -50 1000 772"
+     width="1000" height="772"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-20" y="-50" width="1000" height="772" fill="#ffffff"/>
+    <text x="0" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Reports Page</text>
+    <text x="0" y="19.68" font-size="24" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Reports</text>
+    <rect x="830" y="-4" width="130" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="848" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">⬇ Export PDF</text>
+    <rect x="0" y="52" width="300" height="36" rx="9.0" ry="9.0" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="12" y="73.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📅 Feb 1 — Feb 28, 2026 ▾</text>
+    <rect x="316" y="52" width="80" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="328" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">1 month</text>
+    <rect x="404" y="52" width="90" height="36" rx="9.0" ry="9.0" fill="#DBEAFE" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="416" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">3 months</text>
+    <rect x="502" y="52" width="60" height="36" rx="9.0" ry="9.0" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="514" y="72.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Year</text>
+    <rect x="0" y="108" width="960" height="200" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="24" y="129.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">INCOME VS EXPENSES</text>
+    <text x="24" y="156.2" font-size="10" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">15k</text>
+    <path d="M60,154 L936,154" fill="none" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="24" y="196.2" font-size="10" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">10k</text>
+    <path d="M60,194 L936,194" fill="none" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="24" y="236.2" font-size="10" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">5k</text>
+    <path d="M60,234 L936,234" fill="none" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" stroke-dasharray="8 4"/>
+    <text x="24" y="276.2" font-size="10" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">0</text>
+    <path d="M60,274 L936,274" fill="none" stroke="#E5E7EB" stroke-width="0.5" opacity="1.0" stroke-dasharray="8 4"/>
+    <rect x="160" y="138" width="50" height="130" rx="12" ry="12" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <rect x="218" y="168" width="50" height="100" rx="12" ry="12" fill="#DC2626" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="180" y="287.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Dec</text>
+    <rect x="320" y="143" width="50" height="125" rx="12" ry="12" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <rect x="378" y="173" width="50" height="95" rx="12" ry="12" fill="#DC2626" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="340" y="287.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Jan</text>
+    <rect x="480" y="128" width="50" height="140" rx="12" ry="12" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <rect x="538" y="158" width="50" height="110" rx="12" ry="12" fill="#DC2626" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="500" y="287.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Feb</text>
+    <rect x="760" y="120" width="12" height="12" rx="0" ry="0" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="776" y="127.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Income</text>
+    <rect x="840" y="120" width="12" height="12" rx="0" ry="0" fill="#DC2626" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="856" y="127.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Expenses</text>
+    <rect x="0" y="332" width="468" height="250" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="24" y="353.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">SPENDING BY CATEGORY</text>
+    <ellipse cx="228.0" cy="472.0" rx="80.0" ry="80.0" fill="#DBEAFE" stroke="#E5E7EB" stroke-width="1" opacity="1.0"/>
+    <ellipse cx="228.0" cy="472.0" rx="75.0" ry="75.0" fill="#16A34A" stroke="transparent" stroke-width="1" opacity="1.0"/>
+    <ellipse cx="228.0" cy="472.0" rx="70.0" ry="70.0" fill="#ffffff" stroke="transparent" stroke-width="1" opacity="1.0"/>
+    <text x="328" y="441.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">🛒 Food  38%</text>
+    <text x="328" y="465.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🏠 Housing  28%</text>
+    <text x="328" y="489.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">📦 Shopping  12%</text>
+    <text x="328" y="513.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Others  22%</text>
+    <rect x="492" y="332" width="468" height="250" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="516" y="353.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">TOP CATEGORIES</text>
+    <text x="516" y="378.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🏠 Housing</text>
+    <text x="516" y="395.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 3,000</text>
+    <rect x="692" y="372" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="692" y="372" width="200" height="14" rx="3.5" ry="3.5" fill="#2563EB" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="900" y="381.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">30%</text>
+    <text x="516" y="420.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🛒 Food</text>
+    <text x="516" y="437.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 2,130</text>
+    <rect x="692" y="414" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="692" y="414" width="140" height="14" rx="3.5" ry="3.5" fill="#16A34A" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="900" y="423.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">21%</text>
+    <text x="516" y="462.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">📦 Shopping</text>
+    <text x="516" y="479.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 670</text>
+    <rect x="692" y="456" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="692" y="456" width="46" height="14" rx="3.5" ry="3.5" fill="#D97706" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="900" y="465.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">7%</text>
+    <text x="516" y="504.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">🚗 Transport</text>
+    <text x="516" y="521.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 520</text>
+    <rect x="692" y="498" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="692" y="498" width="33" height="14" rx="3.5" ry="3.5" fill="#2563EB" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="900" y="507.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">5%</text>
+    <text x="516" y="546.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">☕ Dining</text>
+    <text x="516" y="563.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#6B7280" text-anchor="start" opacity="1.0">PLN 230</text>
+    <rect x="692" y="540" width="200" height="14" rx="3.5" ry="3.5" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="692" y="540" width="13" height="14" rx="3.25" ry="3.25" fill="#7C3AED" stroke="none" stroke-width="1" opacity="1.0" />
+    <text x="900" y="549.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#9CA3AF" text-anchor="start" opacity="1.0">2%</text>
+    <rect x="0" y="602" width="960" height="100" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="24" y="623.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">MONTHLY TRENDS</text>
+    <text x="24" y="647.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Net Savings</text>
+    <text x="24" y="670.76" font-size="18" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 3,780</text>
+    <text x="24" y="690.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">↑ 12%</text>
+    <text x="334" y="647.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Avg Transaction</text>
+    <text x="334" y="670.76" font-size="18" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">PLN 68.70</text>
+    <text x="334" y="690.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">↓ 3%</text>
+    <text x="644" y="647.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Transaction Count</text>
+    <text x="644" y="670.76" font-size="18" font-family="'Cascadia', 'Fira Code', monospace" fill="#111827" text-anchor="start" opacity="1.0">127</text>
+    <text x="644" y="690.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">↑ 8%</text>
+</svg>

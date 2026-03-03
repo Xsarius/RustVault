@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-20 -50 1000 582"
+     width="1000" height="582"
+     style="background-color: #ffffff;">
+  <style>
+    text {
+      white-space: pre;
+      dominant-baseline: auto;
+    }
+  </style>
+  <rect x="-20" y="-50" width="1000" height="582" fill="#ffffff"/>
+    <text x="0" y="-18.520000000000003" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Tags Page</text>
+    <text x="0" y="19.68" font-size="24" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">Tags</text>
+    <rect x="840" y="-4" width="120" height="36" rx="9.0" ry="9.0" fill="#2563EB" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="856" y="15.479999999999999" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#ffffff" text-anchor="start" opacity="1.0">+ Add Tag</text>
+    <rect x="0" y="52" width="300" height="36" rx="9.0" ry="9.0" fill="#ffffff" stroke="#D1D5DB" stroke-width="1" opacity="1.0" />
+    <text x="12" y="73.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">🔍 Search tags...</text>
+    <text x="0" y="113.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">ALL TAGS</text>
+    <rect x="0" y="128" width="177" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="12" y="146.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🏷️ entertainment</text>
+    <text x="147" y="147.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">42</text>
+    <rect x="189" y="128" width="141" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="201" y="146.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">🏷️ recurring</text>
+    <text x="300" y="147.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">38</text>
+    <rect x="342" y="128" width="150" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="354" y="146.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">🏷️ fixed-cost</text>
+    <text x="462" y="147.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">25</text>
+    <rect x="504" y="128" width="186" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="516" y="146.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#7C3AED" text-anchor="start" opacity="1.0">🏷️ small-purchase</text>
+    <text x="660" y="147.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">67</text>
+    <rect x="702" y="128" width="186" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="714" y="146.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🏷️ tax-deductible</text>
+    <text x="858" y="147.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">15</text>
+    <rect x="0" y="172" width="132" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="12" y="190.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">🏷️ business</text>
+    <text x="102" y="191.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">12</text>
+    <rect x="144" y="172" width="114" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="156" y="190.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#DC2626" text-anchor="start" opacity="1.0">🏷️ refund</text>
+    <text x="228" y="191.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">5</text>
+    <rect x="270" y="172" width="132" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="282" y="190.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">🏷️ vacation</text>
+    <text x="372" y="191.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">8</text>
+    <rect x="414" y="172" width="195" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="426" y="190.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#16A34A" text-anchor="start" opacity="1.0">🏷️ groceries-extra</text>
+    <text x="579" y="191.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">22</text>
+    <rect x="621" y="172" width="96" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="633" y="190.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#7C3AED" text-anchor="start" opacity="1.0">🏷️ gift</text>
+    <text x="687" y="191.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">9</text>
+    <rect x="729" y="172" width="114" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="741" y="190.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🏷️ health</text>
+    <text x="813" y="191.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">14</text>
+    <rect x="0" y="216" width="141" height="34" rx="8.5" ry="8.5" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="12" y="234.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#D97706" text-anchor="start" opacity="1.0">🏷️ education</text>
+    <text x="111" y="235.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">7</text>
+    <path d="M0,272 L960,272" fill="none" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <text x="0" y="297.02" font-size="11" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">TAG DETAIL</text>
+    <rect x="0" y="312" width="960" height="200" rx="12" ry="12" fill="#F9FAFB" stroke="#E5E7EB" stroke-width="1" opacity="1.0" />
+    <rect x="20" y="328" width="180" height="32" rx="8.0" ry="8.0" fill="#DBEAFE" stroke="#2563EB" stroke-width="1" opacity="1.0" />
+    <text x="36" y="345.48" font-size="14" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🏷️ entertainment</text>
+    <text x="220" y="344.66" font-size="13" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">42 transactions  ·  PLN 3,850 total</text>
+    <text x="20" y="381.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#9CA3AF" text-anchor="start" opacity="1.0">Recent transactions:</text>
+    <text x="40" y="401.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 02</text>
+    <text x="120" y="401.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">SPOTIFY AB</text>
+    <text x="860" y="401.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-9.99</text>
+    <text x="40" y="425.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Mar 01</text>
+    <text x="120" y="425.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">NETFLIX</text>
+    <text x="860" y="425.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-49.99</text>
+    <text x="40" y="449.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#6B7280" text-anchor="start" opacity="1.0">Feb 28</text>
+    <text x="120" y="449.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#111827" text-anchor="start" opacity="1.0">CINEMA CITY</text>
+    <text x="860" y="449.84" font-size="12" font-family="'Cascadia', 'Fira Code', monospace" fill="#DC2626" text-anchor="start" opacity="1.0">-32.00</text>
+    <text x="20" y="491.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">✏️ Rename</text>
+    <text x="120" y="491.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#2563EB" text-anchor="start" opacity="1.0">🔀 Merge</text>
+    <text x="200" y="491.84" font-size="12" font-family="'Helvetica', 'Arial', sans-serif" fill="#DC2626" text-anchor="start" opacity="1.0">🗑 Delete</text>
+</svg>
