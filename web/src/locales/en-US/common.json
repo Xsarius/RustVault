@@ -1,0 +1,39 @@
+{
+  "app": {
+    "name": "RustVault",
+    "description": "Self-hosted personal finance platform"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "import": "Import",
+    "budget": "Budget",
+    "reports": "Reports",
+    "settings": "Settings",
+    "banks": "Banks & Accounts",
+    "categories": "Categories",
+    "tags": "Tags"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "archive": "Archive",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import"
+  },
+  "status": {
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "noResults": "No results found."
+  }
+}

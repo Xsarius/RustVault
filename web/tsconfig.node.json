@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "composite": true,
+    "strict": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  },
+  "include": ["vite.config.ts"]
+}

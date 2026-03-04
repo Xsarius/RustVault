@@ -1,0 +1,12 @@
+# RustVault i18n — Supported Locales
+# Each locale must have a corresponding directory under locales/
+# and web/src/locales/ with translation files.
+
+[meta]
+default_locale = "en-US"
+fallback_locale = "en-US"
+
+[[locales]]
+code = "en-US"
+name = "English (US)"
+direction = "ltr"
