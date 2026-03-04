@@ -143,7 +143,7 @@ The UI is designed for **data density and readability** — inspired by Linear, 
 ### Requirements
 
 - **Docker** with Docker Compose (or any OCI-compatible runtime)
-- **PostgreSQL 15+** (included in the provided `docker-compose.yml`)
+- **PostgreSQL 18+** (included in the provided `docker-compose.yml`)
 - Minimum **1 CPU core** and **512 MB RAM** (runs comfortably on a Raspberry Pi 4)
 
 ### Quick Start
@@ -252,7 +252,7 @@ Development follows a phased approach — each phase is self-contained and shipp
 
 - Cargo workspace with 5 crates (`server`, `core`, `db`, `import`, `ai`)
 - SolidJS + Vite + Tailwind + Kobalte frontend scaffold
-- Multi-stage Dockerfile & `docker-compose.yml` with PostgreSQL 16
+- Multi-stage Dockerfile & `docker-compose.yml` with PostgreSQL 18
 - GitHub Actions CI (Rust check/clippy/test, frontend lint/build, Docker build)
 - i18n infrastructure (Fluent + ICU MessageFormat)
 - mdBook documentation skeleton & initial ADRs
