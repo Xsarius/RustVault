@@ -46,3 +46,4 @@ docs/book/book/
 
 # ── Vale style cache ────────────────────────────────────
 .vale/
+docs/adr/template.md
