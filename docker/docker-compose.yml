@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    image: ghcr.io/xsarius/rustvault:latest
     ports:
       - "${PORT:-8080}:8080"
     environment:
