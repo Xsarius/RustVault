@@ -58,31 +58,6 @@ Built from the ground up in **Rust** for performance and reliability, with a **S
 
 ## Architecture
 
-```mermaid
-graph LR
-    subgraph Clients
-        WEB["Web SPA\n(SolidJS)"]
-        MOBILE["Mobile Apps\n(Capacitor)"]
-    end
-
-    WEB & MOBILE -->|HTTPS / REST| SERVER
-
-    subgraph COMPOSE["Docker Compose"]
-        SERVER["rustvault-server\n(Axum + embedded SPA)"]
-        DB[(PostgreSQL)]
-    end
-
-    SERVER -->|SQLx| DB
-
-    subgraph EXTERNAL["Optional External Services"]
-        AI_EXT["AI Provider\n(Ollama / OpenAI)"]
-        FX["Exchange Rates\n(ECB / OER)"]
-    end
-
-    SERVER -.-> AI_EXT
-    SERVER -.-> FX
-```
-
 > PostgreSQL ships in the provided `docker-compose.yml` but can point to any external instance. Reverse proxy is optional — the server handles TLS termination if needed.
 > For detailed backend diagrams (request flow, import pipeline, crate dependencies) see [BACKEND_PLAN.md](BACKEND_PLAN.md#architecture-diagrams).
 
