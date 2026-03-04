@@ -10,7 +10,7 @@ Thank you for your interest in contributing to RustVault! This guide will help y
 - **Node.js** (>= 22) or **Bun** (>= 1.0)
 - **PostgreSQL** (>= 16) — or use Docker
 - **Docker** & **Docker Compose** — for the full stack
-- **[just](https://just.systems)** — command runner (`brew install just`)
+- **[just](https://just.systems)** — command runner
 
 ### Getting Started
 

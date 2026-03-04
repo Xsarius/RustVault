@@ -47,3 +47,4 @@ docs/book/book/
 # ── Vale style cache ────────────────────────────────────
 .vale/
 docs/adr/template.md
+docs/wireframes/*.py
