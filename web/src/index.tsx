@@ -1,5 +1,7 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
+import { Suspense } from "solid-js";
+import { I18nProvider } from "~/i18n";
 import App from "./App";
 import "./app.css";
 
@@ -11,4 +13,13 @@ if (!root) {
   );
 }
 
-render(() => <App />, root);
+render(
+  () => (
+    <I18nProvider>
+      <Suspense>
+        <App />
+      </Suspense>
+    </I18nProvider>
+  ),
+  root,
+);
