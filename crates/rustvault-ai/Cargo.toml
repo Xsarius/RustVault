@@ -1,0 +1,33 @@
+[package]
+name = "rustvault-ai"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "RustVault AI module — receipt scanning, smart categorization, payee normalization"
+
+[lib]
+name = "rustvault_ai"
+path = "src/lib.rs"
+
+[dependencies]
+# Workspace dependencies
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true }
+
+# Internal crates
+rustvault-core = { workspace = true }
+
+# HTTP client for AI providers
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-webpki-roots", "json"] }
+
+# Image encoding
+base64 = "0.22"
+
+# Async traits
+async-trait = "0.1"

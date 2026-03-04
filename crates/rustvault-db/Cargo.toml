@@ -1,0 +1,24 @@
+[package]
+name = "rustvault-db"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "RustVault database layer — SQLx queries, migrations, repositories"
+
+[lib]
+name = "rustvault_db"
+path = "src/lib.rs"
+
+[dependencies]
+# Workspace dependencies
+sqlx = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+time = { workspace = true }
+rust_decimal = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }

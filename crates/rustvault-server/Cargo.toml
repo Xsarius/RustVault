@@ -1,0 +1,53 @@
+[package]
+name = "rustvault-server"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+description = "RustVault HTTP server — Axum routes, middleware, and extractors"
+
+[[bin]]
+name = "rustvault"
+path = "src/main.rs"
+
+[dependencies]
+# Workspace dependencies
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid = { workspace = true }
+time = { workspace = true }
+rust_decimal = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+validator = { workspace = true }
+
+# Internal crates
+rustvault-core = { workspace = true }
+rustvault-db = { workspace = true }
+rustvault-import = { workspace = true }
+rustvault-ai = { workspace = true }
+
+# HTTP framework
+axum = "0.8"
+axum-extra = { version = "0.12.5", features = ["cookie"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "compression-full", "limit", "trace"] }
+
+# Config
+dotenvy = "0.15"
+toml = "0.9.8"
+
+# API docs
+utoipa = { version = "5", features = ["axum_extras"] }
+utoipa-scalar = "0.3"
+
+# Scheduling
+tokio-cron-scheduler = "0.15.1"
+
+# Rate limiting
+governor = "0.10.4"

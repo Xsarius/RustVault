@@ -1,0 +1,53 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/Xsarius/RustVault"
+authors = ["RustVault Contributors"]
+
+[workspace.dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Logging / tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Database
+sqlx = { version = "0.8", features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "postgres",
+    "uuid",
+    "time",
+    "rust_decimal",
+    "json",
+    "migrate",
+] }
+
+# Common types
+uuid = { version = "1", features = ["v4", "serde"] }
+time = { version = "0.3", features = ["serde", "formatting", "parsing"] }
+rust_decimal = { version = "1", features = ["serde-with-str"] }
+
+# Validation
+validator = { version = "0.20", features = ["derive"] }
+
+# Internal crates
+rustvault-core = { path = "crates/rustvault-core" }
+rustvault-db = { path = "crates/rustvault-db" }
+rustvault-import = { path = "crates/rustvault-import" }
+rustvault-ai = { path = "crates/rustvault-ai" }
