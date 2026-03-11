@@ -9,4 +9,5 @@ fallback_locale = "en-US"
 [[locales]]
 code = "en-US"
 name = "English (US)"
+native_name = "English (US)"
 direction = "ltr"

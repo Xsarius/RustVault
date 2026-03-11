@@ -23,12 +23,15 @@ time = { workspace = true }
 rust_decimal = { workspace = true }
 validator = { workspace = true }
 
+# Database (for derive macros and PgPool in services)
+sqlx = { workspace = true }
+
 # Internal crates
 rustvault-db = { workspace = true }
 
 # Auth
 argon2 = "0.5"
-jsonwebtoken = "10.3.0"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
 aes-gcm = "0.10"
 rand = "0.10.0"
 sha2 = "0.10"
@@ -37,10 +40,13 @@ sha2 = "0.10"
 openidconnect = "4"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-webpki-roots", "json"] }
 
-# Rule engine
+# Utilities
 regex = "1"
+hex = "0.4"
+utoipa = { version = "5", features = ["uuid", "time", "decimal"] }
 
 # i18n
-fluent = "0.17"
+fluent-bundle = "0.16"
 fluent-syntax = "0.12"
 unic-langid = "0.9"
+toml = "0.9"

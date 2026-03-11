@@ -6,8 +6,15 @@
 
 #![warn(missing_docs)]
 
+/// Cryptographic utilities — password hashing (Argon2id), JWT creation/validation, refresh-token generation.
+pub mod crypto;
+/// Core error types shared across the domain layer.
 pub mod error;
+/// Internationalisation — Fluent bundle loading, locale resolution, message formatting.
+pub mod i18n;
+/// Domain models — structs for users, banks, accounts, categories, tags, sessions, settings, and audit entries.
 pub mod models;
+/// Business-logic services — orchestrate repository calls and enforce domain rules.
 pub mod services;
 
 pub use error::CoreError;
