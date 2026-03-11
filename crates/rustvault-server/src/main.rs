@@ -3,13 +3,11 @@
 //! Binary crate that initializes the Axum web server, loads configuration,
 //! sets up tracing, and wires together all domain modules.
 
-#![warn(missing_docs)]
-
-mod app;
-mod routes;
-
 use tracing::info;
 use tracing_subscriber::EnvFilter;
+
+use rustvault_server::config::AppConfig;
+use rustvault_server::state::AppState;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -25,11 +23,28 @@ async fn main() -> anyhow::Result<()> {
 
     info!("Starting RustVault server");
 
-    let app = app::build_app().await?;
+    // Load configuration (TOML + env vars)
+    let config = AppConfig::load()?;
+    let port = config.server.port;
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
+    // Create database connection pool and run migrations
+    let pool = rustvault_db::create_pool(
+        &config.database.url,
+        config.database.max_connections,
+    )
+    .await?;
+
+    // Load i18n locale bundles
+    let i18n = rustvault_core::i18n::I18n::load(std::path::Path::new(
+        &config.server.locales_dir,
+    ))
+    .map_err(|e| anyhow::anyhow!("failed to load i18n: {e}"))?;
+
+    // Build application state and router
+    let state = AppState::new(pool, config, i18n);
+    let app = rustvault_server::app::build_app(state);
+
     let addr = format!("0.0.0.0:{port}");
-
     let listener = tokio::net::TcpListener::bind(&addr).await?;
     info!("Listening on {addr}");
 
