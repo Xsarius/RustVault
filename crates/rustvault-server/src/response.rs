@@ -203,9 +203,9 @@ impl From<CoreError> for ApiError {
             }
             CoreError::OidcUserNotRegistered { .. } => Self::Forbidden,
             CoreError::RegistrationDisabled => Self::Forbidden,
-            CoreError::PasswordLoginDisabled => {
-                Self::BadRequest("This account uses SSO — sign in with your identity provider".into())
-            }
+            CoreError::PasswordLoginDisabled => Self::BadRequest(
+                "This account uses SSO — sign in with your identity provider".into(),
+            ),
             CoreError::OidcError(msg) => {
                 tracing::error!(%msg, "OIDC error");
                 Self::Unauthorized("SSO authentication failed".into())

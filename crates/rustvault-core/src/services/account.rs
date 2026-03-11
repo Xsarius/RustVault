@@ -84,7 +84,7 @@ pub async fn create(
         other => CoreError::Db(other),
     })?;
 
-    let new_value = serde_json::to_value(&row_to_account(row.clone())).ok();
+    let new_value = serde_json::to_value(row_to_account(row.clone())).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,
@@ -148,13 +148,7 @@ pub async fn archive(pool: &PgPool, user_id: Uuid, account_id: Uuid) -> Result<(
         })?;
 
     let _ = rustvault_db::repos::audit::insert(
-        pool,
-        user_id,
-        "account",
-        account_id,
-        "archive",
-        None,
-        None,
+        pool, user_id, "account", account_id, "archive", None, None,
     )
     .await;
 

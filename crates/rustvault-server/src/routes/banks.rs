@@ -48,12 +48,8 @@ pub async fn create(
     auth: AuthUser,
     ValidatedJson(body): ValidatedJson<NewBank>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let bank = rustvault_core::services::bank::create(
-        &state.pool,
-        auth.user_id,
-        &body.name,
-    )
-    .await?;
+    let bank =
+        rustvault_core::services::bank::create(&state.pool, auth.user_id, &body.name).await?;
     Ok((StatusCode::CREATED, ApiResponse::ok(bank)))
 }
 
@@ -97,13 +93,9 @@ pub async fn update(
     Path(id): Path<Uuid>,
     ValidatedJson(body): ValidatedJson<UpdateBank>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let bank = rustvault_core::services::bank::update(
-        &state.pool,
-        auth.user_id,
-        id,
-        body.name.as_deref(),
-    )
-    .await?;
+    let bank =
+        rustvault_core::services::bank::update(&state.pool, auth.user_id, id, body.name.as_deref())
+            .await?;
     Ok(ApiResponse::ok(bank))
 }
 

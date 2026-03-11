@@ -68,11 +68,7 @@ pub async fn find_by_id(pool: &PgPool, user_id: Uuid, bank_id: Uuid) -> Result<B
 }
 
 /// Insert a new bank.
-pub async fn insert(
-    pool: &PgPool,
-    user_id: Uuid,
-    name: &str,
-) -> Result<BankRow, DbError> {
+pub async fn insert(pool: &PgPool, user_id: Uuid, name: &str) -> Result<BankRow, DbError> {
     sqlx::query_as::<_, BankRow>(
         "INSERT INTO banks (user_id, name)
          VALUES ($1, $2)
@@ -116,26 +112,22 @@ pub async fn archive(pool: &PgPool, user_id: Uuid, bank_id: Uuid) -> Result<(), 
     let mut tx = pool.begin().await?;
 
     // Archive the bank
-    let result = sqlx::query(
-        "UPDATE banks SET is_archived = true WHERE id = $1 AND user_id = $2",
-    )
-    .bind(bank_id)
-    .bind(user_id)
-    .execute(&mut *tx)
-    .await?;
+    let result = sqlx::query("UPDATE banks SET is_archived = true WHERE id = $1 AND user_id = $2")
+        .bind(bank_id)
+        .bind(user_id)
+        .execute(&mut *tx)
+        .await?;
 
     if result.rows_affected() == 0 {
         return Err(DbError::NotFound);
     }
 
     // Cascade: archive all accounts belonging to this bank
-    sqlx::query(
-        "UPDATE accounts SET is_archived = true WHERE bank_id = $1 AND user_id = $2",
-    )
-    .bind(bank_id)
-    .bind(user_id)
-    .execute(&mut *tx)
-    .await?;
+    sqlx::query("UPDATE accounts SET is_archived = true WHERE bank_id = $1 AND user_id = $2")
+        .bind(bank_id)
+        .bind(user_id)
+        .execute(&mut *tx)
+        .await?;
 
     tx.commit().await?;
     Ok(())

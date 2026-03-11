@@ -39,6 +39,7 @@ pub async fn register(
 }
 
 /// Authenticate with email + password. Returns JWT tokens.
+#[allow(clippy::too_many_arguments)]
 pub async fn login(
     pool: &PgPool,
     email: &str,
@@ -153,9 +154,8 @@ pub async fn me(pool: &PgPool, user_id: Uuid) -> Result<UserInfo, CoreError> {
 
 use openidconnect::core::{CoreProviderMetadata, CoreResponseType};
 use openidconnect::{
-    AdditionalClaims, AuthenticationFlow, AuthorizationCode, ClientId,
-    ClientSecret, CsrfToken, IssuerUrl, Nonce, RedirectUrl, Scope,
-    TokenResponse,
+    AdditionalClaims, AuthenticationFlow, AuthorizationCode, ClientId, ClientSecret, CsrfToken,
+    IssuerUrl, Nonce, RedirectUrl, Scope, TokenResponse,
 };
 
 /// Empty additional claims (we only need standard OIDC claims).
@@ -175,10 +175,9 @@ async fn oidc_discover(
         .build()
         .map_err(|e| CoreError::OidcError(format!("HTTP client error: {e}")))?;
 
-    let provider_metadata =
-        CoreProviderMetadata::discover_async(issuer, &http_client)
-            .await
-            .map_err(|e| CoreError::OidcError(format!("OIDC discovery failed: {e}")))?;
+    let provider_metadata = CoreProviderMetadata::discover_async(issuer, &http_client)
+        .await
+        .map_err(|e| CoreError::OidcError(format!("OIDC discovery failed: {e}")))?;
 
     Ok((provider_metadata, http_client))
 }
@@ -279,7 +278,9 @@ pub async fn oidc_callback(
     let email: String = claims
         .email()
         .map(|e: &openidconnect::EndUserEmail| e.to_string())
-        .ok_or_else(|| CoreError::OidcError("OIDC provider did not return an email claim".into()))?;
+        .ok_or_else(|| {
+            CoreError::OidcError("OIDC provider did not return an email claim".into())
+        })?;
 
     let username = claims
         .preferred_username()
@@ -287,7 +288,9 @@ pub async fn oidc_callback(
         .or_else(|| {
             claims
                 .name()
-                .and_then(|n: &openidconnect::LocalizedClaim<openidconnect::EndUserName>| n.get(None))
+                .and_then(
+                    |n: &openidconnect::LocalizedClaim<openidconnect::EndUserName>| n.get(None),
+                )
                 .map(|n: &openidconnect::EndUserName| n.to_string())
         })
         .unwrap_or_else(|| email.split('@').next().unwrap_or("user").to_string());
@@ -322,8 +325,12 @@ pub async fn oidc_callback(
     };
 
     // Issue JWT tokens (same as local login)
-    let access_token =
-        crypto::encode_access_token(&user_row.id.to_string(), &user_row.role, jwt_secret, access_ttl)?;
+    let access_token = crypto::encode_access_token(
+        &user_row.id.to_string(),
+        &user_row.role,
+        jwt_secret,
+        access_ttl,
+    )?;
 
     let refresh_token = crypto::generate_refresh_token();
     let refresh_hash = crypto::hash_refresh_token(&refresh_token);

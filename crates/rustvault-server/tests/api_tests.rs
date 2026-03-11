@@ -5,8 +5,8 @@
 
 mod helpers;
 
-use helpers::{register_and_login, test_server, TEST_EMAIL, TEST_PASSWORD, TEST_USER};
-use serde_json::{json, Value};
+use helpers::{TEST_EMAIL, TEST_PASSWORD, TEST_USER, register_and_login, test_server};
+use serde_json::{Value, json};
 
 // ============================================================================
 // Health
@@ -191,7 +191,9 @@ async fn me_returns_user_info(pool: sqlx::PgPool) {
         .get("/api/auth/me")
         .add_header(
             axum::http::header::AUTHORIZATION,
-            format!("Bearer {token}").parse::<axum::http::HeaderValue>().unwrap(),
+            format!("Bearer {token}")
+                .parse::<axum::http::HeaderValue>()
+                .unwrap(),
         )
         .await;
     res.assert_status_ok();
@@ -220,7 +222,10 @@ async fn banks_crud_lifecycle(pool: sqlx::PgPool) {
     // List — initially empty.
     let res = server
         .get("/api/banks")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     let body: Value = res.json();
@@ -229,7 +234,10 @@ async fn banks_crud_lifecycle(pool: sqlx::PgPool) {
     // Create.
     let res = server
         .post("/api/banks")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "Revolut" }))
         .await;
     res.assert_status(axum::http::StatusCode::CREATED);
@@ -240,7 +248,10 @@ async fn banks_crud_lifecycle(pool: sqlx::PgPool) {
     // Get by ID.
     let res = server
         .get(&format!("/api/banks/{bank_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     let body: Value = res.json();
@@ -249,7 +260,10 @@ async fn banks_crud_lifecycle(pool: sqlx::PgPool) {
     // Update.
     let res = server
         .put(&format!("/api/banks/{bank_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "Revolut EU" }))
         .await;
     res.assert_status_ok();
@@ -259,7 +273,10 @@ async fn banks_crud_lifecycle(pool: sqlx::PgPool) {
     // List — should have one bank.
     let res = server
         .get("/api/banks")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     let body: Value = res.json();
@@ -268,7 +285,10 @@ async fn banks_crud_lifecycle(pool: sqlx::PgPool) {
     // Archive.
     let res = server
         .put(&format!("/api/banks/{bank_id}/archive"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status(axum::http::StatusCode::NO_CONTENT);
 }
@@ -293,7 +313,10 @@ async fn accounts_crud_lifecycle(pool: sqlx::PgPool) {
     // Create a bank first (accounts need a parent bank).
     let res = server
         .post("/api/banks")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "TestBank" }))
         .await;
     let bank_id = res.json::<Value>()["data"]["id"]
@@ -304,7 +327,10 @@ async fn accounts_crud_lifecycle(pool: sqlx::PgPool) {
     // List — initially empty.
     let res = server
         .get("/api/accounts")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     assert_eq!(res.json::<Value>()["data"].as_array().unwrap().len(), 0);
@@ -312,7 +338,10 @@ async fn accounts_crud_lifecycle(pool: sqlx::PgPool) {
     // Create account.
     let res = server
         .post("/api/accounts")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({
             "bank_id": bank_id,
             "name": "Checking EUR",
@@ -329,7 +358,10 @@ async fn accounts_crud_lifecycle(pool: sqlx::PgPool) {
     // Get by ID.
     let res = server
         .get(&format!("/api/accounts/{account_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     assert_eq!(res.json::<Value>()["data"]["name"], "Checking EUR");
@@ -337,7 +369,10 @@ async fn accounts_crud_lifecycle(pool: sqlx::PgPool) {
     // Update.
     let res = server
         .put(&format!("/api/accounts/{account_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "Main EUR Account" }))
         .await;
     res.assert_status_ok();
@@ -346,7 +381,10 @@ async fn accounts_crud_lifecycle(pool: sqlx::PgPool) {
     // Filter by bank_id.
     let res = server
         .get(&format!("/api/accounts?bank_id={bank_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     assert_eq!(res.json::<Value>()["data"].as_array().unwrap().len(), 1);
@@ -354,7 +392,10 @@ async fn accounts_crud_lifecycle(pool: sqlx::PgPool) {
     // Archive.
     let res = server
         .put(&format!("/api/accounts/{account_id}/archive"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status(axum::http::StatusCode::NO_CONTENT);
 }
@@ -379,7 +420,10 @@ async fn categories_crud_lifecycle(pool: sqlx::PgPool) {
     // List — initially empty.
     let res = server
         .get("/api/categories")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     assert_eq!(res.json::<Value>()["data"].as_array().unwrap().len(), 0);
@@ -387,7 +431,10 @@ async fn categories_crud_lifecycle(pool: sqlx::PgPool) {
     // Create.
     let res = server
         .post("/api/categories")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({
             "name": "Groceries",
             "category_type": "expense",
@@ -403,7 +450,10 @@ async fn categories_crud_lifecycle(pool: sqlx::PgPool) {
     // Get.
     let res = server
         .get(&format!("/api/categories/{cat_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     assert_eq!(res.json::<Value>()["data"]["name"], "Groceries");
@@ -411,7 +461,10 @@ async fn categories_crud_lifecycle(pool: sqlx::PgPool) {
     // Update.
     let res = server
         .put(&format!("/api/categories/{cat_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "Food & Groceries" }))
         .await;
     res.assert_status_ok();
@@ -420,14 +473,20 @@ async fn categories_crud_lifecycle(pool: sqlx::PgPool) {
     // Delete.
     let res = server
         .delete(&format!("/api/categories/{cat_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status(axum::http::StatusCode::NO_CONTENT);
 
     // Verify deleted.
     let res = server
         .get(&format!("/api/categories/{cat_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status(axum::http::StatusCode::NOT_FOUND);
 }
@@ -440,7 +499,10 @@ async fn categories_bulk_create(pool: sqlx::PgPool) {
 
     let res = server
         .post("/api/categories/bulk")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({
             "categories": [
                 { "name": "Salary", "category_type": "income" },
@@ -474,7 +536,10 @@ async fn tags_crud_lifecycle(pool: sqlx::PgPool) {
     // List — initially empty.
     let res = server
         .get("/api/tags")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     assert_eq!(res.json::<Value>()["data"].as_array().unwrap().len(), 0);
@@ -482,7 +547,10 @@ async fn tags_crud_lifecycle(pool: sqlx::PgPool) {
     // Create.
     let res = server
         .post("/api/tags")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "vacation", "color": "#3b82f6" }))
         .await;
     res.assert_status(axum::http::StatusCode::CREATED);
@@ -493,14 +561,20 @@ async fn tags_crud_lifecycle(pool: sqlx::PgPool) {
     // Get.
     let res = server
         .get(&format!("/api/tags/{tag_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
 
     // Update.
     let res = server
         .put(&format!("/api/tags/{tag_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "holiday" }))
         .await;
     res.assert_status_ok();
@@ -509,14 +583,20 @@ async fn tags_crud_lifecycle(pool: sqlx::PgPool) {
     // Delete.
     let res = server
         .delete(&format!("/api/tags/{tag_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status(axum::http::StatusCode::NO_CONTENT);
 
     // Verify deleted.
     let res = server
         .get(&format!("/api/tags/{tag_id}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status(axum::http::StatusCode::NOT_FOUND);
 }
@@ -529,7 +609,10 @@ async fn tags_bulk_create(pool: sqlx::PgPool) {
 
     let res = server
         .post("/api/tags/bulk")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({
             "tags": [
                 { "name": "recurring" },
@@ -561,7 +644,10 @@ async fn settings_get_returns_defaults(pool: sqlx::PgPool) {
 
     let res = server
         .get("/api/settings")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     let body: Value = res.json();
@@ -581,7 +667,10 @@ async fn settings_update_partial(pool: sqlx::PgPool) {
     // Update only theme and currency.
     let res = server
         .put("/api/settings")
-        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({
             "theme": "dark",
             "default_currency": "EUR",
@@ -679,7 +768,10 @@ async fn user_data_isolation(pool: sqlx::PgPool) {
     // User A creates a bank.
     let res = server
         .post("/api/banks")
-        .add_header(axum::http::header::AUTHORIZATION, auth_a.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth_a.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .json(&json!({ "name": "A's Bank" }))
         .await;
     let bank_id_a = res.json::<Value>()["data"]["id"]
@@ -690,7 +782,10 @@ async fn user_data_isolation(pool: sqlx::PgPool) {
     // User B cannot see user A's banks.
     let res = server
         .get("/api/banks")
-        .add_header(axum::http::header::AUTHORIZATION, auth_b.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth_b.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status_ok();
     assert_eq!(res.json::<Value>()["data"].as_array().unwrap().len(), 0);
@@ -698,7 +793,10 @@ async fn user_data_isolation(pool: sqlx::PgPool) {
     // User B cannot access user A's bank by ID.
     let res = server
         .get(&format!("/api/banks/{bank_id_a}"))
-        .add_header(axum::http::header::AUTHORIZATION, auth_b.parse::<axum::http::HeaderValue>().unwrap())
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth_b.parse::<axum::http::HeaderValue>().unwrap(),
+        )
         .await;
     res.assert_status(axum::http::StatusCode::NOT_FOUND);
 }

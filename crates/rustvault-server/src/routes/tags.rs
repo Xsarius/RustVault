@@ -75,11 +75,7 @@ pub async fn bulk_create(
     auth: AuthUser,
     ValidatedJson(body): ValidatedJson<BulkCreateTags>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let tuples: Vec<_> = body
-        .tags
-        .into_iter()
-        .map(|t| (t.name, t.color))
-        .collect();
+    let tuples: Vec<_> = body.tags.into_iter().map(|t| (t.name, t.color)).collect();
 
     let tags =
         rustvault_core::services::tag::bulk_create(&state.pool, auth.user_id, &tuples).await?;

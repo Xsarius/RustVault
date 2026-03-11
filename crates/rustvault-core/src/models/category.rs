@@ -7,17 +7,13 @@ use uuid::Uuid;
 /// Whether a category applies to income or expense transactions.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, utoipa::ToSchema)]
 #[serde(rename_all = "snake_case")]
+#[derive(Default)]
 pub enum CategoryType {
     /// Category for expense transactions.
+    #[default]
     Expense,
     /// Category for income transactions.
     Income,
-}
-
-impl Default for CategoryType {
-    fn default() -> Self {
-        Self::Expense
-    }
 }
 
 impl CategoryType {

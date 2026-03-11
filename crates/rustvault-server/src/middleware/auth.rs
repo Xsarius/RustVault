@@ -39,9 +39,7 @@ pub async fn auth_middleware(
         state.config.jwt_secret_old.as_deref(),
     )
     .map_err(|e| match e {
-        rustvault_core::CoreError::TokenExpired => {
-            ApiError::Unauthorized("Token expired".into())
-        }
+        rustvault_core::CoreError::TokenExpired => ApiError::Unauthorized("Token expired".into()),
         rustvault_core::CoreError::TokenInvalid(msg) => {
             ApiError::Unauthorized(format!("Invalid token: {msg}"))
         }

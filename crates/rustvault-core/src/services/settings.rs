@@ -89,7 +89,10 @@ pub async fn update(
     let obj = s.as_object_mut().expect("settings is always an object");
 
     if let Some(ref v) = input.default_currency {
-        obj.insert("default_currency".into(), serde_json::Value::String(v.clone()));
+        obj.insert(
+            "default_currency".into(),
+            serde_json::Value::String(v.clone()),
+        );
     }
     if let Some(ref v) = input.date_format {
         obj.insert("date_format".into(), serde_json::Value::String(v.clone()));
@@ -107,13 +110,13 @@ pub async fn update(
         obj.insert("ai_model_text".into(), serde_json::Value::String(v.clone()));
     }
     if let Some(ref v) = input.ai_model_vision {
-        obj.insert("ai_model_vision".into(), serde_json::Value::String(v.clone()));
+        obj.insert(
+            "ai_model_vision".into(),
+            serde_json::Value::String(v.clone()),
+        );
     }
     if let Some(v) = input.ai_confidence_threshold {
-        obj.insert(
-            "ai_confidence_threshold".into(),
-            serde_json::json!(v),
-        );
+        obj.insert("ai_confidence_threshold".into(), serde_json::json!(v));
     }
     if let Some(v) = input.ai_receipt_scanning {
         obj.insert("ai_receipt_scanning".into(), serde_json::Value::Bool(v));
@@ -150,8 +153,8 @@ pub async fn update(
     })?;
 
     // Audit log.
-    let old_value = serde_json::to_value(&row_to_settings(&current)).ok();
-    let new_value = serde_json::to_value(&row_to_settings(&row)).ok();
+    let old_value = serde_json::to_value(row_to_settings(&current)).ok();
+    let new_value = serde_json::to_value(row_to_settings(&row)).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,

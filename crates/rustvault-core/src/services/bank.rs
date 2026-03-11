@@ -27,11 +27,7 @@ pub async fn get(pool: &PgPool, user_id: Uuid, bank_id: Uuid) -> Result<Bank, Co
 }
 
 /// Create a new bank.
-pub async fn create(
-    pool: &PgPool,
-    user_id: Uuid,
-    name: &str,
-) -> Result<Bank, CoreError> {
+pub async fn create(pool: &PgPool, user_id: Uuid, name: &str) -> Result<Bank, CoreError> {
     let row = rustvault_db::repos::bank::insert(pool, user_id, name)
         .await
         .map_err(|e| match e {
@@ -42,7 +38,7 @@ pub async fn create(
         })?;
 
     // Audit log
-    let new_value = serde_json::to_value(&row_to_bank(row.clone())).ok();
+    let new_value = serde_json::to_value(row_to_bank(row.clone())).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,
@@ -74,7 +70,7 @@ pub async fn update(
             },
             other => CoreError::Db(other),
         })?;
-    let old_value = serde_json::to_value(&row_to_bank(old_row)).ok();
+    let old_value = serde_json::to_value(row_to_bank(old_row)).ok();
 
     let row = rustvault_db::repos::bank::update(pool, user_id, bank_id, name)
         .await
@@ -89,7 +85,7 @@ pub async fn update(
             other => CoreError::Db(other),
         })?;
 
-    let new_value = serde_json::to_value(&row_to_bank(row.clone())).ok();
+    let new_value = serde_json::to_value(row_to_bank(row.clone())).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,
@@ -116,16 +112,9 @@ pub async fn archive(pool: &PgPool, user_id: Uuid, bank_id: Uuid) -> Result<(), 
             other => CoreError::Db(other),
         })?;
 
-    let _ = rustvault_db::repos::audit::insert(
-        pool,
-        user_id,
-        "bank",
-        bank_id,
-        "archive",
-        None,
-        None,
-    )
-    .await;
+    let _ =
+        rustvault_db::repos::audit::insert(pool, user_id, "bank", bank_id, "archive", None, None)
+            .await;
 
     Ok(())
 }

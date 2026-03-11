@@ -42,7 +42,7 @@ pub async fn create(
             other => CoreError::Db(other),
         })?;
 
-    let new_value = serde_json::to_value(&row_to_tag(row.clone())).ok();
+    let new_value = serde_json::to_value(row_to_tag(row.clone())).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,
@@ -103,7 +103,7 @@ pub async fn delete(pool: &PgPool, user_id: Uuid, tag_id: Uuid) -> Result<(), Co
             other => CoreError::Db(other),
         })?;
 
-    let old_value = serde_json::to_value(&row_to_tag(deleted)).ok();
+    let old_value = serde_json::to_value(row_to_tag(deleted)).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,

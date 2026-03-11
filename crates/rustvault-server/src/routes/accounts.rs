@@ -99,8 +99,7 @@ pub async fn get(
     auth: AuthUser,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let account =
-        rustvault_core::services::account::get(&state.pool, auth.user_id, id).await?;
+    let account = rustvault_core::services::account::get(&state.pool, auth.user_id, id).await?;
     Ok(ApiResponse::ok(account))
 }
 

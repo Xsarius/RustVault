@@ -27,8 +27,7 @@ pub async fn list(
     State(state): State<AppState>,
     auth: AuthUser,
 ) -> Result<impl IntoResponse, ApiError> {
-    let categories =
-        rustvault_core::services::category::list(&state.pool, auth.user_id).await?;
+    let categories = rustvault_core::services::category::list(&state.pool, auth.user_id).await?;
     Ok(PaginatedResponse::from_vec(categories))
 }
 
@@ -86,8 +85,7 @@ pub async fn bulk_create(
         .collect();
 
     let categories =
-        rustvault_core::services::category::bulk_create(&state.pool, auth.user_id, &tuples)
-            .await?;
+        rustvault_core::services::category::bulk_create(&state.pool, auth.user_id, &tuples).await?;
     Ok((StatusCode::CREATED, ApiResponse::ok(categories)))
 }
 
@@ -108,8 +106,7 @@ pub async fn get(
     auth: AuthUser,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let category =
-        rustvault_core::services::category::get(&state.pool, auth.user_id, id).await?;
+    let category = rustvault_core::services::category::get(&state.pool, auth.user_id, id).await?;
     Ok(ApiResponse::ok(category))
 }
 

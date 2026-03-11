@@ -128,9 +128,7 @@ impl I18n {
                         count += ast
                             .body
                             .iter()
-                            .filter(|e| {
-                                matches!(e, fluent_syntax::ast::Entry::Message(_))
-                            })
+                            .filter(|e| matches!(e, fluent_syntax::ast::Entry::Message(_)))
                             .count();
                     }
 
@@ -228,10 +226,7 @@ impl I18n {
                 .collect();
 
             // Sort by quality descending.
-            candidates.sort_by(|a, b| {
-                b.1.partial_cmp(&a.1)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-            });
+            candidates.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
 
             for (lang, _) in &candidates {
                 // Exact match.
@@ -240,9 +235,11 @@ impl I18n {
                 }
                 // Prefix match (e.g., "en" matches "en-US").
                 let prefix = lang.split('-').next().unwrap_or(lang);
-                if let Some(matched) = self.locale_codes.iter().find(|c| {
-                    c.split('-').next().unwrap_or(c) == prefix
-                }) {
+                if let Some(matched) = self
+                    .locale_codes
+                    .iter()
+                    .find(|c| c.split('-').next().unwrap_or(c) == prefix)
+                {
                     return matched.clone();
                 }
             }
@@ -347,10 +344,7 @@ mod tests {
     fn resolve_locale_quality() {
         let i18n = I18n::load(&test_locales_dir()).expect("should load locales");
         // Even with quality weights, en-US is the only available locale
-        assert_eq!(
-            i18n.resolve_locale(Some("pl;q=0.9,en-US;q=0.8")),
-            "en-US"
-        );
+        assert_eq!(i18n.resolve_locale(Some("pl;q=0.9,en-US;q=0.8")), "en-US");
     }
 
     #[test]
@@ -370,6 +364,9 @@ mod tests {
     #[test]
     fn format_unknown_message() {
         let i18n = I18n::load(&test_locales_dir()).expect("should load locales");
-        assert!(i18n.format("en-US", "nonexistent-message-xyz", None).is_none());
+        assert!(
+            i18n.format("en-US", "nonexistent-message-xyz", None)
+                .is_none()
+        );
     }
 }

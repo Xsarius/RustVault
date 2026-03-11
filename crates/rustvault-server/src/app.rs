@@ -1,7 +1,7 @@
 //! Application builder — constructs the Axum router with all layers and routes.
 
-use axum::middleware as axum_mw;
 use axum::Router;
+use axum::middleware as axum_mw;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
 use utoipa::OpenApi;

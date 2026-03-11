@@ -13,9 +13,9 @@ pub mod i18n;
 pub mod settings;
 pub mod tags;
 
+use axum::Router;
 use axum::middleware;
 use axum::routing::{get, post, put};
-use axum::Router;
 
 use crate::middleware::auth::auth_middleware;
 use crate::state::AppState;

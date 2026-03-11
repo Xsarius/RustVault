@@ -21,9 +21,7 @@ use crate::state::AppState;
         (status = 200, description = "Available locales", body = inline(Vec<rustvault_core::i18n::LocaleInfo>)),
     ),
 )]
-pub async fn list_locales(
-    State(state): State<AppState>,
-) -> impl IntoResponse {
+pub async fn list_locales(State(state): State<AppState>) -> impl IntoResponse {
     let locales = state.i18n.available_locales().to_vec();
     ApiResponse::ok(locales)
 }

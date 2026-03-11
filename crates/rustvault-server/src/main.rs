@@ -28,17 +28,12 @@ async fn main() -> anyhow::Result<()> {
     let port = config.server.port;
 
     // Create database connection pool and run migrations
-    let pool = rustvault_db::create_pool(
-        &config.database.url,
-        config.database.max_connections,
-    )
-    .await?;
+    let pool =
+        rustvault_db::create_pool(&config.database.url, config.database.max_connections).await?;
 
     // Load i18n locale bundles
-    let i18n = rustvault_core::i18n::I18n::load(std::path::Path::new(
-        &config.server.locales_dir,
-    ))
-    .map_err(|e| anyhow::anyhow!("failed to load i18n: {e}"))?;
+    let i18n = rustvault_core::i18n::I18n::load(std::path::Path::new(&config.server.locales_dir))
+        .map_err(|e| anyhow::anyhow!("failed to load i18n: {e}"))?;
 
     // Build application state and router
     let state = AppState::new(pool, config, i18n);

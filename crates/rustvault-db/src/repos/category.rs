@@ -92,6 +92,7 @@ pub async fn insert(
 }
 
 /// Bulk-insert categories. Returns all created rows.
+#[allow(clippy::type_complexity)]
 pub async fn bulk_insert(
     pool: &PgPool,
     user_id: Uuid,
@@ -115,6 +116,7 @@ pub async fn bulk_insert(
 }
 
 /// Update a category.
+#[allow(clippy::too_many_arguments)]
 pub async fn update(
     pool: &PgPool,
     user_id: Uuid,

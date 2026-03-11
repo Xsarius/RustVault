@@ -13,11 +13,7 @@ pub async fn list(pool: &PgPool, user_id: Uuid) -> Result<Vec<Category>, CoreErr
 }
 
 /// Get a single category by ID.
-pub async fn get(
-    pool: &PgPool,
-    user_id: Uuid,
-    category_id: Uuid,
-) -> Result<Category, CoreError> {
+pub async fn get(pool: &PgPool, user_id: Uuid, category_id: Uuid) -> Result<Category, CoreError> {
     let row = rustvault_db::repos::category::find_by_id(pool, user_id, category_id)
         .await
         .map_err(|e| match e {
@@ -50,17 +46,24 @@ pub async fn create(
             })?;
     }
 
-    let row =
-        rustvault_db::repos::category::insert(pool, user_id, name, parent_id, icon, color, category_type.as_db_str())
-            .await
-            .map_err(|e| match e {
-                rustvault_db::DbError::UniqueViolation(_) => {
-                    CoreError::Conflict(format!("category '{name}' already exists in this context"))
-                }
-                other => CoreError::Db(other),
-            })?;
+    let row = rustvault_db::repos::category::insert(
+        pool,
+        user_id,
+        name,
+        parent_id,
+        icon,
+        color,
+        category_type.as_db_str(),
+    )
+    .await
+    .map_err(|e| match e {
+        rustvault_db::DbError::UniqueViolation(_) => {
+            CoreError::Conflict(format!("category '{name}' already exists in this context"))
+        }
+        other => CoreError::Db(other),
+    })?;
 
-    let new_value = serde_json::to_value(&row_to_category(row.clone())).ok();
+    let new_value = serde_json::to_value(row_to_category(row.clone())).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,
@@ -76,15 +79,28 @@ pub async fn create(
 }
 
 /// Bulk create categories.
+#[allow(clippy::type_complexity)]
 pub async fn bulk_create(
     pool: &PgPool,
     user_id: Uuid,
-    categories: &[(String, Option<Uuid>, Option<String>, Option<String>, CategoryType)],
+    categories: &[(
+        String,
+        Option<Uuid>,
+        Option<String>,
+        Option<String>,
+        CategoryType,
+    )],
 ) -> Result<Vec<Category>, CoreError> {
     let tuples: Vec<_> = categories
         .iter()
         .map(|(name, parent_id, icon, color, ct)| {
-            (name.clone(), *parent_id, icon.clone(), color.clone(), ct.as_db_str().to_string())
+            (
+                name.clone(),
+                *parent_id,
+                icon.clone(),
+                color.clone(),
+                ct.as_db_str().to_string(),
+            )
         })
         .collect();
     let rows = rustvault_db::repos::category::bulk_insert(pool, user_id, &tuples).await?;
@@ -92,6 +108,7 @@ pub async fn bulk_create(
 }
 
 /// Update an existing category.
+#[allow(clippy::too_many_arguments)]
 pub async fn update(
     pool: &PgPool,
     user_id: Uuid,
@@ -136,7 +153,7 @@ pub async fn delete(pool: &PgPool, user_id: Uuid, category_id: Uuid) -> Result<(
             other => CoreError::Db(other),
         })?;
 
-    let old_value = serde_json::to_value(&row_to_category(deleted)).ok();
+    let old_value = serde_json::to_value(row_to_category(deleted)).ok();
     let _ = rustvault_db::repos::audit::insert(
         pool,
         user_id,

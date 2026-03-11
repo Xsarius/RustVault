@@ -2,8 +2,8 @@
 //!
 //! Wraps [`axum::Json`] with automatic validation via the [`validator`] crate.
 
-use axum::extract::rejection::JsonRejection;
 use axum::extract::FromRequest;
+use axum::extract::rejection::JsonRejection;
 use axum::http::Request;
 use serde::de::DeserializeOwned;
 use validator::Validate;

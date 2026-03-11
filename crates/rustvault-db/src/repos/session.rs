@@ -52,10 +52,7 @@ pub async fn insert(
 }
 
 /// Find a valid (not revoked, not expired) session by token hash.
-pub async fn find_valid_by_hash(
-    pool: &PgPool,
-    token_hash: &str,
-) -> Result<SessionRow, DbError> {
+pub async fn find_valid_by_hash(pool: &PgPool, token_hash: &str) -> Result<SessionRow, DbError> {
     sqlx::query_as::<_, SessionRow>(
         "SELECT id, user_id, token_hash, user_agent, ip_address, expires_at, revoked, created_at
          FROM sessions

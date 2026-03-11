@@ -33,7 +33,7 @@ pub struct AppConfig {
     pub oidc_client_id: Option<String>,
     /// OIDC client secret.
     pub oidc_client_secret: Option<String>,
-    /// OIDC issuer URL (e.g., https://auth.example.com/application/o/rustvault/).
+    /// OIDC issuer URL (e.g., <https://auth.example.com/application/o/rustvault/>).
     pub oidc_issuer_url: Option<String>,
 }
 
@@ -207,17 +207,11 @@ impl Default for ImportConfig {
 }
 
 /// AI feature configuration.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 #[serde(default)]
 pub struct AiConfig {
     /// Master toggle — false disables all AI features.
     pub enabled: bool,
-}
-
-impl Default for AiConfig {
-    fn default() -> Self {
-        Self { enabled: false }
-    }
 }
 
 /// Raw TOML file structure (deserialization target).
@@ -312,9 +306,7 @@ impl AppConfig {
             .map_err(|_| ConfigError::MissingEnv("DATABASE_PASSWORD".to_string()))?;
         let name = std::env::var("DATABASE_NAME").unwrap_or_else(|_| "rustvault".to_string());
 
-        Ok(format!(
-            "postgres://{user}:{password}@{host}:{port}/{name}"
-        ))
+        Ok(format!("postgres://{user}:{password}@{host}:{port}/{name}"))
     }
 
     /// Parse a size string like "10MB" into bytes.

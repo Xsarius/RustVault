@@ -29,7 +29,9 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool, CoreError> {
     match Argon2::default().verify_password(password.as_bytes(), &parsed) {
         Ok(()) => Ok(true),
         Err(argon2::password_hash::Error::Password) => Ok(false),
-        Err(e) => Err(CoreError::Internal(format!("password verification failed: {e}"))),
+        Err(e) => Err(CoreError::Internal(format!(
+            "password verification failed: {e}"
+        ))),
     }
 }
 
@@ -76,7 +78,7 @@ pub fn decode_access_token(
         &DecodingKey::from_secret(secret.as_bytes()),
         &validation,
     ) {
-        Ok(data) => return Ok(data.claims),
+        Ok(data) => Ok(data.claims),
         Err(e) => {
             // If there's an old secret, try that before failing
             if let Some(old) = old_secret {
@@ -90,12 +92,8 @@ pub fn decode_access_token(
             }
             // Map specific JWT errors
             match e.kind() {
-                jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
-                    return Err(CoreError::TokenExpired);
-                }
-                _ => {
-                    return Err(CoreError::TokenInvalid(e.to_string()));
-                }
+                jsonwebtoken::errors::ErrorKind::ExpiredSignature => Err(CoreError::TokenExpired),
+                _ => Err(CoreError::TokenInvalid(e.to_string())),
             }
         }
     }
@@ -134,8 +132,7 @@ mod tests {
     #[test]
     fn jwt_roundtrip() {
         let secret = "test-secret-key-that-is-long-enough-for-hmac";
-        let token =
-            encode_access_token("user-123", "admin", secret, 3600).unwrap();
+        let token = encode_access_token("user-123", "admin", secret, 3600).unwrap();
         let claims = decode_access_token(&token, secret, None).unwrap();
         assert_eq!(claims.sub, "user-123");
         assert_eq!(claims.role, "admin");
@@ -147,15 +144,13 @@ mod tests {
         let new_secret = "new-secret-key-that-is-long-enough-for-hmac";
 
         // Token signed with old secret
-        let token =
-            encode_access_token("user-456", "member", old_secret, 3600).unwrap();
+        let token = encode_access_token("user-456", "member", old_secret, 3600).unwrap();
 
         // Should fail with new secret alone
         assert!(decode_access_token(&token, new_secret, None).is_err());
 
         // Should succeed when old secret is provided as fallback
-        let claims =
-            decode_access_token(&token, new_secret, Some(old_secret)).unwrap();
+        let claims = decode_access_token(&token, new_secret, Some(old_secret)).unwrap();
         assert_eq!(claims.sub, "user-456");
     }
 

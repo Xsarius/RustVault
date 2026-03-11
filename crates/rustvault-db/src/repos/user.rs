@@ -51,12 +51,10 @@ pub async fn find_by_id(pool: &PgPool, id: Uuid) -> Result<UserRow, DbError> {
 ///
 /// Used by auth middleware to validate sessions without fetching the full row.
 pub async fn get_role(pool: &PgPool, id: Uuid) -> Result<String, DbError> {
-    let row: Option<(String,)> = sqlx::query_as(
-        "SELECT role::text FROM users WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(pool)
-    .await?;
+    let row: Option<(String,)> = sqlx::query_as("SELECT role::text FROM users WHERE id = $1")
+        .bind(id)
+        .fetch_optional(pool)
+        .await?;
 
     row.map(|(role,)| role).ok_or(DbError::NotFound)
 }

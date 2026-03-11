@@ -169,13 +169,12 @@ pub async fn update(
 
 /// Soft-archive an account.
 pub async fn archive(pool: &PgPool, user_id: Uuid, account_id: Uuid) -> Result<(), DbError> {
-    let result = sqlx::query(
-        "UPDATE accounts SET is_archived = true WHERE id = $1 AND user_id = $2",
-    )
-    .bind(account_id)
-    .bind(user_id)
-    .execute(pool)
-    .await?;
+    let result =
+        sqlx::query("UPDATE accounts SET is_archived = true WHERE id = $1 AND user_id = $2")
+            .bind(account_id)
+            .bind(user_id)
+            .execute(pool)
+            .await?;
 
     if result.rows_affected() == 0 {
         return Err(DbError::NotFound);

@@ -1,9 +1,9 @@
 //! Authentication routes: register, login, refresh, me.
 
+use axum::Json;
 use axum::extract::State;
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::IntoResponse;
-use axum::Json;
 
 use crate::extractors::auth::AuthUser;
 use crate::extractors::json::ValidatedJson;
@@ -156,9 +156,7 @@ pub async fn me(
 /// Returns the authorization URL that the client should redirect to.
 /// The `state` and `nonce` must be stored client-side (e.g., in a session cookie)
 /// and sent back in the callback for CSRF/replay protection.
-pub async fn oidc_authorize(
-    State(state): State<AppState>,
-) -> Result<impl IntoResponse, ApiError> {
+pub async fn oidc_authorize(State(state): State<AppState>) -> Result<impl IntoResponse, ApiError> {
     let config = &state.config;
 
     if !config.auth.oidc.enabled {
@@ -183,15 +181,14 @@ pub async fn oidc_authorize(
         "http", "localhost", config.server.port
     );
 
-    let (authorize_url, csrf_state, nonce) =
-        rustvault_core::services::auth::oidc_authorize_url(
-            issuer_url,
-            client_id,
-            client_secret,
-            &redirect_url,
-            &config.auth.oidc.scopes,
-        )
-        .await?;
+    let (authorize_url, csrf_state, nonce) = rustvault_core::services::auth::oidc_authorize_url(
+        issuer_url,
+        client_id,
+        client_secret,
+        &redirect_url,
+        &config.auth.oidc.scopes,
+    )
+    .await?;
 
     let response = serde_json::json!({
         "data": {
