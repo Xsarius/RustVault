@@ -202,8 +202,6 @@ erDiagram
         UUID id PK
         UUID user_id FK
         string name
-        string icon
-        string color
         boolean is_archived
         int sort_order
         JSONB metadata
@@ -217,11 +215,9 @@ erDiagram
         UUID bank_id FK
         string name
         string currency "ISO 4217"
-        string type "checking | savings | cash | credit | investment | prepaid"
+        string type "checking | savings | credit | investment"
         numeric balance_cache
-        boolean supports_card_topup
-        string icon
-        string color
+        boolean supports_nonstandard_topup
         boolean is_archived
         int sort_order
         JSONB metadata
@@ -283,7 +279,7 @@ erDiagram
         UUID parent_id FK "self-ref"
         string icon
         string color
-        boolean is_income
+        string category_type "expense | income"
         int sort_order
         JSONB metadata
         timestamp created_at
@@ -387,7 +383,7 @@ erDiagram
 
 - **Bank → Account hierarchy**: Banks are the top-level grouping entity. Each user defines their banks (Revolut, Lunar, Zen, etc.), and each bank contains one or more accounts. Default grouping in the UI is by bank. Accounts have a unique (bank_id, name) constraint.
 - **Transfer as a first-class entity**: Internal transfers between the user's own accounts are modelled as a `Transfer` record linking two `Transaction` rows (one debit, one credit). This avoids double-counting in income/expense reports. The `Transfer.method` field distinguishes wire, SEPA, card payment top-ups, and internal moves.
-- **`supports_card_topup` on Account**: Marks accounts that can receive card payment top-ups from other accounts (e.g., Zen debit card). Used as a hint for transfer detection — when a card payment matches an incoming transaction on a `supports_card_topup` account, the system suggests `card_payment` as the transfer method. Card top-up is a transfer method, not an account type.
+- **`supports_nonstandard_topup` on Account**: Marks accounts that can receive non-standard top-ups from other accounts (e.g., card payments, Zen debit card top-ups). Used as a hint for transfer detection — when a payment matches an incoming transaction on a `supports_nonstandard_topup` account, the system suggests the appropriate transfer method. Non-standard top-up is a transfer method, not an account type.
 - **Transfer detection during import**: The import pipeline scans newly imported transactions against existing ones across the user's other accounts, matching by amount (with tolerance), date (with tolerance), and direction (debit ↔ credit). High-confidence matches can be auto-linked; others are surfaced as suggestions.
 - **`original_desc` on Transaction**: Preserve the raw bank description separately from user-edited `description`. Enables re-running auto-rules without losing source data.
 - **`metadata` (JSONB) columns**: Extensible fields without schema migrations. AI module and future features store data here.
@@ -993,7 +989,7 @@ docs/
 
 ### Tasks
 
-- [ ] **P0.1** Initialize Cargo workspace with the following crate structure:
+- [x] **P0.1** Initialize Cargo workspace with the following crate structure:
   ```
   /
   ├── Cargo.toml              (workspace)
@@ -1010,20 +1006,20 @@ docs/
   │   └── docker-compose.yml
   └── docs/
   ```
-- [ ] **P0.2** Set up `docker-compose.yml` with PostgreSQL 18 + the app (multi-stage build).
-- [ ] **P0.3** Create Dockerfile: stage 1 = Rust build (cargo-chef for caching), stage 2 = Node build (Vite), stage 3 = minimal runtime (distroless/debian-slim) serving static + binary.
-- [ ] **P0.4** Initialize SolidJS project in `web/` with Vite, TypeScript, Tailwind CSS, Kobalte.
-- [ ] **P0.5** Configure `rust-toolchain.toml` (stable), `clippy.toml`, `rustfmt.toml`.
-- [ ] **P0.6** Add `justfile` or `Makefile` with common commands: `dev`, `build`, `test`, `migrate`, `lint`, `docker-build`.
-- [ ] **P0.7** Set up GitHub Actions CI: Rust (check, clippy, test), Frontend (lint, build), Docker image build.
-- [ ] **P0.8** Create `.env.example` with all config variables (DB URL, JWT secret, OIDC config, AI provider config, etc.).
-- [ ] **P0.9** Set up i18n infrastructure:
+- [x] **P0.2** Set up `docker-compose.yml` with PostgreSQL 18 + the app (multi-stage build).
+- [x] **P0.3** Create Dockerfile: stage 1 = Rust build (cargo-chef for caching), stage 2 = Node build (Vite), stage 3 = minimal runtime (distroless/debian-slim) serving static + binary.
+- [x] **P0.4** Initialize SolidJS project in `web/` with Vite, TypeScript, Tailwind CSS, Kobalte.
+- [x] **P0.5** Configure `rust-toolchain.toml` (stable), `clippy.toml`, `rustfmt.toml`.
+- [x] **P0.6** Add `justfile` or `Makefile` with common commands: `dev`, `build`, `test`, `migrate`, `lint`, `docker-build`.
+- [x] **P0.7** Set up GitHub Actions CI: Rust (check, clippy, test), Frontend (lint, build), Docker image build.
+- [x] **P0.8** Create `.env.example` with all config variables (DB URL, JWT secret, OIDC config, AI provider config, etc.).
+- [x] **P0.9** Set up i18n infrastructure:
   - Create `locales/en-US/` directory with initial `.ftl` files (empty placeholders for each namespace).
   - Create `web/src/locales/en-US/` directory with initial `.json` files.
   - Add `locales/_meta.toml` listing supported locales.
   - Configure `rust-i18n` or `fluent-rs` in `rustvault-core`.
   - Set up `@solid-primitives/i18n` in the SolidJS project with lazy locale loading.
-- [ ] **P0.10** Set up documentation infrastructure:
+- [x] **P0.10** Set up documentation infrastructure:
   - Initialize `mdBook` in `docs/book/` with `book.toml` and `SUMMARY.md` skeleton.
   - Create `docs/adr/template.md` (ADR template).
   - Write **ADR-0001**: Backend. **ADR-0002**: Frontend. **ADR-0003**: API. **ADR-0004**: Data Model. *(ADRs 0005–0008 already exist: UX, Error Handling, Testing, Auth/JWT.)*
@@ -1036,11 +1032,11 @@ docs/
   - Configure `rustdoc` in CI to fail on warnings.
 
 ### Documentation Deliverables (P0)
-- [ ] README.md with project overview, badges, quick start.
-- [ ] CONTRIBUTING.md with dev environment setup.
-- [ ] ADR-0001 through ADR-0008 written.
-- [ ] `docs/book/src/SUMMARY.md` with full planned chapter structure (chapters as stubs).
-- [ ] `.env.example` fully annotated with descriptions.
+- [x] README.md with project overview, badges, quick start.
+- [x] CONTRIBUTING.md with dev environment setup.
+- [x] ADR-0001 through ADR-0008 written.
+- [x] `docs/book/src/SUMMARY.md` with full planned chapter structure (chapters as stubs).
+- [x] `.env.example` fully annotated with descriptions.
 
 ### Acceptance Criteria
 - `docker compose up` starts Postgres + app container.
@@ -1056,14 +1052,14 @@ docs/
 
 ### Tasks
 
-- [ ] **P1.1** Write PostgreSQL migration 001: `users` (with `auth_provider`, `oidc_subject` columns, unique index on `oidc_subject`), `banks`, `accounts`, `categories`, `tags` tables. Account references `bank_id` FK. Add unique constraint `(bank_id, name)` on accounts.
-- [ ] **P1.2** Implement user registration & login endpoints:
+- [x] **P1.1** Write PostgreSQL migration 001: `users` (with `auth_provider`, `oidc_subject` columns, unique index on `oidc_subject`), `banks`, `accounts`, `categories`, `tags`, `sessions`, `audit_log` tables. Account references `bank_id` FK. Add unique constraint `(bank_id, name)` on accounts.
+- [x] **P1.2** Implement user registration & login endpoints:
   - `POST /api/auth/register` — create user (argon2 password hash).
   - `POST /api/auth/login` — return JWT (access + refresh tokens).
   - `POST /api/auth/refresh` — rotate refresh token.
   - `GET /api/auth/me` — current user info.
-- [ ] **P1.3** Implement JWT middleware for Axum (extract user from `Authorization` header).
-- [ ] **P1.3b** Implement **OIDC / SSO support** (Authentik, Keycloak, Authelia, any OIDC provider):
+- [x] **P1.3** Implement JWT middleware for Axum (extract user from `Authorization` header).
+- [x] **P1.3b** Implement **OIDC / SSO support** (Authentik, Keycloak, Authelia, any OIDC provider):
   - Add `openidconnect` crate to `rustvault-core`.
   - Add OIDC configuration to `config.toml` and env vars:
     ```toml
@@ -1096,52 +1092,52 @@ docs/
   - Users with `auth_provider='both'` can sign in via either method.
   - Write `docs/book/src/self-hosting/oidc-setup.md` — Authentik setup guide with screenshots (create provider, create application, configure redirect URI `https://<host>/api/auth/oidc/callback`).
   - Write `docs/adr/0009-oidc-design.md` — ADR for OIDC architecture decisions.
-- [ ] **P1.4** Implement CRUD for **Banks**:
+- [x] **P1.4** Implement CRUD for **Banks**:
   - `GET /api/banks` — list user's banks with nested accounts and total balance per currency.
-  - `POST /api/banks` — create bank (name, icon, color).
+  - `POST /api/banks` — create bank (name).
   - `PUT /api/banks/:id` — update.
   - `PUT /api/banks/:id/archive` — soft-archive (also archives all accounts within).
-- [ ] **P1.5** Implement CRUD for **Accounts**:
+- [x] **P1.5** Implement CRUD for **Accounts**:
   - `GET /api/accounts` — list user's accounts (filterable by bank_id, type, currency, is_archived; group_by bank/type/currency).
-  - `POST /api/accounts` — create account (bank_id required, name, currency, type, supports_card_topup).
+  - `POST /api/accounts` — create account (bank_id required, name, currency, type, supports_nonstandard_topup).
   - `PUT /api/accounts/:id` — update.
   - `PUT /api/accounts/:id/archive` — soft-archive.
-- [ ] **P1.6** Implement CRUD for **Categories**:
+- [x] **P1.6** Implement CRUD for **Categories**:
   - `GET /api/categories` — list (hierarchical tree).
   - `POST /api/categories` — create (with optional `parent_id`).
   - `PUT /api/categories/:id` — update (rename, re-parent, change icon/color).
   - `DELETE /api/categories/:id` — merge into another category or make uncategorized.
   - `POST /api/categories/bulk` — create multiple at once (for import flow).
-- [ ] **P1.7** Implement CRUD for **Tags**:
+- [x] **P1.7** Implement CRUD for **Tags**:
   - `GET /api/tags` — list.
   - `POST /api/tags` — create.
   - `PUT /api/tags/:id` — update.
   - `DELETE /api/tags/:id` — remove from all transactions.
   - `POST /api/tags/bulk` — create multiple.
-- [ ] **P1.8** Implement **Audit Log** middleware: intercept create/update/delete on core entities, write to `audit_log` table.
-- [ ] **P1.9** Add API error handling layer: consistent JSON error format, proper HTTP status codes.
-- [ ] **P1.10** Implement **Settings** endpoint:
+- [x] **P1.8** Implement **Audit Log** service: create/update/delete on core entities logged to `audit_log` table via service layer.
+- [x] **P1.9** Add API error handling layer: consistent JSON error format, proper HTTP status codes.
+- [x] **P1.10** Implement **Settings** endpoint:
   - `GET /api/settings` — user preferences (default currency, locale, date format, AI features toggle).
   - `PUT /api/settings` — update preferences.
-- [ ] **P1.11** Implement **i18n for backend**:
+- [x] **P1.11** Implement **i18n for backend**:
   - Set up Fluent bundle loading from `locales/{locale}/` files.
   - Implement `Accept-Language` header parsing middleware to resolve user locale.
   - Localize all API error messages (return `code` + localized `message`).
   - Implement `GET /api/i18n/locales` endpoint — list available locales with completeness percentage.
   - Write `locales/en-US/auth.ftl`, `common.ftl`, `errors.ftl` with all strings from P1 endpoints.
-- [ ] **P1.12** Write integration tests for all endpoints (use `sqlx::test` with test database).
+- [x] **P1.12** Write integration tests for all endpoints (use `sqlx::test` with test database).
 
 ### Documentation Deliverables (P1)
-- [ ] All `pub` items in `rustvault-core` and `rustvault-db` have `///` doc comments.
-- [ ] Each migration file has a header comment explaining the schema design rationale.
-- [ ] OpenAPI annotations (`utoipa`) on all P1 endpoints with request/response examples.
-- [ ] Write `docs/book/src/getting-started/installation.md` — Docker setup instructions.
-- [ ] Write `docs/book/src/getting-started/setting-up-accounts.md` — first account creation walkthrough.
-- [ ] Write `docs/book/src/self-hosting/environment-variables.md` — all config options documented (including OIDC env vars).
-- [ ] Write `docs/book/src/self-hosting/oidc-setup.md` — OIDC provider setup guide (Authentik walkthrough, generic OIDC instructions, redirect URI, scopes, troubleshooting).
-- [ ] Write `docs/adr/0009-oidc-design.md` — ADR: OIDC architecture (Authorization Code + PKCE, user provisioning strategy, dual-auth, token exchange).
-- [ ] Write `docs/contributing/code-style.md` — Rust and TypeScript style guide.
-- [ ] Write `docs/contributing/testing-guide.md` — how to run tests, write tests, test DB setup.
+- [x] All `pub` items in `rustvault-core` and `rustvault-db` have `///` doc comments.
+- [x] Each migration file has a header comment explaining the schema design rationale.
+- [x] OpenAPI annotations (`utoipa`) on all P1 endpoints with request/response examples.
+- [x] Write `docs/book/src/getting-started/installation.md` — Docker setup instructions.
+- [x] Write `docs/book/src/getting-started/setting-up-accounts.md` — first account creation walkthrough.
+- [x] Write `docs/book/src/self-hosting/environment-variables.md` — all config options documented (including OIDC env vars).
+- [x] Write `docs/book/src/self-hosting/oidc-setup.md` — OIDC provider setup guide (Authentik walkthrough, generic OIDC instructions, redirect URI, scopes, troubleshooting).
+- [x] Write `docs/adr/0009-oidc-design.md` — ADR: OIDC architecture (Authorization Code + PKCE, user provisioning strategy, dual-auth, token exchange).
+- [x] Write `docs/contributing/code-style.md` — Rust and TypeScript style guide.
+- [x] Write `docs/contributing/testing-guide.md` — how to run tests, write tests, test DB setup.
 
 ### Acceptance Criteria
 - A user can register, log in, and manage banks/accounts/categories/tags via API.
@@ -1150,7 +1146,7 @@ docs/
 - Banks group accounts; accounts reference a bank.
 - All mutations are logged in the audit log.
 - Unauthorized requests return 401.
-- Tests cover happy path + error cases.
+- Tests cover success path + error cases.
 
 ---
 
@@ -1176,10 +1172,10 @@ docs/
   - Optimistic updates pattern for CRUD operations.
 - [ ] **P2.4** Build **Bank & Account Management** page:
   - List banks with nested accounts, total balance per currency.
-  - Create/edit bank dialog (name, icon, color).
+  - Create/edit bank dialog (name).
   - Archive bank action (cascades to accounts).
   - Within each bank: list accounts with balances.
-  - Create/edit account dialog (name, type, currency, icon, color, supports_card_topup).
+  - Create/edit account dialog (name, type, currency, supports_nonstandard_topup).
   - Archive account action.
   - Default grouping by bank; toggle to group by account type or currency.
 - [ ] **P2.5** Build **Category Management** page:
@@ -1253,7 +1249,7 @@ docs/
 - [ ] **P3A.4** Implement **transfer detection algorithm**:
   - Match debit on Account A with credit on Account B: same user, close dates (within tolerance), matching amounts (within tolerance), opposite signs.
   - Confidence scoring: exact amount + same date = 95%+, small date difference = lower confidence, amount with fee tolerance = lower confidence.
-  - Detect card top-ups: when destination account has `supports_card_topup`, suggest `card_payment` method.
+  - Detect non-standard top-ups: when destination account has `supports_nonstandard_topup`, suggest appropriate transfer method.
   - De-duplicate suggestions: one transaction can only be in one suggested pair.
 - [ ] **P3A.5** Implement full-text search on transaction `description`, `original_desc`, `payee`, `notes` using PostgreSQL `tsvector`.
 - [ ] **P3A.6** Implement **duplicate detection**: on import, check for transactions with same date, amount, and similar description within the same account. Flag as potential duplicates rather than silently skipping.

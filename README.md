@@ -42,7 +42,7 @@ Built from the ground up in **Rust** for performance and reliability, with a **S
 
 ## Key Features
 
-- **Multi-currency accounts** — banks, checking, savings, cash, credit, investment
+- **Multi-currency accounts** — banks, checking, savings, credit, investment
 - **Budgeting** with progress tracking and period comparison
 - **Import from any bank** — CSV, MT940, OFX/QFX, QIF, CAMT.053, XLSX, JSON
 - **Custom statement parsers** — define per-bank parsing profiles for automated column mapping, date/amount format handling, and metadata extraction so repeat imports from the same bank just work

@@ -496,10 +496,6 @@ Returns all banks with their nested accounts.
     {
       "id": "uuid",
       "name": "Revolut",
-      "icon": "revolut",
-      "color": "#0075EB",
-      "country": "LT",
-      "bic": "REVOLT21",
       "is_archived": false,
       "metadata": {},
       "created_at": "2026-01-15T12:00:00Z",
@@ -510,10 +506,8 @@ Returns all banks with their nested accounts.
           "currency": "PLN",
           "type": "checking",
           "balance_cache": "5234.50",
-          "icon": "wallet",
-          "color": "#3B82F6",
           "is_archived": false,
-          "supports_card_topup": true,
+          "supports_nonstandard_topup": true,
           "metadata": {},
           "created_at": "2026-01-15T12:00:00Z"
         }
@@ -544,10 +538,6 @@ POST /api/banks
 ```json
 {
   "name": "Revolut",
-  "icon": "revolut",
-  "color": "#0075EB",
-  "country": "LT",
-  "bic": "REVOLT21",
   "metadata": {}
 }
 ```
@@ -555,10 +545,6 @@ POST /api/banks
 | Field | Type | Required | Validation |
 |-------|------|----------|------------|
 | `name` | string | Yes | 1–100 chars, unique per user |
-| `icon` | string | No | Icon identifier |
-| `color` | string | No | Hex color code |
-| `country` | string | No | ISO 3166-1 alpha-2 (2 chars) |
-| `bic` | string | No | BIC/SWIFT code (8 or 11 chars) |
 | `metadata` | object | No | Max depth 5, max 64 KB |
 
 **Response `201`:** Created bank object (without accounts — empty bank).
@@ -583,8 +569,7 @@ PUT /api/banks/{id}
 **Request Body:** Partial update.
 ```json
 {
-  "name": "Revolut Business",
-  "color": "#1A1A2E"
+  "name": "Revolut Business"
 }
 ```
 
@@ -638,10 +623,8 @@ Flat list of all accounts across all banks. Use `bank_id` filter to scope to one
       "currency": "PLN",
       "type": "checking",
       "balance_cache": "5234.50",
-      "icon": "wallet",
-      "color": "#3B82F6",
       "is_archived": false,
-      "supports_card_topup": true,
+      "supports_nonstandard_topup": true,
       "metadata": {},
       "created_at": "2026-01-15T12:00:00Z"
     }
@@ -667,9 +650,7 @@ POST /api/accounts
   "name": "Main PLN",
   "currency": "PLN",
   "type": "checking",
-  "icon": "wallet",
-  "color": "#3B82F6",
-  "supports_card_topup": false,
+  "supports_nonstandard_topup": false,
   "metadata": {}
 }
 ```
@@ -679,10 +660,8 @@ POST /api/accounts
 | `bank_id` | uuid | Yes | Must exist, owned by user |
 | `name` | string | Yes | 1–100 chars, unique per bank |
 | `currency` | string | Yes | ISO 4217 code (3 chars) |
-| `type` | enum | Yes | `checking`, `savings`, `cash`, `credit`, `investment`, `prepaid` |
-| `icon` | string | No | Icon identifier |
-| `color` | string | No | Hex color code |
-| `supports_card_topup` | bool | No | Default `false`. Marks account as topup-able via card payment from other accounts |
+| `type` | enum | Yes | `checking`, `savings`, `cash`, `credit`, `investment` |
+| `supports_nonstandard_topup` | bool | No | Default `false`. Marks account as supporting non-standard top-up methods (e.g. card payments from other accounts) |
 | `metadata` | object | No | Max depth 5, max 64 KB |
 
 **Response `201`:** Created account object.
@@ -708,9 +687,7 @@ PUT /api/accounts/{id}
 ```json
 {
   "name": "Updated Name",
-  "icon": "wallet",
-  "color": "#10B981",
-  "supports_card_topup": true
+  "supports_nonstandard_topup": true
 }
 ```
 
@@ -763,7 +740,7 @@ Returns hierarchical tree structure.
       "parent_id": null,
       "icon": "utensils",
       "color": "#EF4444",
-      "is_income": false,
+      "category_type": "expense",
       "sort_order": 0,
       "metadata": {},
       "created_at": "2026-01-15T12:00:00Z",
@@ -774,7 +751,7 @@ Returns hierarchical tree structure.
           "parent_id": "uuid-of-food",
           "icon": "shopping-cart",
           "color": "#F87171",
-          "is_income": false,
+          "category_type": "expense",
           "sort_order": 0,
           "metadata": {},
           "created_at": "2026-01-15T12:00:00Z",
@@ -804,7 +781,7 @@ POST /api/categories
   "parent_id": "uuid-of-food",
   "icon": "shopping-cart",
   "color": "#F87171",
-  "is_income": false,
+  "category_type": "expense",
   "sort_order": 0
 }
 ```
@@ -815,7 +792,7 @@ POST /api/categories
 | `parent_id` | uuid | No | Must exist, must belong to user |
 | `icon` | string | No | Icon identifier |
 | `color` | string | No | Hex color code |
-| `is_income` | bool | No | Default `false` |
+| `category_type` | string | No | `expense` or `income`. Default `expense` |
 | `sort_order` | int | No | Default `0` |
 
 **Response `201`:** Created category object.
@@ -879,8 +856,8 @@ Used during import to create multiple categories at once.
 ```json
 {
   "categories": [
-    { "name": "Subscriptions", "is_income": false },
-    { "name": "Freelance", "is_income": true }
+    { "name": "Subscriptions", "category_type": "expense" },
+    { "name": "Freelance", "category_type": "income" }
   ]
 }
 ```

@@ -78,7 +78,7 @@ crates/
 │       │   ├── mod.rs
 │       │   ├── user.rs        # User, NewUser, UserSettings, Role
 │       │   ├── bank.rs        # Bank, NewBank, BankWithAccounts
-│       │   ├── account.rs     # Account, NewAccount, AccountType (checking/savings/cash/credit/invest/prepaid)
+│       │   ├── account.rs     # Account, NewAccount, AccountType (checking/savings/credit/investment)
 │       │   ├── category.rs    # Category, NewCategory, CategoryTree
 │       │   ├── tag.rs         # Tag, NewTag
 │       │   ├── transaction.rs # Transaction, NewTransaction, TransactionType, TransactionFilter, BulkUpdate
@@ -138,12 +138,11 @@ crates/
 │       │   ├── session.rs     # insert, revoke, list_by_user, cleanup_expired
 │       │   └── settings.rs    # get_by_user, upsert
 │       └── migrations/        # SQL migrations (embedded via sqlx::migrate!)
-│           ├── 0001_initial_schema.sql
-│           ├── 0002_transactions_imports_rules.sql
-│           ├── 0003_budgets.sql
-│           ├── 0004_exchange_rates.sql
-│           ├── 0005_sessions.sql
-│           └── 0006_full_text_search.sql
+│           ├── 0001_initial_schema.sql         # users, banks, accounts, categories, tags, sessions, audit_log (implemented)
+│           ├── 0002_transactions_imports_rules.sql  # transactions, transfers, imports, auto_rules, transaction_tags (planned)
+│           ├── 0003_budgets.sql                # budgets, budget_lines (planned)
+│           ├── 0004_exchange_rates.sql         # exchange_rates (planned)
+│           └── 0005_full_text_search.sql       # tsvector columns + indexes (planned)
 │
 ├── rustvault-import/          # Library crate — file parsers & import pipeline
 │   ├── Cargo.toml
@@ -1173,7 +1172,7 @@ pub async fn list_by_user(pool: &PgPool, user_id: Uuid) -> Result<Vec<Account>, 
         Account,
         r#"
         SELECT id, user_id, name, currency, type as "account_type: _",
-               balance_cache, icon, color, is_archived, metadata,
+               balance_cache, is_archived, metadata,
                created_at
         FROM accounts
         WHERE user_id = $1 AND NOT is_archived
@@ -1192,18 +1191,16 @@ pub async fn insert(pool: &PgPool, user_id: Uuid, new: &NewAccount) -> Result<Ac
     let row = sqlx::query_as!(
         Account,
         r#"
-        INSERT INTO accounts (id, user_id, name, currency, type, icon, color, metadata)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO accounts (id, user_id, name, currency, type, metadata)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING id, user_id, name, currency, type as "account_type: _",
-                  balance_cache, icon, color, is_archived, metadata, created_at
+                  balance_cache, is_archived, metadata, created_at
         "#,
         Uuid::new_v4(),
         user_id,
         new.name,
         new.currency,
         new.account_type as _,
-        new.icon,
-        new.color,
         new.metadata,
     )
     .fetch_one(pool)
@@ -1224,8 +1221,6 @@ pub async fn update(
     user_id: Uuid,
     account_id: Uuid,
     name: Option<&str>,
-    icon: Option<&str>,
-    color: Option<&str>,
 ) -> Result<Account, DbError> { /* ... */ }
 
 /// Soft-delete: set is_archived = true.
@@ -1256,14 +1251,14 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";  -- gen_random_uuid()
 
 CREATE TYPE user_role AS ENUM ('admin', 'member', 'viewer');
 CREATE TYPE auth_provider AS ENUM ('local', 'oidc', 'both');
-CREATE TYPE account_type AS ENUM ('checking', 'savings', 'cash', 'credit', 'investment', 'prepaid');
+CREATE TYPE account_type AS ENUM ('checking', 'savings', 'credit', 'investment');
 
 CREATE TABLE users (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username        TEXT NOT NULL UNIQUE,
     email           TEXT NOT NULL UNIQUE,
     password_hash   TEXT,                      -- NULL for OIDC-only users
-    role            user_role NOT NULL DEFAULT 'admin',
+    role            user_role NOT NULL DEFAULT 'member',
     auth_provider   auth_provider NOT NULL DEFAULT 'local',
     oidc_subject    TEXT,                      -- OIDC `sub` claim
     oidc_issuer     TEXT,                      -- OIDC issuer URL
@@ -1283,8 +1278,6 @@ CREATE TABLE banks (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name        TEXT NOT NULL,
-    icon        TEXT,
-    color       TEXT,
     is_archived BOOLEAN NOT NULL DEFAULT false,
     sort_order  INT NOT NULL DEFAULT 0,
     metadata    JSONB NOT NULL DEFAULT '{}',
@@ -1301,9 +1294,7 @@ CREATE TABLE accounts (
     currency           TEXT NOT NULL DEFAULT 'USD',
     type               account_type NOT NULL DEFAULT 'checking',
     balance_cache      NUMERIC(19, 4) NOT NULL DEFAULT 0,
-    supports_card_topup BOOLEAN NOT NULL DEFAULT false,
-    icon               TEXT,
-    color              TEXT,
+    supports_nonstandard_topup BOOLEAN NOT NULL DEFAULT false,
     is_archived        BOOLEAN NOT NULL DEFAULT false,
     sort_order         INT NOT NULL DEFAULT 0,
     metadata           JSONB NOT NULL DEFAULT '{}',
@@ -1319,7 +1310,7 @@ CREATE TABLE categories (
     parent_id   UUID REFERENCES categories(id) ON DELETE SET NULL,
     icon        TEXT,
     color       TEXT,
-    is_income   BOOLEAN NOT NULL DEFAULT false,
+    category_type category_type NOT NULL DEFAULT 'expense',
     sort_order  INT NOT NULL DEFAULT 0,
     metadata    JSONB NOT NULL DEFAULT '{}',
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -1892,8 +1883,6 @@ pub struct Bank {
     pub id: Uuid,
     pub user_id: Uuid,
     pub name: String,
-    pub icon: Option<String>,
-    pub color: Option<String>,
     pub is_archived: bool,
     pub sort_order: i32,
     pub metadata: serde_json::Value,
@@ -1916,23 +1905,19 @@ pub struct BankWithAccounts {
 pub struct NewBank {
     #[validate(length(min = 1, max = 100))]
     pub name: String,
-    pub icon: Option<String>,
-    pub color: Option<String>,
     pub metadata: Option<serde_json::Value>,
 }
 
 // crates/rustvault-core/src/models/account.rs
 
-/// Account type enum — extended to include `prepaid`.
+/// Account type enum.
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "account_type", rename_all = "snake_case")]
 pub enum AccountType {
     Checking,
     Savings,
-    Cash,
     Credit,
     Investment,
-    Prepaid,
 }
 
 /// An account within a bank.
@@ -1945,9 +1930,7 @@ pub struct Account {
     pub currency: String,
     pub account_type: AccountType,
     pub balance_cache: Decimal,
-    pub supports_card_topup: bool,
-    pub icon: Option<String>,
-    pub color: Option<String>,
+    pub supports_nonstandard_topup: bool,
     pub is_archived: bool,
     pub sort_order: i32,
     pub metadata: serde_json::Value,
@@ -1965,7 +1948,7 @@ pub struct NewAccount {
     pub currency: String,
     pub account_type: AccountType,
     #[serde(default)]
-    pub supports_card_topup: bool,
+    pub supports_nonstandard_topup: bool,
     pub icon: Option<String>,
     pub color: Option<String>,
     pub metadata: Option<serde_json::Value>,
@@ -2969,7 +2952,7 @@ Transfer Detection (if detect_transfers enabled)
   │   → Scan imported transactions against existing ones across user's other accounts
   │   → Match by amount (±tolerance), date (±tolerance), opposite direction
   │   → Score confidence: exact amount + same date = 95%+
-  │   → Detect card topups: if destination has supports_card_topup, suggest card_payment method
+  │   → Detect non-standard topups: if destination has supports_nonstandard_topup, suggest appropriate transfer method
   │   → If auto_link_transfers: link high-confidence matches (>= 95%)
   │   → Return suggestions for manual review
   │
@@ -3357,14 +3340,14 @@ Ordered by dependency. Each step produces a testable, working increment.
 
 | # | Task | Files | Deliverable |
 |---|------|-------|-------------|
-| 2.1 | Migration 0001 (users with `auth_provider`/`oidc_subject`, banks, accounts, categories, tags, audit_log) | `migrations/0001_*.sql` | Schema created (accounts reference bank_id, users support OIDC) |
+| 2.1 | Migration 0001 (users with `auth_provider`/`oidc_subject`, banks, accounts, categories, tags, sessions, audit_log) | `migrations/0001_*.sql` | Schema created (all P1 tables in one migration) |
 | 2.2 | User DB repo | `repos/user.rs` | CRUD queries (find by email, find by oidc_subject) |
 | 2.3 | Crypto module (Argon2, JWT) | `rustvault-core/src/crypto.rs` | Password hashing + JWT generation |
 | 2.4 | Auth service (register, login, refresh) | `services/auth.rs` | Business logic for auth |
 | 2.5 | Auth routes + auth middleware | `routes/auth.rs`, `middleware/auth.rs`, `extractors/auth.rs` | API endpoints work |
-| 2.6 | OIDC client + service + routes | `services/oidc.rs`, `routes/oidc.rs`, `config.rs` | OIDC discovery, authorize, callback, user provisioning |
-| 2.7 | Migration 0005 (sessions) | `migrations/0005_*.sql` | Session tracking |
-| 2.8 | Session repo + management endpoints | `repos/session.rs`, updates to auth routes | Session list/revoke |
+| 2.6 | OIDC service + routes (integrated in auth) | `services/auth.rs`, `routes/auth.rs`, `config.rs` | OIDC discovery, authorize, callback, user provisioning |
+| 2.7 | Session repo + management | `repos/session.rs` | Session tracking (included in migration 0001) |
+| 2.8 | Audit repo | `repos/audit.rs` | Audit log queries (included in migration 0001) |
 | 2.9 | Integration tests for auth flow (local + OIDC) | `tests/auth.rs` | Tests pass |
 
 ### Step 3: Entity CRUD (P1.4–P1.10)
@@ -3375,7 +3358,7 @@ Ordered by dependency. Each step produces a testable, working increment.
 | 3.1 | Account repo + service + routes | `repos/account.rs`, `services/account.rs`, `routes/accounts.rs` | Account CRUD API (filterable by bank/type/currency, archive) |
 | 3.2 | Category repo + service + routes (tree, bulk) | `repos/category.rs`, `services/category.rs`, `routes/categories.rs` | Category CRUD API |
 | 3.3 | Tag repo + service + routes (bulk) | `repos/tag.rs`, `services/tag.rs`, `routes/tags.rs` | Tag CRUD API |
-| 3.4 | Audit log middleware + repo | `middleware/audit.rs`, `repos/audit.rs` | Mutations logged |
+| 3.4 | Audit log service + repo (logging integrated in service layer CUD ops) | `services/*.rs`, `repos/audit.rs` | Mutations logged |
 | 3.5 | Settings service + routes | `services/settings.rs`, `routes/settings.rs` | Settings CRUD API |
 | 3.6 | I18n service (Fluent loading, locale middleware) | `i18n.rs`, `middleware/locale.rs` | Localized error messages |
 | 3.7 | Integration tests for all CRUD | `tests/` | Tests pass |

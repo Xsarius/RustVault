@@ -751,9 +751,8 @@ Components adapt internally via Tailwind responsive classes — **not** by swapp
 | `Settings` | Settings | Nav: Settings |
 | `Wallet` | Account (checking) | Account type |
 | `CircleDollarSign` | Income | Transaction type |
-| `CreditCard` | Credit/Prepaid | Account type |
+| `CreditCard` | Credit | Account type |
 | `TrendingUp` | Investment | Account type |
-| `Banknote` | Cash | Account type |
 | `ArrowUpDown` | Transfer | Transaction type, Transfer badge |
 | `Receipt` | Receipt | AI receipt scan |
 | `Sparkles` | AI | AI suggestion indicator |
@@ -986,7 +985,7 @@ The seed dataset should be realistic and comprehensive enough to showcase all fe
 | Entity | Count | Notes |
 |--------|-------|-------|
 | Banks | 3 | Revolut, Lunar, Zen — with icons and colors |
-| Accounts | 6 | Mix of checking, savings, credit, prepaid across banks |
+| Accounts | 6 | Mix of checking, savings, credit, investment across banks |
 | Categories | 15 | Hierarchical tree (3 levels), both income and expense |
 | Tags | 8 | Common tags (vacation, business, recurring, etc.) |
 | Transactions | 500 | 6 months of realistic data — varied amounts, payees, categories |
