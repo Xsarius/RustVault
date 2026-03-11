@@ -5,8 +5,11 @@
 
 #![warn(missing_docs)]
 
+/// Database error types.
 pub mod error;
+/// Connection-pool factory.
 pub mod pool;
+/// Repository modules — per-entity SQL query functions.
 pub mod repos;
 
 pub use error::DbError;
