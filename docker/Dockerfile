@@ -20,15 +20,26 @@ RUN cargo chef prepare --recipe-path recipe.json
 # ============================================================
 FROM chef AS rust-builder
 
+# Build profile: "release" (default) or "debug"
+ARG PROFILE=release
+
 COPY --from=planner /app/recipe.json recipe.json
 
-# Build dependencies (cached layer)
-RUN cargo chef cook --release --recipe-path recipe.json
+# Build dependencies (cached layer — must match the profile used below)
+RUN if [ "$PROFILE" = "release" ]; then \
+        cargo chef cook --release --recipe-path recipe.json; \
+    else \
+        cargo chef cook --recipe-path recipe.json; \
+    fi
 
 # Build application
 COPY Cargo.toml Cargo.lock ./
 COPY crates/ crates/
-RUN cargo build --release --bin rustvault
+RUN if [ "$PROFILE" = "release" ]; then \
+        cargo build --release --bin rustvault; \
+    else \
+        cargo build --bin rustvault; \
+    fi
 
 # ============================================================
 # Stage 4: Node builder — build frontend assets
@@ -57,10 +68,15 @@ RUN useradd --create-home --shell /bin/bash rustvault
 WORKDIR /app
 
 # Copy the compiled binary
-COPY --from=rust-builder /app/target/release/rustvault /app/rustvault
+# ARG must be re-declared after FROM to be visible in this stage
+ARG PROFILE=release
+COPY --from=rust-builder /app/target/${PROFILE}/rustvault /app/rustvault
 
 # Copy frontend build output
 COPY --from=node-builder /app/web/dist /app/static
+
+# Copy locale bundles
+COPY locales/ /app/locales/
 
 # Copy default config
 COPY docker/config.toml /app/config.toml
