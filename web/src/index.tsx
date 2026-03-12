@@ -3,6 +3,7 @@ import { render } from "solid-js/web";
 import { Suspense } from "solid-js";
 import { I18nProvider } from "~/i18n";
 import App from "./App";
+import { initVitals } from "./vitals";
 import "./app.css";
 
 const root = document.getElementById("root");
@@ -23,3 +24,6 @@ render(
   ),
   root,
 );
+
+// Start web-vitals monitoring
+initVitals();
