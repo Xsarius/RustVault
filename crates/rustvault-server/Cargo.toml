@@ -40,10 +40,10 @@ rustvault-import = { workspace = true }
 rustvault-ai = { workspace = true }
 
 # HTTP framework
-axum = "0.8"
+axum = { version = "0.8", features = ["multipart"] }
 axum-extra = { version = "0.12.5", features = ["cookie"] }
 tower = "0.5"
-tower-http = { version = "0.6", features = ["cors", "compression-full", "limit", "trace"] }
+tower-http = { version = "0.6", features = ["cors", "compression-full", "fs", "limit", "trace"] }
 
 # Config
 dotenvy = "0.15"

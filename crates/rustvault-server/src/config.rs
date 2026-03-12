@@ -53,6 +53,11 @@ pub struct ServerConfig {
     pub max_upload_size: String,
     /// Path to the locales directory (relative to CWD or absolute).
     pub locales_dir: String,
+    /// Path to the built frontend static assets directory.
+    ///
+    /// Axum serves this directory at `/` with a SPA fallback to `index.html`.
+    /// Set to an empty string to disable static file serving (API-only mode).
+    pub static_dir: String,
 }
 
 impl Default for ServerConfig {
@@ -64,6 +69,7 @@ impl Default for ServerConfig {
             max_body_size: "10MB".to_string(),
             max_upload_size: "50MB".to_string(),
             locales_dir: "locales".to_string(),
+            static_dir: "static".to_string(),
         }
     }
 }
