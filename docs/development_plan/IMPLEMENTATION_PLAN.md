@@ -1156,21 +1156,21 @@ docs/
 
 ### Tasks
 
-- [ ] **P2.1** Set up SolidJS routing (`@solidjs/router`) with layout:
+- [x] **P2.1** Set up SolidJS routing (`@solidjs/router`) with layout:
   - Sidebar nav (Dashboard, Transactions, Import, Budget, Reports, Settings).
   - Top bar (user menu, notifications bell for unreviewed transactions).
   - Mobile-responsive: bottom tab bar on small screens.
-- [ ] **P2.2** Build authentication pages:
+- [x] **P2.2** Build authentication pages:
   - Login page.
   - Registration page.
   - **OIDC login button**: if OIDC is configured (detected via `GET /api/auth/oidc/config`), show a "Sign in with {display_name}" button below the local login form. Clicking redirects to the OIDC provider. Button is hidden if OIDC is not enabled.
   - OIDC callback handler: frontend route `/auth/oidc/callback` that receives the redirect from the OIDC provider, extracts `code` + `state` from URL params, and forwards to the backend callback endpoint. On success, stores the returned JWT and redirects to dashboard.
   - JWT token management (store in memory, refresh in background).
-- [ ] **P2.3** Create API client layer:
+- [x] **P2.3** Create API client layer:
   - Typed fetch wrapper with auto-refresh on 401.
   - SolidJS resources/store for server state.
   - Optimistic updates pattern for CRUD operations.
-- [ ] **P2.4** Build **Bank & Account Management** page:
+- [x] **P2.4** Build **Bank & Account Management** page:
   - List banks with nested accounts, total balance per currency.
   - Create/edit bank dialog (name).
   - Archive bank action (cascades to accounts).
@@ -1178,29 +1178,29 @@ docs/
   - Create/edit account dialog (name, type, currency, supports_nonstandard_topup).
   - Archive account action.
   - Default grouping by bank; toggle to group by account type or currency.
-- [ ] **P2.5** Build **Category Management** page:
+- [x] **P2.5** Build **Category Management** page:
   - Tree view of hierarchical categories.
   - Drag-and-drop to re-parent.
   - Inline create (click "+" next to parent to add child).
   - Color/icon picker.
-- [ ] **P2.6** Build **Tag Management** page:
+- [x] **P2.6** Build **Tag Management** page:
   - Tag cloud / list view.
   - Inline create, edit, delete.
-- [ ] **P2.7** Build **Settings** page:
+- [x] **P2.7** Build **Settings** page:
   - Preferences (currency, locale, date format).
   - **Language selector**: dropdown with flag icons, switches locale in real-time without page reload.
   - AI features toggle (enable/disable AI receipt scanning and smart categorization).
   - Account section (change password, sessions).
-- [ ] **P2.8** Implement dark/light theme toggle (Tailwind dark mode).
-- [ ] **P2.9** Implement **frontend i18n**:
+- [x] **P2.8** Implement dark/light theme toggle (Tailwind dark mode).
+- [x] **P2.9** Implement **frontend i18n**:
   - Wrap app root in `I18nProvider` with locale from user settings / browser detection.
   - Replace all hardcoded strings with `t('namespace.key')` calls.
   - Implement locale-aware date/time display (via `Intl.DateTimeFormat`).
   - Implement locale-aware number/currency display (via `Intl.NumberFormat`).
   - Write `web/src/locales/en-US/common.json`, `auth.json`, `settings.json` with all P2 strings.
   - Add locale switch test: verify all visible text changes when switching locale.
-- [ ] **P2.10** Set up Storybook or equivalent for component development in isolation.
-- [ ] **P2.11** Implement **frontend performance foundations** (see [Section 6](#6-frontend-performance-strategy)):
+- [x] **P2.10** Set up Storybook or equivalent for component development in isolation.
+- [x] **P2.11** Implement **frontend performance foundations** (see [Section 6](#6-frontend-performance-strategy)):
   - Configure Vite route-based code splitting: every page uses `lazy(() => import(...))`.
   - Set up vendor chunk separation (SolidJS runtime, Kobalte, utilities in one long-cached chunk).
   - Implement skeleton screen components (generic `Skeleton` primitive: lines, circles, rectangles, configurable).
@@ -1214,11 +1214,11 @@ docs/
   - Configure font subsetting and `font-display: swap` with WOFF2 preload.
 
 ### Documentation Deliverables (P2)
-- [ ] Storybook deployed with all reusable components documented (props, usage examples, variants).
-- [ ] Write `docs/book/src/getting-started/quick-tour.md` — UI walkthrough with screenshots.
-- [ ] Write `docs/contributing/translation-guide.md` — how to add a new locale (file structure, key naming, plurals, testing).
-- [ ] TSDoc comments on all exported SolidJS components and hooks.
-- [ ] Write `docs/adr/0010-i18n-fluent-icu.md` — why Fluent + ICU MessageFormat.
+- [x] Storybook deployed with all reusable components documented (props, usage examples, variants).
+- [x] Write `docs/book/src/getting-started/quick-tour.md` — UI walkthrough with screenshots.
+- [x] Write `docs/contributing/translation-guide.md` — how to add a new locale (file structure, key naming, plurals, testing).
+- [x] TSDoc comments on all exported SolidJS components and hooks.
+- [x] Write `docs/adr/0010-i18n-fluent-icu.md` — why Fluent + ICU MessageFormat.
 
 ### Acceptance Criteria
 - User can log in (local or OIDC), navigate between pages, manage banks/accounts/categories/tags.
