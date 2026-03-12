@@ -11,7 +11,7 @@ export interface TextFieldProps {
   /** Label text. */
   label: string;
   /** Input type. */
-  type?: "text" | "email" | "password" | "number" | "url";
+  type?: "text" | "email" | "password" | "number" | "url" | "date";
   /** Placeholder. */
   placeholder?: string;
   /** Current value. */

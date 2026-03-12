@@ -1,0 +1,81 @@
+{
+  "title": "Auto-Rules",
+  "addRule": "Add Rule",
+  "editRule": "Edit Rule",
+  "deleteRule": "Delete Rule",
+  "noRules": "No auto-rules yet",
+  "noRulesDescription": "Create rules to automatically categorize and tag your transactions during import.",
+  "enabled": "Enabled",
+  "disabled": "Disabled",
+  "priority": "Priority",
+  "dragToReorder": "Drag to reorder",
+  "conditions": {
+    "title": "Conditions",
+    "add": "Add condition",
+    "addCondition": "Add condition",
+    "field": "Field",
+    "value": "Value",
+    "logic": "Logic",
+    "and": "AND",
+    "or": "OR",
+    "fields": {
+      "description_contains": "Description contains",
+      "description_regex": "Description matches (regex)",
+      "payee_equals": "Payee equals",
+      "payee_contains": "Payee contains",
+      "amount_range": "Amount range",
+      "account_id": "Account"
+    },
+    "valuePlaceholder": "Enter value\u2026"
+  },
+  "actions": {
+    "title": "Actions",
+    "add": "Add action",
+    "addAction": "Add action",
+    "type": "Action type",
+    "value": "Value",
+    "types": {
+      "set_category": "Set category",
+      "add_tags": "Add tags",
+      "set_payee": "Set payee",
+      "set_metadata": "Set metadata"
+    },
+    "valuePlaceholder": "Enter value\u2026"
+  },
+  "test": {
+    "title": "Test Rule",
+    "description": "Test your conditions against a sample transaction.",
+    "matched": "Conditions matched!",
+    "notMatched": "Conditions did not match.",
+    "runTest": "Test",
+    "payee": "Payee",
+    "amount": "Amount",
+    "run": "Test"
+  },
+  "rerun": {
+    "title": "Re-run All Rules",
+    "description": "Apply all enabled rules to existing transactions.",
+    "confirm": "Re-run",
+    "preview": "Preview changes"
+  },
+  "form": {
+    "name": "Rule name",
+    "namePlaceholder": "e.g. Groceries at Lidl",
+    "priority": "Priority",
+    "enabled": "Enabled",
+    "createTitle": "Add Rule",
+    "editTitle": "Edit Rule"
+  },
+  "empty": {
+    "title": "No auto-rules yet",
+    "description": "Create rules to automatically categorize and tag your transactions during import."
+  },
+  "toast": {
+    "created": "Rule created",
+    "updated": "Rule updated",
+    "deleted": "Rule deleted",
+    "rerunComplete": "Rules re-run complete",
+    "enabled": "Rule enabled",
+    "disabled": "Rule disabled"
+  }
+}

@@ -15,6 +15,7 @@ import {
   Landmark,
   FolderTree,
   Tags,
+  Wand2,
   Settings,
   PanelLeftClose,
   PanelLeft,
@@ -40,6 +41,7 @@ const MANAGE_ITEMS: NavItem[] = [
   { path: "/banks", labelKey: "common.nav.banks", icon: Landmark },
   { path: "/categories", labelKey: "common.nav.categories", icon: FolderTree },
   { path: "/tags", labelKey: "common.nav.tags", icon: Tags },
+  { path: "/rules", labelKey: "common.nav.rules", icon: Wand2 },
 ];
 
 const BOTTOM_ITEMS: NavItem[] = [

@@ -179,3 +179,51 @@ export async function updateOne<T>(path: string, body: unknown): Promise<T> {
   const res = await put<ApiResponse<T>>(path, body);
   return res.data;
 }
+
+/** Upload a file via multipart/form-data. */
+export async function postFormData<T>(path: string, formData: FormData): Promise<T> {
+  const headers: Record<string, string> = {};
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const res = await fetch(path, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (res.status === 401 && refreshToken) {
+    const refreshed = await doRefresh();
+    if (refreshed) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+      const retry = await fetch(path, { method: "POST", headers, body: formData });
+      if (!retry.ok) {
+        let errorBody: ApiErrorBody | undefined;
+        try { errorBody = await retry.json(); } catch { /* not JSON */ }
+        throw new ApiError(
+          retry.status,
+          errorBody?.error?.code ?? "UNKNOWN",
+          errorBody?.error?.message ?? `Request failed with status ${retry.status}`,
+          errorBody?.error?.details,
+        );
+      }
+      return retry.json();
+    }
+    clearTokens();
+    throw new ApiError(401, "AUTH_EXPIRED", "Session expired. Please log in again.");
+  }
+
+  if (!res.ok) {
+    let errorBody: ApiErrorBody | undefined;
+    try { errorBody = await res.json(); } catch { /* not JSON */ }
+    throw new ApiError(
+      res.status,
+      errorBody?.error?.code ?? "UNKNOWN",
+      errorBody?.error?.message ?? `Request failed with status ${res.status}`,
+      errorBody?.error?.details,
+    );
+  }
+
+  return res.json();
+}

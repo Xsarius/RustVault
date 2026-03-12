@@ -1,0 +1,100 @@
+{
+  "title": "Import",
+  "wizard": {
+    "title": "Import Transactions",
+    "steps": {
+      "upload": "Upload",
+      "configure": "Configure",
+      "preview": "Preview",
+      "confirm": "Confirm"
+    }
+  },
+  "upload": {
+    "title": "Upload File",
+    "description": "Drag and drop a bank statement file, or click to browse.",
+    "browseFiles": "Browse files",
+    "dragDrop": "or drag and drop",
+    "supportedFormats": "Supported formats: CSV, MT940, OFX, QIF, CAMT.053, XLSX, JSON",
+    "selectAccount": "Select account",
+    "accountRequired": "Please select an account to import into.",
+    "formatDetected": "Format detected",
+    "totalRows": "{{count}} rows found",
+    "uploading": "Uploading…"
+  },
+  "configure": {
+    "title": "Column Mapping",
+    "description": "Map your file's columns to transaction fields. Preview data is shown below.",
+    "sourceColumn": "Source Column",
+    "targetField": "Maps To",
+    "preview": "Preview",
+    "skip": "Skip",
+    "date": "Date",
+    "amount": "Amount",
+    "description": "Description",
+    "payee": "Payee",
+    "reference": "Reference",
+    "currency": "Currency",
+    "autoDetected": "Auto-detected"
+  },
+  "preview": {
+    "title": "Preview",
+    "description": "Review the parsed transactions before importing.",
+    "rows": "{{count}} transactions to import",
+    "badges": {
+      "new": "New",
+      "duplicate": "Possible duplicate",
+      "error": "Error",
+      "newCategory": "New category",
+      "autoCategory": "Auto-categorized"
+    },
+    "noIssues": "All rows look good!",
+    "issuesFound": "{{count}} issues found"
+  },
+  "confirm": {
+    "title": "Import Complete",
+    "summary": "Import Summary",
+    "imported": "Imported",
+    "skipped": "Skipped",
+    "duplicates": "Duplicates",
+    "errors": "Errors",
+    "rulesApplied": "Rules applied",
+    "done": "Done",
+    "viewTransactions": "View Transactions",
+    "importAnother": "Import Another"
+  },
+  "list": {
+    "title": "Import History",
+    "noImports": "No imports yet",
+    "noImportsDescription": "Upload a bank statement to import transactions.",
+    "rollback": "Rollback",
+    "rollbackConfirm": "Are you sure you want to rollback this import? All imported transactions will be deleted.",
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed",
+      "rolled_back": "Rolled Back"
+    }
+  },
+  "toast": {
+    "uploaded": "File uploaded successfully",
+    "configured": "Mapping saved",
+    "imported": "Import completed",
+    "rolledBack": "Import rolled back",
+    "uploadFailed": "Upload failed",
+    "importFailed": "Import failed"
+  },
+  "transfer": {
+    "title": "Transfer Matches",
+    "description": "We detected potential transfer matches between your accounts.",
+    "suggestions": "Transfer Suggestions",
+    "confirm": "Confirm Transfer",
+    "dismiss": "Dismiss",
+    "link": "Link as Transfer",
+    "unlink": "Unlink Transfer",
+    "manualLink": "Manual Link",
+    "selectTransaction": "Select a transaction to link",
+    "badge": "Transfer",
+    "noSuggestions": "No transfer suggestions"
+  }
+}

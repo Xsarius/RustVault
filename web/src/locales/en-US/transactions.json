@@ -1,0 +1,114 @@
+{
+  "title": "Transactions",
+  "addTransaction": "Add Transaction",
+  "editTransaction": "Edit Transaction",
+  "deleteTransaction": "Delete Transaction",
+  "noTransactions": "No transactions yet",
+  "noTransactionsDescription": "Import a bank statement or add transactions manually to get started.",
+  "search": "Search transactions…",
+  "filters": {
+    "title": "Filters",
+    "dateRange": "Date range",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "account": "Account",
+    "allAccounts": "All accounts",
+    "category": "Category",
+    "allCategories": "All categories",
+    "tag": "Tag",
+    "allTags": "All tags",
+    "type": "Type",
+    "allTypes": "All types",
+    "reviewed": "Reviewed",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "amountRange": "Amount range",
+    "minAmount": "Min amount",
+    "maxAmount": "Max amount",
+    "clear": "Clear filters",
+    "allReviewed": "All",
+    "unreviewed": "Unreviewed",
+    "apply": "Apply"
+  },
+  "columns": {
+    "date": "Date",
+    "description": "Description",
+    "payee": "Payee",
+    "category": "Category",
+    "tags": "Tags",
+    "amount": "Amount",
+    "account": "Account",
+    "reviewed": "Reviewed",
+    "actions": "Actions"
+  },
+  "bulk": {
+    "selected": "{{count}} selected",
+    "categorize": "Set category",
+    "tag": "Add tag",
+    "markReviewed": "Mark reviewed",
+    "delete": "Delete",
+    "clearSelection": "Clear selection",
+    "categorizeDescription": "Assign a category to the selected transactions."
+  },
+  "detail": {
+    "title": "Transaction Details",
+    "originalDescription": "Original description",
+    "editedDescription": "Edited description",
+    "auditHistory": "Audit History",
+    "createRule": "Create rule from this",
+    "transferDetails": "Transfer Details",
+    "linkedTransaction": "Linked transaction",
+    "counterpartAccount": "Counterpart account",
+    "method": "Method",
+    "noHistory": "No changes recorded yet.",
+    "originalDesc": "Original",
+    "reference": "Reference",
+    "unreview": "Unreview",
+    "review": "Mark Reviewed"
+  },
+  "types": {
+    "income": "Income",
+    "expense": "Expense",
+    "transfer": "Transfer"
+  },
+  "status": {
+    "reviewed": "Reviewed",
+    "unreviewed": "Unreviewed",
+    "duplicate": "Duplicate",
+    "deleted": "Deleted"
+  },
+  "form": {
+    "account": "Account",
+    "type": "Type",
+    "amount": "Amount",
+    "date": "Date",
+    "description": "Description",
+    "payee": "Payee",
+    "category": "Category",
+    "tags": "Tags",
+    "notes": "Notes",
+    "selectAccount": "Select account",
+    "selectCategory": "Select category",
+    "selectType": "Select type",
+    "createTitle": "Add Transaction"
+  },
+  "toast": {
+    "created": "Transaction created",
+    "updated": "Transaction updated",
+    "deleted": "Transaction deleted",
+    "bulkUpdated": "{{count}} transactions updated",
+    "bulkDeleted": "{{count}} transactions deleted",
+    "reviewedTransaction": "Marked as reviewed",
+    "unreviewedTransaction": "Marked as unreviewed"
+  },
+  "quickFilter": {
+    "unreviewed": "Unreviewed"
+  },
+  "empty": {
+    "title": "No transactions yet",
+    "description": "Import a bank statement or add transactions manually to get started."
+  },
+  "loadMore": "Loading more…",
+  "endOfList": "All transactions loaded"
+}

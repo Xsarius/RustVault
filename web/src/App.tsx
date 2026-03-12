@@ -22,6 +22,7 @@ const Tags = lazy(() => import("~/pages/Tags"));
 const Budget = lazy(() => import("~/pages/Budget"));
 const Reports = lazy(() => import("~/pages/Reports"));
 const Settings = lazy(() => import("~/pages/Settings"));
+const Rules = lazy(() => import("~/pages/Rules"));
 const More = lazy(() => import("~/pages/More"));
 const NotFound = lazy(() => import("~/pages/NotFound"));
 
@@ -51,6 +52,7 @@ const App: Component = () => {
           <Route path="/banks" component={Banks} />
           <Route path="/categories" component={Categories} />
           <Route path="/tags" component={Tags} />
+          <Route path="/rules" component={Rules} />
           <Route path="/budget" component={Budget} />
           <Route path="/reports" component={Reports} />
           <Route path="/settings" component={Settings} />

@@ -224,6 +224,211 @@ export interface UpdateSettings {
   ai_enabled?: boolean;
 }
 
+// ── Transactions ──────────────────────────────────────────────
+
+export type TransactionType = "income" | "expense" | "transfer";
+
+export interface Transaction {
+  id: string;
+  user_id: string;
+  account_id: string;
+  category_id: string | null;
+  import_id: string | null;
+  transaction_type: TransactionType;
+  amount: string; // Decimal as string
+  currency: string;
+  date: string; // ISO date (YYYY-MM-DD)
+  description: string;
+  original_desc: string | null;
+  payee: string | null;
+  reference: string | null;
+  notes: string | null;
+  is_reviewed: boolean;
+  is_deleted: boolean;
+  is_duplicate: boolean;
+  metadata: Record<string, unknown>;
+  tag_ids?: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewTransaction {
+  account_id: string;
+  category_id?: string;
+  transaction_type: TransactionType;
+  amount: string;
+  date: string;
+  description: string;
+  payee?: string;
+  notes?: string;
+  tag_ids?: string[];
+}
+
+export interface UpdateTransaction {
+  category_id?: string | null;
+  transaction_type?: TransactionType;
+  amount?: string;
+  date?: string;
+  description?: string;
+  payee?: string | null;
+  notes?: string | null;
+  is_reviewed?: boolean;
+  tag_ids?: string[];
+}
+
+export interface BulkUpdateTransactions {
+  transaction_ids: string[];
+  category_id?: string | null;
+  is_reviewed?: boolean;
+  add_tag_ids?: string[];
+}
+
+export interface TransactionListQuery {
+  account_id?: string;
+  category_id?: string;
+  transaction_type?: string;
+  date_from?: string;
+  date_to?: string;
+  q?: string;
+  is_reviewed?: boolean;
+  tag_id?: string;
+  import_id?: string;
+  limit?: number;
+  cursor?: string;
+}
+
+// ── Imports ───────────────────────────────────────────────────
+
+export type ImportStatus =
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "rolled_back";
+
+export interface Import {
+  id: string;
+  user_id: string;
+  file_name: string;
+  file_format: string;
+  account_id: string;
+  status: ImportStatus;
+  total_rows: number;
+  imported_count: number;
+  skipped_count: number;
+  duplicate_count: number;
+  error_count: number;
+  error_details: unknown | null;
+  column_mapping: unknown | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ParsedRow {
+  date: string;
+  amount: string;
+  currency: string | null;
+  description: string;
+  payee: string | null;
+  reference: string | null;
+  metadata: Record<string, unknown>;
+}
+
+export interface UploadResponse {
+  import: Import;
+  detected_format: string;
+  preview: ParsedRow[];
+  total_rows: number;
+}
+
+export interface ConfigureImportRequest {
+  mapping: Record<string, unknown>;
+}
+
+export interface ExecuteImportRequest {
+  mapping?: Record<string, unknown>;
+  skip_duplicates?: boolean;
+}
+
+export interface ImportExecutionResult {
+  import: Import;
+  imported_count: number;
+  duplicate_count: number;
+  error_count: number;
+  errors: ImportRowError[];
+  rules_applied: Record<string, number>;
+}
+
+export interface ImportRowError {
+  row: number;
+  message: string;
+}
+
+// ── Auto-Rules ────────────────────────────────────────────────
+
+export interface AutoRule {
+  id: string;
+  user_id: string;
+  name: string;
+  priority: number;
+  is_enabled: boolean;
+  conditions: unknown;
+  actions: unknown;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewAutoRule {
+  name: string;
+  priority?: number;
+  conditions: RuleCondition[];
+  actions: RuleAction[];
+}
+
+export interface UpdateAutoRule {
+  name?: string;
+  priority?: number;
+  is_enabled?: boolean;
+  conditions?: RuleCondition[];
+  actions?: RuleAction[];
+}
+
+export interface RuleCondition {
+  field: string;
+  value: unknown;
+  logic?: "and" | "or";
+}
+
+export interface RuleAction {
+  type: string;
+  value: unknown;
+}
+
+export interface TestRuleRequest {
+  conditions: unknown;
+  description: string;
+  payee?: string;
+  amount: string;
+  account_id: string;
+}
+
+export interface TestRuleResponse {
+  matched: boolean;
+}
+
+export interface SuggestRuleRequest {
+  description: string;
+  payee?: string;
+  amount: string;
+}
+
+export interface SuggestRuleResponse {
+  name: string;
+  conditions: RuleCondition[];
+}
+
 // ── i18n ──────────────────────────────────────────────────────
 
 export interface LocaleInfo {
