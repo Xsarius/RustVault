@@ -17,19 +17,19 @@ RustVault is a self-hosted finance app used by individuals and households worldw
 
 ## Decisions
 
-### Internationalization: Fluent (backend) + ICU MessageFormat (frontend)
+### Internationalization: Fluent (backend) + JSON namespaces (frontend)
 
 Two i18n systems, each optimized for its environment:
 
 - **Backend:** Project Fluent (`fluent-rs`) for API error messages and server-generated content. Fluent handles plurals, gender, and grammatical cases natively.
-- **Frontend:** ICU MessageFormat via `@solid-primitives/i18n` for reactive UI labels. Lazy-loaded — only the active locale is fetched.
-- **Formatting:** ICU4X (Rust) and browser Intl API for locale-aware dates, numbers, and currencies.
+- **Frontend:** JSON namespace files with `{{param}}` interpolation via `@solid-primitives/i18n` for reactive UI labels. Lazy-loaded — only the active locale is fetched.
+- **Formatting:** Browser Intl API for locale-aware dates, numbers, and currencies.
 
 | Alternative | Why not |
-|-------------|---------|
+|-------------|--------|
 | **gettext** | Basic plural support; no gender/case handling |
 | **i18next** | JS-only; backend needs a separate solution |
-| **Single system everywhere** | No mature Rust ICU implementation; Fluent is more expressive |
+| **Single system everywhere** | No mature Rust Fluent-in-browser solution; JSON is simpler for UI strings |
 
 Fallback chain: `user.locale → browser locale → instance default → en-US`.
 
@@ -85,7 +85,7 @@ Monetary amounts use tabular (monospace) numerals so columns of numbers align ve
 
 ### Negative
 
-- Two i18n systems to maintain (Fluent + ICU) — key naming conventions must stay synchronized
+- Two i18n systems to maintain (Fluent + JSON) — key naming conventions must stay synchronized
 - Fluent is less known than gettext — contributor learning curve for translators
 - Strict performance budget may constrain feature complexity
 
@@ -97,7 +97,7 @@ Monetary amounts use tabular (monospace) numerals so columns of numbers align ve
 ## References
 
 - [Project Fluent](https://projectfluent.org/)
-- [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/)
+- [SolidJS i18n](https://github.com/solidjs-community/solid-primitives/tree/main/packages/i18n)
 - [WCAG 2.1 AA](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Kobalte accessibility](https://kobalte.dev/docs/core/overview/accessibility)
 - [Web performance budgets](https://web.dev/performance-budgets-101/)

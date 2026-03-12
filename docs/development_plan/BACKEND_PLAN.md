@@ -139,7 +139,7 @@ crates/
 │       │   └── settings.rs    # get_by_user, upsert
 │       └── migrations/        # SQL migrations (embedded via sqlx::migrate!)
 │           ├── 0001_initial_schema.sql         # users, banks, accounts, categories, tags, sessions, audit_log (implemented)
-│           ├── 0002_transactions_imports_rules.sql  # transactions, transfers, imports, auto_rules, transaction_tags (planned)
+│           ├── 0002_transactions_imports_rules.sql  # transactions, transfers, imports, auto_rules, transaction_tags (implemented)
 │           ├── 0003_budgets.sql                # budgets, budget_lines (planned)
 │           ├── 0004_exchange_rates.sql         # exchange_rates (planned)
 │           └── 0005_full_text_search.sql       # tsvector columns + indexes (planned)

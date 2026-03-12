@@ -31,8 +31,11 @@ web/src/locales/
     ├── auth.json          # Login, register, password reset
     ├── banks.json         # Banks & accounts screens
     ├── categories.json    # Category management
+    ├── import.json        # Import wizard & pipeline
+    ├── rules.json         # Auto-categorization rules
+    ├── settings.json      # Settings page
     ├── tags.json          # Tag management
-    └── settings.json      # Settings page
+    └── transactions.json  # Transaction list, detail, transfers
 ```
 
 ### Key Naming Conventions

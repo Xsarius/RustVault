@@ -221,7 +221,7 @@ Development follows a phased approach — each phase is self-contained and shipp
 ```
 
 <details>
-<summary><strong>Phase 0 — Project Scaffolding</strong>&ensp; 🔜 Next</summary>
+<summary><strong>Phase 0 — Project Scaffolding</strong>&ensp; ✅ Done</summary>
 
 > Repo structure, CI, dev environment, Docker skeleton.
 
@@ -234,7 +234,7 @@ Development follows a phased approach — each phase is self-contained and shipp
 </details>
 
 <details>
-<summary><strong>Phase 1 — Core Backend</strong>&ensp; 📋 Planned</summary>
+<summary><strong>Phase 1 — Core Backend</strong>&ensp; ✅ Done</summary>
 
 > Auth, user/account CRUD, API foundation.
 
@@ -247,7 +247,7 @@ Development follows a phased approach — each phase is self-contained and shipp
 </details>
 
 <details>
-<summary><strong>Phase 2 — Web UI Shell</strong>&ensp; 📋 Planned</summary>
+<summary><strong>Phase 2 — Web UI Shell</strong>&ensp; ✅ Done</summary>
 
 > App shell with navigation, auth pages, entity management UI.
 
@@ -261,7 +261,7 @@ Development follows a phased approach — each phase is self-contained and shipp
 </details>
 
 <details>
-<summary><strong>Phase 3 — Transactions & Import</strong>&ensp; 📋 Planned</summary>
+<summary><strong>Phase 3 — Transactions & Import</strong>&ensp; ✅ Done</summary>
 
 > The core differentiator — automated, flexible data import from any bank.
 
@@ -275,7 +275,7 @@ Development follows a phased approach — each phase is self-contained and shipp
 </details>
 
 <details>
-<summary><strong>Phase 4 — Budgeting & Forecasting</strong>&ensp; 📋 Planned</summary>
+<summary><strong>Phase 4 — Budgeting & Forecasting</strong>&ensp; � Next</summary>
 
 > Create budgets, track actuals, compare periods.
 

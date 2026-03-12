@@ -948,8 +948,7 @@ docs/
 │   └── release-process.md
 ├── security/
 │   └── SECURITY.md
-└── changelog/
-    └── CHANGELOG.md
+└── wireframes/
 ```
 
 ### 7.4 Documentation Tooling
@@ -1008,6 +1007,7 @@ docs/
   ```
 - [x] **P0.2** Set up `docker-compose.yml` with PostgreSQL 18 + the app (multi-stage build).
 - [x] **P0.3** Create Dockerfile: stage 1 = Rust build (cargo-chef for caching), stage 2 = Node build (Vite), stage 3 = minimal runtime (distroless/debian-slim) serving static + binary.
+- [x] **P0.3a** Wire `tower-http` `ServeDir` fallback into Axum (`app.rs`) so the built SPA is served at `/` with SPA client-routing support (`index.html` fallback). Configurable via `server.static_dir` (default: `"static"`; empty string = API-only mode).
 - [x] **P0.4** Initialize SolidJS project in `web/` with Vite, TypeScript, Tailwind CSS, Kobalte.
 - [x] **P0.5** Configure `rust-toolchain.toml` (stable), `clippy.toml`, `rustfmt.toml`.
 - [x] **P0.6** Add `justfile` or `Makefile` with common commands: `dev`, `build`, `test`, `migrate`, `lint`, `docker-build`.
@@ -1025,7 +1025,6 @@ docs/
   - Write **ADR-0001**: Backend. **ADR-0002**: Frontend. **ADR-0003**: API. **ADR-0004**: Data Model. *(ADRs 0005–0008 already exist: UX, Error Handling, Testing, Auth/JWT.)*
   - Create `docs/contributing/CONTRIBUTING.md` with initial structure.
   - Create `docs/security/SECURITY.md` with vulnerability reporting process.
-  - Create `docs/changelog/CHANGELOG.md` (empty, keep-a-changelog format).
   - Add `vale` config (`.vale.ini`) and writing style rules.
   - Add `mdbook-linkcheck` to CI pipeline.
   - Add `#![warn(missing_docs)]` to all Rust crate roots.
@@ -1234,29 +1233,29 @@ docs/
 
 ### 3A — Transaction & Transfer Backend
 
-- [ ] **P3A.1** Write migration 002: `transactions`, `transfers`, `imports`, `auto_rules`, `transaction_tags` (junction table) tables. Transaction has `type` (`income`/`expense`/`transfer`). Transfer links two transaction IDs with `method`, `status`, `exchange_rate`, `confidence`.
-- [ ] **P3A.2** Implement Transaction CRUD:
+- [x] **P3A.1** Write migration 002: `transactions`, `transfers`, `imports`, `auto_rules`, `transaction_tags` (junction table) tables. Transaction has `type` (`income`/`expense`/`transfer`). Transfer links two transaction IDs with `method`, `status`, `exchange_rate`, `confidence`.
+- [x] **P3A.2** Implement Transaction CRUD:
   - `GET /api/transactions` — paginated, filterable (date range, account, bank, category, tag, type, search text, reviewed status, exclude_transfers, transfer_status), sortable. Response includes `transfer` object when linked.
   - `POST /api/transactions` — manual create (income/expense only; for transfers use `/api/transfers`).
   - `PUT /api/transactions/:id` — edit (any field, including category reassignment). Warns if part of a linked transfer.
   - `DELETE /api/transactions/:id` — soft-delete. If part of a transfer, unlinks the counterpart.
   - `PATCH /api/transactions/bulk` — bulk update (set category, add tag, mark reviewed) for selected transaction IDs.
-- [ ] **P3A.3** Implement **Transfer endpoints**:
+- [x] **P3A.3** Implement **Transfer endpoints**:
   - `POST /api/transfers` — create a transfer between two accounts. Auto-creates linked debit + credit transactions.
   - `POST /api/transfers/link` — manually link two existing transactions as a transfer pair.
   - `DELETE /api/transfers/:transfer_id` — unlink a transfer (transactions remain as standalone income/expense).
   - `POST /api/transfers/detect` — scan unlinked transactions across user's accounts for potential transfer matches. Supports date/amount tolerance, auto-link option for high-confidence matches.
-- [ ] **P3A.4** Implement **transfer detection algorithm**:
+- [x] **P3A.4** Implement **transfer detection algorithm**:
   - Match debit on Account A with credit on Account B: same user, close dates (within tolerance), matching amounts (within tolerance), opposite signs.
   - Confidence scoring: exact amount + same date = 95%+, small date difference = lower confidence, amount with fee tolerance = lower confidence.
   - Detect non-standard top-ups: when destination account has `supports_nonstandard_topup`, suggest appropriate transfer method.
   - De-duplicate suggestions: one transaction can only be in one suggested pair.
-- [ ] **P3A.5** Implement full-text search on transaction `description`, `original_desc`, `payee`, `notes` using PostgreSQL `tsvector`.
-- [ ] **P3A.6** Implement **duplicate detection**: on import, check for transactions with same date, amount, and similar description within the same account. Flag as potential duplicates rather than silently skipping.
+- [x] **P3A.5** Implement full-text search on transaction `description`, `original_desc`, `payee`, `notes` using PostgreSQL `tsvector`.
+- [x] **P3A.6** Implement **duplicate detection**: on import, check for transactions with same date, amount, and similar description within the same account. Flag as potential duplicates rather than silently skipping.
 
 ### 3B — Import Engine (`rustvault-import` crate)
 
-- [ ] **P3B.1** Define `ImportParser` trait:
+- [x] **P3B.1** Define `ImportParser` trait:
   ```rust
   pub trait ImportParser: Send + Sync {
       fn name(&self) -> &str;
@@ -1274,38 +1273,38 @@ docs/
       pub metadata: HashMap<String, Value>,
   }
   ```
-- [ ] **P3B.2** Implement **CSV parser** with:
+- [x] **P3B.2** Implement **CSV parser** with:
   - Auto-detect delimiter (comma, semicolon, tab).
   - Auto-detect date format via heuristic (try common formats).
   - Column mapping UI: user maps columns on first import, mapping is saved per account for reuse.
   - Handle different decimal separators (`.` vs `,`).
-- [ ] **P3B.3** Implement **MT940 parser** using `mt940` crate or custom parser.
-- [ ] **P3B.4** Implement **OFX/QFX parser**:
+- [x] **P3B.3** Implement **MT940 parser** using `mt940` crate or custom parser.
+- [x] **P3B.4** Implement **OFX/QFX parser**:
   - Normalize OFX 1.x SGML to XML before parsing (strip SGML header, close unclosed tags).
   - Parse OFX 2.x natively as XML via `quick-xml`.
   - Extract `STMTTRN` entries (date `DTPOSTED`, amount `TRNAMT`, `NAME`/`MEMO`, `FITID` for dedup).
   - Support both checking (`BANKMSGSRSV1`) and credit card (`CREDITCARDMSGSRSV1`) statement types.
-- [ ] **P3B.5** Implement **QIF parser**:
+- [x] **P3B.5** Implement **QIF parser**:
   - Line-based parser for Quicken Interchange Format.
   - Handle record types: `D` (date), `T` (amount), `P` (payee), `M` (memo), `L` (category), `N` (check number).
   - Auto-detect date format (US `MM/DD/YYYY` vs EU `DD/MM/YYYY`).
-- [ ] **P3B.6** Implement **CAMT.053 parser** (ISO 20022):
+- [x] **P3B.6** Implement **CAMT.053 parser** (ISO 20022):
   - Parse XML via `quick-xml` — extract `Ntry` (entries) with `Amt`, `BookgDt`, `RmtInf` (remittance info), `Cdtr`/`Dbtr` (creditor/debtor).
   - Preserve rich metadata: IBAN, BIC, end-to-end ID, mandate reference.
   - Handle batch entries (`NtryDtls/TxDtls`) — one `Ntry` can contain multiple individual transactions.
   - Critical for EU/SEPA banks; replacement for MT940 (mandatory in many countries by 2025).
-- [ ] **P3B.7** Implement **XLSX/XLS/ODS parser**:
+- [x] **P3B.7** Implement **XLSX/XLS/ODS parser**:
   - Use `calamine` crate to read spreadsheet files.
   - Auto-detect header row (first row with text in most columns).
   - Column mapping UI (same as CSV) — user maps columns on first import, saved per account.
   - Handle multiple sheets: let user pick which sheet to import.
   - Handle merged cells, empty rows gracefully.
-- [ ] **P3B.8** Implement **JSON parser** (flexible schema, user maps fields).
-- [ ] **P3B.9** Register parsers in a `ParserRegistry` (registry pattern — easy to add more).
+- [x] **P3B.8** Implement **JSON parser** (flexible schema, user maps fields).
+- [x] **P3B.9** Register parsers in a `ParserRegistry` (registry pattern — easy to add more).
 
 ### 3C — Import Pipeline (orchestration)
 
-- [ ] **P3C.1** Implement import endpoint:
+- [x] **P3C.1** Implement import endpoint:
   - `POST /api/import/upload` — upload file, detect format, return preview (first 10 rows parsed).
   - `POST /api/import/configure` — submit column mapping (if CSV/JSON), target account.
   - `POST /api/import/execute` — run full import with the following pipeline:
@@ -1315,11 +1314,11 @@ docs/
   - `GET /api/imports` — list past imports.
   - `GET /api/imports/:id` — import details (stats, errors, linked transactions).
   - `DELETE /api/imports/:id` — rollback import (delete all transactions from this import).
-- [ ] **P3C.2** **On-the-fly taxonomy creation** during import:
+- [x] **P3C.2** **On-the-fly taxonomy creation** during import:
   - If a bank statement contains a field that could map to a category/tag not yet in the system, **create it automatically** and tag with `auto_created: true`.
   - Never reject an import because of missing metadata.
   - After import, show a "Review new entities" prompt listing auto-created categories/tags for user to confirm/rename/merge.
-- [ ] **P3C.3** Implement **Auto-Categorization Rules Engine**:
+- [x] **P3C.3** Implement **Auto-Categorization Rules Engine**:
   - Rules are user-defined (CRUD endpoints):
     - `GET /api/rules` — list.
     - `POST /api/rules` — create rule.
@@ -1338,11 +1337,11 @@ docs/
     - Set `payee` (normalize payee names).
     - Set custom `metadata` fields.
   - Rules apply automatically on import; user can also "re-run rules" on existing transactions.
-- [ ] **P3C.4** Implement **"Suggest Rule"** feature: when a user manually categorizes a transaction, prompt "Create a rule for similar transactions?" pre-filling conditions from the transaction's `original_desc`.
+- [x] **P3C.4** Implement **"Suggest Rule"** feature: when a user manually categorizes a transaction, prompt "Create a rule for similar transactions?" pre-filling conditions from the transaction's `original_desc`.
 
 ### 3D — Import & Transaction UI
 
-- [ ] **P3D.1** Build **Import Wizard** (multi-step dialog):
+- [x] **P3D.1** Build **Import Wizard** (multi-step dialog):
   1. **Upload**: drag-and-drop / file picker. Show format auto-detection result.
   2. **Configure**: if CSV/JSON, show column mapping UI with preview table. Save mapping per account.
   3. **Preview**: show parsed transactions with auto-categorization applied. Highlight:
@@ -1351,7 +1350,7 @@ docs/
      - Parsing errors (red badge).
      User can fix issues inline before confirming.
   4. **Confirm**: execute import, show summary (imported, skipped, duplicates, errors).
-- [ ] **P3D.2** Build **Transaction List** page:
+- [x] **P3D.2** Build **Transaction List** page:
   - **Virtualized list** using `@tanstack/solid-virtual`: only visible rows rendered, handles 100k+ transactions at 60fps.
   - Cursor-based pagination (50 items/page) with infinite scroll (`IntersectionObserver` trigger near bottom).
   - Filterable table/list (date range, account, category, tag, reviewed status, amount range, text search).
@@ -1360,20 +1359,20 @@ docs/
   - Bulk select → bulk categorize / tag / mark reviewed / delete.
   - "Unreviewed" filter as a primary quick-action button.
   - Skeleton rows shown while pages load.
-- [ ] **P3D.3** Build **Transaction Detail** page/panel:
+- [x] **P3D.3** Build **Transaction Detail** page/panel:
   - All fields editable.
   - Show `original_desc` vs. user-edited `description` diff.
   - Audit history (changes over time from audit log).
   - "Create rule from this" button.
   - Split transaction support (one bank entry → multiple category allocations). *(Future: requires `transaction_splits` table — `parent_transaction_id`, `category_id`, `amount`. Data model to be designed in a dedicated ADR.)*
   - Transfer details: linked counterpart transaction, bank/account, method badge.
-- [ ] **P3D.4** Build **Transfer Management** UI:
+- [x] **P3D.4** Build **Transfer Management** UI:
   - Transfer suggestions panel: review detected transfer pairs, confirm or dismiss.
   - Manual link: select two transactions to link as a transfer.
   - Transfer badge on transaction list rows (shows counterpart bank/account).
   - Unlink transfer action.
   - After import: "Transfer matches found" summary with review/confirm flow.
-- [ ] **P3D.5** Build **Auto-Rules Management** page:
+- [x] **P3D.5** Build **Auto-Rules Management** page:
   - List rules with priority ordering (drag to reorder).
   - Rule editor with condition builder UI (visual AND/OR groups).
   - Test rule: show matching transactions count + preview.
@@ -1393,26 +1392,26 @@ docs/
 - All import wizard steps, transaction list, transfer management, and rule editor are fully localized.
 
 ### i18n Tasks (Phase 3)
-- [ ] **P3.i18n.1** Write `locales/en-US/transactions.ftl` and `import.ftl` — all backend error messages, validation messages, import status strings.
-- [ ] **P3.i18n.2** Write `web/src/locales/en-US/transactions.json` and `import.json` — all UI strings for transaction list, detail, import wizard, rule editor.
-- [ ] **P3.i18n.3** Locale-aware transaction formatting: amounts use user's number format, dates use user's date format throughout all transaction views.
-- [ ] **P3.i18n.4** Import date parsing: respect locale hints (e.g., `DD/MM/YYYY` vs `MM/DD/YYYY`) with user-overridable format in column mapping.
+- [x] **P3.i18n.1** Write `locales/en-US/transactions.ftl` and `import.ftl` — all backend error messages, validation messages, import status strings.
+- [x] **P3.i18n.2** Write `web/src/locales/en-US/transactions.json` and `import.json` — all UI strings for transaction list, detail, import wizard, rule editor.
+- [x] **P3.i18n.3** Locale-aware transaction formatting: amounts use user's number format, dates use user's date format throughout all transaction views.
+- [x] **P3.i18n.4** Import date parsing: respect locale hints (e.g., `DD/MM/YYYY` vs `MM/DD/YYYY`) with user-overridable format in column mapping.
 
 ### Documentation Deliverables (P3)
-- [ ] Write `docs/book/src/features/transactions.md` — transaction management user guide (create, edit, bulk ops, search).
-- [ ] Write `docs/book/src/features/import-pipeline.md` — end-to-end import walkthrough with screenshots of each wizard step.
-- [ ] Write `docs/book/src/features/auto-rules.md` — rule engine user guide (creating rules, conditions reference, testing, re-running).
-- [ ] Write `docs/book/src/import-formats/csv.md` — CSV format reference (delimiters, date formats, decimal separators, column mapping).
-- [ ] Write `docs/book/src/import-formats/mt940.md` — MT940 format guide.
-- [ ] Write `docs/book/src/import-formats/ofx-qfx.md` — OFX/QFX format guide (OFX 1.x SGML vs 2.x XML, supported statement types).
-- [ ] Write `docs/book/src/import-formats/qif.md` — QIF format reference (record types, date format handling).
-- [ ] Write `docs/book/src/import-formats/camt053.md` — CAMT.053 (ISO 20022) guide (EU/SEPA standard, entry structure, batch transactions).
-- [ ] Write `docs/book/src/import-formats/xlsx.md` — XLSX/XLS/ODS spreadsheet import guide (sheet selection, header detection, column mapping).
-- [ ] Write `docs/book/src/import-formats/json.md` — JSON schema reference.
-- [ ] Write `docs/book/src/import-formats/custom-mapping.md` — how to create and save column mappings.
-- [ ] OpenAPI annotations on all P3 endpoints (imports, transactions, rules) with examples.
-- [ ] Document `ImportParser` trait in rustdoc with examples for implementing a custom parser.
-- [ ] Write `docs/book/src/getting-started/first-import.md` — beginner tutorial: import your first bank statement.
+- [x] Write `docs/book/src/features/transactions.md` — transaction management user guide (create, edit, bulk ops, search).
+- [x] Write `docs/book/src/features/import-pipeline.md` — end-to-end import walkthrough with screenshots of each wizard step.
+- [x] Write `docs/book/src/features/auto-rules.md` — rule engine user guide (creating rules, conditions reference, testing, re-running).
+- [x] Write `docs/book/src/import-formats/csv.md` — CSV format reference (delimiters, date formats, decimal separators, column mapping).
+- [x] Write `docs/book/src/import-formats/mt940.md` — MT940 format guide.
+- [x] Write `docs/book/src/import-formats/ofx-qfx.md` — OFX/QFX format guide (OFX 1.x SGML vs 2.x XML, supported statement types).
+- [x] Write `docs/book/src/import-formats/qif.md` — QIF format reference (record types, date format handling).
+- [x] Write `docs/book/src/import-formats/camt053.md` — CAMT.053 (ISO 20022) guide (EU/SEPA standard, entry structure, batch transactions).
+- [x] Write `docs/book/src/import-formats/xlsx.md` — XLSX/XLS/ODS spreadsheet import guide (sheet selection, header detection, column mapping).
+- [x] Write `docs/book/src/import-formats/json.md` — JSON schema reference.
+- [x] Write `docs/book/src/import-formats/custom-mapping.md` — how to create and save column mappings.
+- [x] OpenAPI annotations on all P3 endpoints (imports, transactions, rules) with examples.
+- [x] Document `ImportParser` trait in rustdoc with examples for implementing a custom parser.
+- [x] Write `docs/book/src/getting-started/first-import.md` — beginner tutorial: import your first bank statement.
 
 ---
 

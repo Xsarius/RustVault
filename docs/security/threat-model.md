@@ -336,40 +336,40 @@ sequenceDiagram
 
 #### Phase 1 (Core Backend)
 
-- [ ] Argon2id password hashing (19 MiB memory, 2 iterations)
-- [ ] JWT access tokens (15 min TTL, memory-only)
-- [ ] Refresh token rotation with theft detection
-- [ ] `HttpOnly; Secure; SameSite=Strict` cookies
-- [ ] Rate limiting on auth endpoints (5/15min/IP)
-- [ ] Account lockout (20 failures)
+- [x] Argon2id password hashing (19 MiB memory, 2 iterations)
+- [x] JWT access tokens (15 min TTL, memory-only)
+- [ ] Refresh token rotation with theft detection *(rotation done; theft detection missing)*
+- [ ] `HttpOnly; Secure; SameSite=Strict` cookies *(refresh token returned in JSON body, not cookie)*
+- [ ] Rate limiting on auth endpoints (5/15min/IP) *(config + governor dep exist; middleware not wired)*
+- [ ] Account lockout (20 failures) *(config + error variant exist; tracking not implemented)*
 - [ ] HaveIBeenPwned password check
-- [ ] CORS strict origin allowlist
+- [ ] CORS strict origin allowlist *(currently `CorsLayer::permissive()`)*
 - [ ] `X-Requested-With` CSRF header requirement
-- [ ] Row-level security (`user_id` filtering)
-- [ ] `#[serde(skip)]` on sensitive fields
-- [ ] Input validation (`validator` crate)
+- [x] Row-level security (`user_id` filtering)
+- [x] `#[serde(skip)]` on sensitive fields
+- [x] Input validation (`validator` crate)
 - [ ] `#[serde(deny_unknown_fields)]` on request DTOs
-- [ ] Audit log for all mutations
+- [x] Audit log for all mutations
 - [ ] Security event logging (failed logins, rate limits)
 - [ ] No secrets in log output
-- [ ] OIDC with PKCE and full claim validation
+- [ ] OIDC with PKCE and full claim validation *(OIDC done; PKCE missing)*
 
 #### Phase 2 (Web UI)
 
 - [ ] CSP header (no inline scripts)
-- [ ] No `innerHTML` usage
-- [ ] Access tokens in memory only (no localStorage)
+- [x] No `innerHTML` usage
+- [x] Access tokens in memory only (no localStorage)
 - [ ] Session management UI
 
 #### Phase 3 (Import Pipeline)
 
-- [ ] File type validation by magic bytes
+- [x] File type validation by magic bytes
 - [ ] Filename sanitization (UUID-based internal names)
-- [ ] Size limits (50 MB statements, 25 MB receipts)
+- [ ] Size limits (50 MB statements, 25 MB receipts) *(50 MB statement limit done; receipt limit missing)*
 - [ ] Sandboxed parsing (separate tokio task)
-- [ ] No archive files, flat files only
+- [ ] No archive files, flat files only *(extension allowlist only; no explicit archive rejection)*
 - [ ] Import rate limiting (50/user/hour)
-- [ ] Temporary file cleanup
+- [x] Temporary file cleanup *(N/A — files processed in-memory, no temp files written)*
 
 #### Phase 7 (Hardening & Release)
 
