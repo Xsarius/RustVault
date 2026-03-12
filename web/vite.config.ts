@@ -16,6 +16,14 @@ export default defineConfig({
   build: {
     target: "esnext",
     outDir: "dist",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["solid-js", "solid-js/web", "solid-js/store", "@solidjs/router"],
+          kobalte: ["@kobalte/core"],
+        },
+      },
+    },
   },
   resolve: {
     alias: {
