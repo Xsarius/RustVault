@@ -6,9 +6,16 @@
 
 #![warn(missing_docs)]
 
+pub mod detect;
 pub mod error;
+pub mod parsers;
+pub mod raw;
+pub mod registry;
 
+pub use detect::{detect_format, FileFormat};
 pub use error::ImportError;
+pub use raw::{ColumnMapping, ImportParser, RawTransaction};
+pub use registry::ParserRegistry;
 
 /// Result type alias for import operations.
 pub type ImportResult<T> = Result<T, ImportError>;

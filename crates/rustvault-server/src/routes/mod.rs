@@ -10,12 +10,16 @@ pub mod banks;
 pub mod categories;
 pub mod health;
 pub mod i18n;
+pub mod imports;
+pub mod rules;
 pub mod settings;
 pub mod tags;
+pub mod transactions;
+pub mod transfers;
 
 use axum::Router;
 use axum::middleware;
-use axum::routing::{get, post, put};
+use axum::routing::{delete, get, patch, post, put};
 
 use crate::middleware::auth::auth_middleware;
 use crate::state::AppState;
@@ -76,6 +80,45 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         .route(
             "/api/settings",
             get(settings::get).put(settings::update),
+        )
+        // Transactions
+        .route(
+            "/api/transactions",
+            get(transactions::list).post(transactions::create),
+        )
+        .route("/api/transactions/bulk", patch(transactions::bulk_update))
+        .route(
+            "/api/transactions/{id}",
+            get(transactions::get)
+                .put(transactions::update)
+                .delete(transactions::delete),
+        )
+        // Transfers
+        .route("/api/transfers", post(transfers::create))
+        .route("/api/transfers/link", post(transfers::link))
+        .route("/api/transfers/detect", post(transfers::detect))
+        .route("/api/transfers/{id}", delete(transfers::unlink))
+        // Imports
+        .route("/api/imports", get(imports::list))
+        .route("/api/imports/upload", post(imports::upload))
+        .route(
+            "/api/imports/upload-and-execute",
+            post(imports::upload_and_execute),
+        )
+        .route(
+            "/api/imports/{id}",
+            get(imports::get).delete(imports::rollback),
+        )
+        .route("/api/imports/{id}/preview", post(imports::preview))
+        .route("/api/imports/{id}/configure", put(imports::configure))
+        .route("/api/imports/{id}/execute", post(imports::execute))
+        // Auto-categorization Rules
+        .route("/api/rules", get(rules::list).post(rules::create))
+        .route("/api/rules/test", post(rules::test_rule))
+        .route("/api/rules/suggest", post(rules::suggest))
+        .route(
+            "/api/rules/{id}",
+            get(rules::get).put(rules::update).delete(rules::delete),
         )
         .layer(middleware::from_fn_with_state(state, auth_middleware))
 }
