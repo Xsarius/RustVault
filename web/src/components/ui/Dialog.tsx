@@ -33,9 +33,9 @@ export function Dialog(props: DialogProps) {
       <KobalteDialog.Portal>
         <KobalteDialog.Overlay class="fixed inset-0 z-[var(--z-overlay)] bg-black/50 data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[closed]:animate-out data-[closed]:fade-out-0" />
         <div class="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4">
-          <KobalteDialog.Content class="w-full max-w-lg bg-bg border border-border rounded-[var(--radius-lg)] shadow-md data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[expanded]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95">
+          <KobalteDialog.Content class="w-full max-w-lg bg-bg border border-border rounded-[var(--radius-lg)] shadow-md overflow-hidden data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[expanded]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95">
             <div class="flex items-center justify-between p-6 pb-0">
-              <div>
+              <div class="min-w-0 flex-1 pr-2">
                 <KobalteDialog.Title class="text-lg font-semibold text-text">
                   {local.title}
                 </KobalteDialog.Title>
@@ -49,7 +49,7 @@ export function Dialog(props: DialogProps) {
                 <X size={18} />
               </KobalteDialog.CloseButton>
             </div>
-            <div class="p-6">{local.children}</div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-5rem)]">{local.children}</div>
           </KobalteDialog.Content>
         </div>
       </KobalteDialog.Portal>
