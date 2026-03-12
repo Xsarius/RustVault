@@ -1,0 +1,30 @@
+{
+  "title": "Settings",
+  "tabs": {
+    "general": "General",
+    "appearance": "Appearance",
+    "account": "Account"
+  },
+  "general": {
+    "defaults": "Defaults",
+    "currency": "Default currency",
+    "language": "Language"
+  },
+  "appearance": {
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "account": {
+    "profile": "Profile",
+    "username": "Username",
+    "email": "Email",
+    "security": "Security",
+    "changePassword": "Change Password",
+    "dangerZone": "Danger Zone",
+    "deleteDescription": "Permanently delete your account and all associated data. This action cannot be undone.",
+    "deleteAccount": "Delete Account"
+  },
+  "saved": "Settings saved"
+}

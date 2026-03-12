@@ -12,7 +12,8 @@
     "settings": "Settings",
     "banks": "Banks & Accounts",
     "categories": "Categories",
-    "tags": "Tags"
+    "tags": "Tags",
+    "more": "More"
   },
   "actions": {
     "save": "Save",
@@ -28,12 +29,43 @@
     "search": "Search",
     "filter": "Filter",
     "export": "Export",
-    "import": "Import"
+    "import": "Import",
+    "add": "Add",
+    "saveChanges": "Save Changes",
+    "changePassword": "Change Password",
+    "deleteAccount": "Delete Account"
   },
   "status": {
     "loading": "Loading…",
     "saving": "Saving…",
     "saved": "Saved",
     "noResults": "No results found."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "empty": {
+    "noBanks": "No banks yet",
+    "noBanksDescription": "Add your first bank to start tracking accounts.",
+    "noCategories": "No categories yet",
+    "noCategoriesDescription": "Create income and expense categories to organize your transactions.",
+    "noTags": "No tags yet",
+    "noTagsDescription": "Tags let you add flexible labels to transactions beyond categories.",
+    "noTransactions": "No transactions yet",
+    "noAccounts": "No accounts"
+  },
+  "settings": {
+    "general": "General",
+    "appearance": "Appearance",
+    "account": "Account",
+    "defaults": "Defaults",
+    "currency": "Default currency",
+    "language": "Language",
+    "profile": "Profile",
+    "security": "Security",
+    "dangerZone": "Danger Zone",
+    "dangerDescription": "Permanently delete your account and all associated data. This action cannot be undone."
   }
 }

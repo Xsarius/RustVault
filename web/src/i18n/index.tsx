@@ -38,6 +38,10 @@ export const DEFAULT_LOCALE: Locale = "en-US";
 export type RawDictionary = {
   common: typeof import("~/locales/en-US/common.json");
   auth: typeof import("~/locales/en-US/auth.json");
+  banks: typeof import("~/locales/en-US/banks.json");
+  categories: typeof import("~/locales/en-US/categories.json");
+  tags: typeof import("~/locales/en-US/tags.json");
+  settings: typeof import("~/locales/en-US/settings.json");
 };
 
 /** Flattened dictionary with dot-separated keys (e.g. "common.nav.dashboard"). */
@@ -52,12 +56,16 @@ export type Dictionary = i18n.Flatten<RawDictionary>;
  * a flattened dictionary. New namespaces must be added here when created.
  */
 async function fetchDictionary(locale: Locale): Promise<Dictionary> {
-  const [common, auth] = await Promise.all([
-    import(`~/locales/${locale}/common.json`).then((m) => m.default ?? m),
-    import(`~/locales/${locale}/auth.json`).then((m) => m.default ?? m),
+  const [common, auth, banks, categories, tags, settings] = await Promise.all([
+    import(`../locales/${locale}/common.json`).then((m) => m.default ?? m),
+    import(`../locales/${locale}/auth.json`).then((m) => m.default ?? m),
+    import(`../locales/${locale}/banks.json`).then((m) => m.default ?? m),
+    import(`../locales/${locale}/categories.json`).then((m) => m.default ?? m),
+    import(`../locales/${locale}/tags.json`).then((m) => m.default ?? m),
+    import(`../locales/${locale}/settings.json`).then((m) => m.default ?? m),
   ]);
 
-  const raw: RawDictionary = { common, auth };
+  const raw: RawDictionary = { common, auth, banks, categories, tags, settings };
   return i18n.flatten(raw) as Dictionary;
 }
 

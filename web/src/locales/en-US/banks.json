@@ -1,0 +1,21 @@
+{
+  "title": "Banks & Accounts",
+  "addBank": "Add Bank",
+  "bankName": "Bank name",
+  "bankNamePlaceholder": "e.g. Chase, Revolut",
+  "addAccount": "Add Account",
+  "accountName": "Account name",
+  "accountType": "Account type",
+  "currency": "Currency",
+  "types": {
+    "checking": "Checking",
+    "savings": "Savings",
+    "credit": "Credit Card",
+    "investment": "Investment",
+    "cash": "Cash"
+  },
+  "created": "Bank created",
+  "deleted": "Bank deleted",
+  "archived": "Bank archived",
+  "accountCreated": "Account created"
+}

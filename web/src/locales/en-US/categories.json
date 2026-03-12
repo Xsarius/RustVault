@@ -1,0 +1,16 @@
+{
+  "title": "Categories",
+  "addCategory": "Add Category",
+  "categoryName": "Name",
+  "categoryNamePlaceholder": "e.g. Groceries",
+  "categoryType": "Type",
+  "parentCategory": "Parent category",
+  "noParent": "— None (root) —",
+  "types": {
+    "income": "Income",
+    "expense": "Expense"
+  },
+  "created": "Category created",
+  "deleted": "Category deleted",
+  "updated": "Category updated"
+}
