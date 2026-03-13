@@ -323,3 +323,20 @@ fn clean_description(raw: &str) -> String {
         parts.join(" ").trim().to_owned()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Mt940Parser;
+    use crate::raw::ImportParser;
+
+    #[test]
+    fn parses_single_mt940_transaction() {
+        let parser = Mt940Parser;
+        let data = b":20:REF123\n:60F:C260301EUR0,00\n:61:260301D12,34NTRFNONREF//ABC123\n:86:Coffee Shop\n:62F:C260301EUR100,00\n";
+
+        let rows = parser.parse(data, None).expect("mt940 parse should succeed");
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].description, "Coffee Shop");
+        assert_eq!(rows[0].amount.to_string(), "-12.34");
+    }
+}

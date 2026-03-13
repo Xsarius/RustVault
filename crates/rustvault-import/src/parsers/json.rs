@@ -298,3 +298,33 @@ fn value_to_decimal(v: &Value) -> ImportResult<Decimal> {
         ))),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::JsonParser;
+    use crate::ImportError;
+    use crate::raw::ImportParser;
+
+    #[test]
+    fn parses_json_array_with_auto_detected_fields() {
+        let parser = JsonParser;
+        let data = br#"[
+            {"date":"2026-03-01","amount":"-12.34","description":"Coffee"},
+            {"date":"2026-03-02","amount":1500.00,"description":"Salary"}
+        ]"#;
+
+        let rows = parser.parse(data, None).expect("json parse should succeed");
+        assert_eq!(rows.len(), 2);
+        assert_eq!(rows[0].description, "Coffee");
+        assert_eq!(rows[1].amount.to_string(), "1500.0");
+    }
+
+    #[test]
+    fn fails_for_non_array_non_object_root() {
+        let parser = JsonParser;
+        let data = br#"123"#;
+
+        let err = parser.parse(data, None).expect_err("parse should fail");
+        assert!(matches!(err, ImportError::ParseFailed(_)));
+    }
+}

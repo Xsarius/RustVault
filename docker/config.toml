@@ -37,7 +37,7 @@ auto_register = true
 
 [import]
 max_file_size = "50MB"
-allowed_extensions = ["csv", "mt940", "sta", "ofx", "qfx", "qif", "xml", "xlsx", "xls", "ods", "json"]
+allowed_extensions = ["csv", "mt940", "sta", "ofx", "qfx", "qif", "xml", "xlsx", "xls", "ods", "json", "pdf"]
 
 [ai]
 enabled = false

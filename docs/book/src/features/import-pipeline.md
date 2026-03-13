@@ -19,7 +19,7 @@ The user uploads a file via the web UI or the API. The server validates:
 
 RustVault auto-detects the file format using three strategies in order:
 
-1. **Magic bytes** — ZIP archives (XLSX/ODS) start with `PK`; OLE2 files (XLS) start with `D0 CF 11 E0`
+1. **Magic bytes** — ZIP archives (XLSX/ODS) start with `PK`; OLE2 files (XLS) start with `D0 CF 11 E0`; PDFs start with `%PDF-`
 2. **Content inspection** — the first few lines are checked for format signatures:
    - OFX: `OFXHEADER` or `<OFX>`
    - CAMT.053: `<Document` with `camt.053` namespace
@@ -41,6 +41,7 @@ Each format has a dedicated parser that extracts raw transaction records:
 | CAMT.053 | `parsers::camt053` | XML `<Ntry>` elements |
 | Spreadsheet | `parsers::spreadsheet` | Row-based with header mapping |
 | JSON | `parsers::json` | Array-of-objects with field mapping |
+| PDF | `parsers::pdf` | Text extraction + date/amount/description line heuristics |
 
 A shared date parser (`parsers::date`) handles 20+ date format variants.
 

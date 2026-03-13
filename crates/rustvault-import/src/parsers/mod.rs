@@ -5,6 +5,7 @@ pub mod csv;
 pub mod json;
 pub mod mt940;
 pub mod ofx;
+pub mod pdf;
 pub mod qif;
 pub mod spreadsheet;
 

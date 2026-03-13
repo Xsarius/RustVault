@@ -8,6 +8,7 @@ use crate::parsers::csv::CsvParser;
 use crate::parsers::json::JsonParser;
 use crate::parsers::mt940::Mt940Parser;
 use crate::parsers::ofx::OfxParser;
+use crate::parsers::pdf::PdfParser;
 use crate::parsers::qif::QifParser;
 use crate::parsers::spreadsheet::SpreadsheetParser;
 
@@ -33,6 +34,7 @@ impl ParserRegistry {
                 Box::new(Camt053Parser),
                 Box::new(SpreadsheetParser),
                 Box::new(JsonParser),
+                Box::new(PdfParser),
             ],
         }
     }
@@ -47,6 +49,7 @@ impl ParserRegistry {
             FileFormat::Camt053 => "CAMT.053",
             FileFormat::Spreadsheet => "Spreadsheet",
             FileFormat::Json => "JSON",
+            FileFormat::Pdf => "PDF",
         };
         self.parsers
             .iter()

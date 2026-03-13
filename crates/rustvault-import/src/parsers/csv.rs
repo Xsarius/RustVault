@@ -290,3 +290,30 @@ fn parse_amount(s: &str, decimal_sep: char) -> ImportResult<Decimal> {
         .parse::<Decimal>()
         .map_err(|e| ImportError::ParseFailed(format!("invalid amount '{s}': {e}")))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::CsvParser;
+    use crate::ImportError;
+    use crate::raw::ImportParser;
+
+    #[test]
+    fn parses_basic_csv_rows() {
+        let parser = CsvParser;
+        let data = b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
+
+        let rows = parser.parse(data, None).expect("csv parse should succeed");
+        assert_eq!(rows.len(), 2);
+        assert_eq!(rows[0].description, "Coffee");
+        assert_eq!(rows[1].amount.to_string(), "100.00");
+    }
+
+    #[test]
+    fn fails_without_detectable_required_headers() {
+        let parser = CsvParser;
+        let data = b"foo,bar,baz\na,b,c\n";
+
+        let err = parser.parse(data, None).expect_err("parse should fail");
+        assert!(matches!(err, ImportError::MappingRequired(_)));
+    }
+}

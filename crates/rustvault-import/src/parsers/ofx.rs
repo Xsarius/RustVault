@@ -314,3 +314,38 @@ fn parse_ofx_date(s: &str) -> ImportResult<Date> {
     Date::from_calendar_date(year, month, day)
         .map_err(|e| ImportError::ParseFailed(format!("OFX date invalid: '{s}': {e}")))
 }
+
+#[cfg(test)]
+mod tests {
+        use super::OfxParser;
+        use crate::raw::ImportParser;
+
+        #[test]
+        fn parses_basic_ofx_xml_transaction() {
+                let parser = OfxParser;
+                let data = br#"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<OFX>
+    <BANKMSGSRSV1>
+        <STMTTRNRS>
+            <STMTRS>
+                <BANKTRANLIST>
+                    <STMTTRN>
+                        <TRNTYPE>DEBIT</TRNTYPE>
+                        <DTPOSTED>20260301</DTPOSTED>
+                        <TRNAMT>-12.34</TRNAMT>
+                        <FITID>FIT123</FITID>
+                        <NAME>Coffee Shop</NAME>
+                        <MEMO>Morning coffee</MEMO>
+                    </STMTTRN>
+                </BANKTRANLIST>
+            </STMTRS>
+        </STMTTRNRS>
+    </BANKMSGSRSV1>
+</OFX>"#;
+
+                let rows = parser.parse(data, None).expect("ofx parse should succeed");
+                assert_eq!(rows.len(), 1);
+                assert!(rows[0].description.contains("Coffee Shop"));
+                assert_eq!(rows[0].amount.to_string(), "-12.34");
+        }
+}

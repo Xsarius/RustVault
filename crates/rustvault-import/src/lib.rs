@@ -1,7 +1,7 @@
 //! RustVault import engine.
 //!
 //! Provides file parsers for bank statement formats (CSV, MT940, OFX, QIF,
-//! CAMT.053, XLSX, JSON), format detection, column mapping, and
+//! CAMT.053, XLSX, JSON, PDF), format detection, column mapping, and
 //! duplicate detection.
 
 #![warn(missing_docs)]

@@ -5,8 +5,39 @@
 
 mod helpers;
 
+use axum_test::multipart::{MultipartForm, Part};
 use helpers::{TEST_EMAIL, TEST_PASSWORD, TEST_USER, register_and_login, test_server};
 use serde_json::{Value, json};
+
+async fn create_bank_and_account(server: &axum_test::TestServer, auth: &str) -> String {
+    let bank_res = server
+        .post("/api/banks")
+        .add_header(axum::http::header::AUTHORIZATION, auth)
+        .json(&json!({ "name": "Import Test Bank" }))
+        .await;
+    bank_res.assert_status(axum::http::StatusCode::CREATED);
+    let bank_id = bank_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .expect("bank id")
+        .to_string();
+
+    let account_res = server
+        .post("/api/accounts")
+        .add_header(axum::http::header::AUTHORIZATION, auth)
+        .json(&json!({
+            "bank_id": bank_id,
+            "name": "Import Checking",
+            "currency": "EUR",
+            "type": "checking",
+        }))
+        .await;
+    account_res.assert_status(axum::http::StatusCode::CREATED);
+
+    account_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .expect("account id")
+        .to_string()
+}
 
 // ============================================================================
 // Health
@@ -689,6 +720,417 @@ async fn settings_update_partial(pool: sqlx::PgPool) {
 async fn settings_require_auth(pool: sqlx::PgPool) {
     let server = test_server(pool);
     let res = server.get("/api/settings").await;
+    res.assert_status(axum::http::StatusCode::UNAUTHORIZED);
+}
+
+// ============================================================================
+// Imports — Upload, Execute, Rollback
+// ============================================================================
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn imports_upload_returns_preview(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    let csv_bytes = b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
+    let form = MultipartForm::new()
+        .add_text("account_id", account_id)
+        .add_part(
+            "file",
+            Part::bytes(csv_bytes.as_slice())
+                .file_name("statement.csv")
+                .mime_type("text/csv"),
+        );
+
+    let res = server
+        .post("/api/imports/upload")
+        .add_header(axum::http::header::AUTHORIZATION, auth)
+        .multipart(form)
+        .await;
+
+    res.assert_status(axum::http::StatusCode::CREATED);
+    let body: Value = res.json();
+    assert_eq!(body["data"]["detected_format"], "csv");
+    assert_eq!(body["data"]["total_rows"], 2);
+    assert_eq!(body["data"]["preview"].as_array().unwrap().len(), 2);
+}
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn imports_upload_and_execute_then_rollback(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    let csv_bytes = b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
+    let form = MultipartForm::new()
+        .add_text("account_id", account_id)
+        .add_text("skip_duplicates", "true")
+        .add_part(
+            "file",
+            Part::bytes(csv_bytes.as_slice())
+                .file_name("statement.csv")
+                .mime_type("text/csv"),
+        );
+
+    let res = server
+        .post("/api/imports/upload-and-execute")
+        .add_header(axum::http::header::AUTHORIZATION, &auth)
+        .multipart(form)
+        .await;
+    res.assert_status_ok();
+    let body: Value = res.json();
+
+    assert_eq!(body["data"]["imported_count"], 2);
+    let import_id = body["data"]["import"]["id"]
+        .as_str()
+        .expect("import id")
+        .to_string();
+
+    let list_res = server
+        .get("/api/imports")
+        .add_header(axum::http::header::AUTHORIZATION, &auth)
+        .await;
+    list_res.assert_status_ok();
+    assert!(!list_res.json::<Value>()["items"].as_array().unwrap().is_empty());
+
+    let get_res = server
+        .get(&format!("/api/imports/{import_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, &auth)
+        .await;
+    get_res.assert_status_ok();
+    assert_eq!(get_res.json::<Value>()["data"]["status"], "completed");
+
+    let rollback_res = server
+        .delete(&format!("/api/imports/{import_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, &auth)
+        .await;
+    rollback_res.assert_status(axum::http::StatusCode::NO_CONTENT);
+
+    let get_after_rollback = server
+        .get(&format!("/api/imports/{import_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth)
+        .await;
+    get_after_rollback.assert_status_ok();
+    assert_eq!(
+        get_after_rollback.json::<Value>()["data"]["status"],
+        "rolled_back"
+    );
+}
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn imports_list_requires_auth(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let res = server.get("/api/imports").await;
+    res.assert_status(axum::http::StatusCode::UNAUTHORIZED);
+}
+
+// ============================================================================
+// Transactions — CRUD + Bulk
+// ============================================================================
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transactions_crud_and_bulk(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    let create_res = server
+        .post("/api/transactions")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "account_id": account_id,
+            "category_id": null,
+            "transaction_type": "expense",
+            "amount": "-12.34",
+            "date": "2026-03-01",
+            "description": "Coffee shop",
+            "payee": "Coffee Shop",
+            "notes": "morning",
+            "tag_ids": []
+        }))
+        .await;
+    create_res.assert_status(axum::http::StatusCode::CREATED);
+    let tx_id = create_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let list_res = server
+        .get("/api/transactions?limit=20")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .await;
+    list_res.assert_status_ok();
+    assert!(!list_res.json::<Value>()["items"].as_array().unwrap().is_empty());
+
+    let update_res = server
+        .put(&format!("/api/transactions/{tx_id}"))
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "description": "Coffee beans",
+            "is_reviewed": true
+        }))
+        .await;
+    update_res.assert_status_ok();
+    assert_eq!(update_res.json::<Value>()["data"]["description"], "Coffee beans");
+
+    let bulk_res = server
+        .patch("/api/transactions/bulk")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "transaction_ids": [tx_id],
+            "is_reviewed": false,
+            "add_tag_ids": []
+        }))
+        .await;
+    bulk_res.assert_status_ok();
+    assert_eq!(bulk_res.json::<Value>()["data"]["updated"], 1);
+
+    let delete_res = server
+        .delete(&format!("/api/transactions/{tx_id}"))
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .await;
+    delete_res.assert_status(axum::http::StatusCode::NO_CONTENT);
+}
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transactions_require_auth(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let res = server.get("/api/transactions").await;
+    res.assert_status(axum::http::StatusCode::UNAUTHORIZED);
+}
+
+// ============================================================================
+// Transfers — Create / Detect / Unlink
+// ============================================================================
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+
+    let account_a = create_bank_and_account(&server, &auth).await;
+    let account_b = create_bank_and_account(&server, &auth).await;
+
+    let create_transfer_res = server
+        .post("/api/transfers")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "from_account_id": account_a,
+            "to_account_id": account_b,
+            "amount": "15.00",
+            "date": "2026-03-01",
+            "description": "Wallet top-up",
+            "method": "internal"
+        }))
+        .await;
+    create_transfer_res.assert_status(axum::http::StatusCode::CREATED);
+    let transfer_id = create_transfer_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Create a second pair of matching transactions so detect endpoint has candidates.
+    let debit_res = server
+        .post("/api/transactions")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "account_id": account_a,
+            "transaction_type": "expense",
+            "amount": "-20.00",
+            "date": "2026-03-02",
+            "description": "Manual transfer out",
+            "tag_ids": []
+        }))
+        .await;
+    debit_res.assert_status(axum::http::StatusCode::CREATED);
+
+    let credit_res = server
+        .post("/api/transactions")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "account_id": account_b,
+            "transaction_type": "income",
+            "amount": "20.00",
+            "date": "2026-03-02",
+            "description": "Manual transfer in",
+            "tag_ids": []
+        }))
+        .await;
+    credit_res.assert_status(axum::http::StatusCode::CREATED);
+
+    let detect_res = server
+        .post("/api/transfers/detect?date_tolerance_days=1&amount_tolerance=0")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .await;
+    detect_res.assert_status_ok();
+    assert!(detect_res.json::<Value>()["items"].is_array());
+
+    let unlink_res = server
+        .delete(&format!("/api/transfers/{transfer_id}"))
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .await;
+    unlink_res.assert_status(axum::http::StatusCode::NO_CONTENT);
+}
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transfers_require_auth(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let res = server.post("/api/transfers/detect").await;
+    res.assert_status(axum::http::StatusCode::UNAUTHORIZED);
+}
+
+// ============================================================================
+// Rules — CRUD + Test + Suggest
+// ============================================================================
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn rules_crud_test_and_suggest(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    let create_res = server
+        .post("/api/rules")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "name": "Coffee Rule",
+            "priority": 10,
+            "conditions": [
+                { "field": "description_contains", "value": "coffee", "logic": "and" }
+            ],
+            "actions": [
+                { "type": "set_payee", "value": "Coffee Shop" }
+            ]
+        }))
+        .await;
+    create_res.assert_status(axum::http::StatusCode::CREATED);
+    let rule_id = create_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let list_res = server
+        .get("/api/rules")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .await;
+    list_res.assert_status_ok();
+    assert!(!list_res.json::<Value>()["items"].as_array().unwrap().is_empty());
+
+    let get_res = server
+        .get(&format!("/api/rules/{rule_id}"))
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .await;
+    get_res.assert_status_ok();
+    assert_eq!(get_res.json::<Value>()["data"]["name"], "Coffee Rule");
+
+    let update_res = server
+        .put(&format!("/api/rules/{rule_id}"))
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({ "name": "Coffee Rule Updated", "is_enabled": true }))
+        .await;
+    update_res.assert_status_ok();
+    assert_eq!(
+        update_res.json::<Value>()["data"]["name"],
+        "Coffee Rule Updated"
+    );
+
+    let test_res = server
+        .post("/api/rules/test")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "conditions": [
+                { "field": "description_contains", "value": "coffee", "logic": "and" },
+                { "field": "account_id", "value": account_id, "logic": "and" }
+            ],
+            "description": "Coffee purchase",
+            "payee": "Coffee Shop",
+            "amount": "-4.20",
+            "account_id": account_id
+        }))
+        .await;
+    test_res.assert_status_ok();
+    assert_eq!(test_res.json::<Value>()["data"]["matched"], true);
+
+    let suggest_res = server
+        .post("/api/rules/suggest")
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .json(&json!({
+            "description": "Spotify subscription",
+            "payee": "Spotify",
+            "amount": "-29.99"
+        }))
+        .await;
+    suggest_res.assert_status_ok();
+    assert!(suggest_res.json::<Value>()["data"]["conditions"].is_array());
+
+    let delete_res = server
+        .delete(&format!("/api/rules/{rule_id}"))
+        .add_header(
+            axum::http::header::AUTHORIZATION,
+            auth.parse::<axum::http::HeaderValue>().unwrap(),
+        )
+        .await;
+    delete_res.assert_status(axum::http::StatusCode::NO_CONTENT);
+}
+
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn rules_require_auth(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let res = server.get("/api/rules").await;
     res.assert_status(axum::http::StatusCode::UNAUTHORIZED);
 }
 

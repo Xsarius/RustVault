@@ -185,3 +185,21 @@ fn parse_amount(s: &str) -> ImportResult<Decimal> {
     Decimal::from_str(&cleaned)
         .map_err(|e| ImportError::ParseFailed(format!("invalid amount '{s}': {e}")))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::QifParser;
+    use crate::raw::ImportParser;
+
+    #[test]
+    fn parses_qif_record() {
+        let parser = QifParser;
+        let data = b"!Type:Bank\nD2026-03-01\nT-12.34\nPCoffee Shop\nMMorning coffee\nNREF1\n^\n";
+
+        let rows = parser.parse(data, None).expect("qif parse should succeed");
+        assert_eq!(rows.len(), 1);
+        assert!(rows[0].description.contains("Coffee Shop"));
+        assert_eq!(rows[0].amount.to_string(), "-12.34");
+        assert_eq!(rows[0].reference.as_deref(), Some("REF1"));
+    }
+}

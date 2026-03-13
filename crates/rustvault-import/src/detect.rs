@@ -20,6 +20,8 @@ pub enum FileFormat {
     Spreadsheet,
     /// JSON.
     Json,
+    /// PDF statement.
+    Pdf,
 }
 
 impl FileFormat {
@@ -33,6 +35,7 @@ impl FileFormat {
             Self::Camt053 => "camt053",
             Self::Spreadsheet => "xlsx",
             Self::Json => "json",
+            Self::Pdf => "pdf",
         }
     }
 }
@@ -56,6 +59,10 @@ pub fn detect_format(data: &[u8], extension: Option<&str>) -> Option<FileFormat>
     // Legacy XLS (BIFF / OLE2 Compound Document).
     if data.len() >= 8 && data[..8] == [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1] {
         return Some(FileFormat::Spreadsheet);
+    }
+    // PDF starts with "%PDF-".
+    if data.len() >= 5 && data[..5] == [0x25, 0x50, 0x44, 0x46, 0x2D] {
+        return Some(FileFormat::Pdf);
     }
 
     // Work with text from here on — try UTF-8 first, then lossy.
@@ -124,6 +131,7 @@ fn detect_by_extension(extension: Option<&str>) -> Option<FileFormat> {
         "xml" | "camt053" | "camt" => Some(FileFormat::Camt053),
         "xlsx" | "xls" | "ods" => Some(FileFormat::Spreadsheet),
         "json" => Some(FileFormat::Json),
+        "pdf" => Some(FileFormat::Pdf),
         _ => None,
     }
 }
@@ -159,4 +167,28 @@ fn looks_like_csv(text: &str) -> bool {
         }
     }
     false
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{FileFormat, detect_format};
+
+    #[test]
+    fn detects_pdf_by_magic_bytes() {
+        let data = b"%PDF-1.7\n...";
+        assert_eq!(detect_format(data, None), Some(FileFormat::Pdf));
+    }
+
+    #[test]
+    fn detects_by_extension_fallback() {
+        let data = b"\xFF\xFE\x00\x01";
+        assert_eq!(detect_format(data, Some("qif")), Some(FileFormat::Qif));
+        assert_eq!(detect_format(data, Some("pdf")), Some(FileFormat::Pdf));
+    }
+
+    #[test]
+    fn detects_csv_from_consistent_delimiters() {
+        let data = b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,10.00,Tea\n";
+        assert_eq!(detect_format(data, None), Some(FileFormat::Csv));
+    }
 }

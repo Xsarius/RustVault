@@ -207,6 +207,7 @@ impl Default for ImportConfig {
                 "xls".into(),
                 "ods".into(),
                 "json".into(),
+                "pdf".into(),
             ],
         }
     }

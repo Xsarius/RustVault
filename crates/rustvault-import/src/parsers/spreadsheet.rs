@@ -324,3 +324,26 @@ fn parse_amount(s: &str) -> ImportResult<Decimal> {
     Decimal::from_str(&cleaned)
         .map_err(|e| ImportError::ParseFailed(format!("invalid amount '{s}': {e}")))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::SpreadsheetParser;
+    use crate::raw::ImportParser;
+
+    #[test]
+    fn detects_spreadsheet_from_magic_bytes() {
+        let parser = SpreadsheetParser;
+        let zip_magic = [0x50, 0x4B, 0x03, 0x04, 0x00];
+        let xls_magic = [0xD0, 0xCF, 0x11, 0xE0, 0x00];
+
+        assert!(parser.detect(&zip_magic, None) > 0.0);
+        assert!(parser.detect(&xls_magic, None) > 0.0);
+    }
+
+    #[test]
+    fn detects_spreadsheet_from_extension() {
+        let parser = SpreadsheetParser;
+        assert!(parser.detect(b"not-a-real-file", Some("xlsx")) > 0.0);
+        assert!(parser.detect(b"not-a-real-file", Some("ods")) > 0.0);
+    }
+}
