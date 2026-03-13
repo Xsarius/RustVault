@@ -8,12 +8,14 @@ mod helpers;
 use axum_test::multipart::{MultipartForm, Part};
 use helpers::{TEST_EMAIL, TEST_PASSWORD, TEST_USER, register_and_login, test_server};
 use serde_json::{Value, json};
+use uuid::Uuid;
 
 async fn create_bank_and_account(server: &axum_test::TestServer, auth: &str) -> String {
+    let suffix = Uuid::new_v4().to_string();
     let bank_res = server
         .post("/api/banks")
         .add_header(axum::http::header::AUTHORIZATION, auth)
-        .json(&json!({ "name": "Import Test Bank" }))
+        .json(&json!({ "name": format!("Import Test Bank {suffix}") }))
         .await;
     bank_res.assert_status(axum::http::StatusCode::CREATED);
     let bank_id = bank_res.json::<Value>()["data"]["id"]
@@ -26,7 +28,7 @@ async fn create_bank_and_account(server: &axum_test::TestServer, auth: &str) -> 
         .add_header(axum::http::header::AUTHORIZATION, auth)
         .json(&json!({
             "bank_id": bank_id,
-            "name": "Import Checking",
+            "name": format!("Import Checking {suffix}"),
             "currency": "EUR",
             "type": "checking",
         }))
@@ -734,7 +736,8 @@ async fn imports_upload_returns_preview(pool: sqlx::PgPool) {
     let auth = format!("Bearer {token}");
     let account_id = create_bank_and_account(&server, &auth).await;
 
-    let csv_bytes = b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
+    let csv_bytes =
+        b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
     let form = MultipartForm::new()
         .add_text("account_id", account_id)
         .add_part(
@@ -764,7 +767,8 @@ async fn imports_upload_and_execute_then_rollback(pool: sqlx::PgPool) {
     let auth = format!("Bearer {token}");
     let account_id = create_bank_and_account(&server, &auth).await;
 
-    let csv_bytes = b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
+    let csv_bytes =
+        b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
     let form = MultipartForm::new()
         .add_text("account_id", account_id)
         .add_text("skip_duplicates", "true")
@@ -794,7 +798,12 @@ async fn imports_upload_and_execute_then_rollback(pool: sqlx::PgPool) {
         .add_header(axum::http::header::AUTHORIZATION, &auth)
         .await;
     list_res.assert_status_ok();
-    assert!(!list_res.json::<Value>()["items"].as_array().unwrap().is_empty());
+    assert!(
+        !list_res.json::<Value>()["data"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
 
     let get_res = server
         .get(&format!("/api/imports/{import_id}"))
@@ -849,7 +858,7 @@ async fn transactions_crud_and_bulk(pool: sqlx::PgPool) {
             "category_id": null,
             "transaction_type": "expense",
             "amount": "-12.34",
-            "date": "2026-03-01",
+            "date": { "year": 2026, "ordinal": 60 },
             "description": "Coffee shop",
             "payee": "Coffee Shop",
             "notes": "morning",
@@ -870,7 +879,12 @@ async fn transactions_crud_and_bulk(pool: sqlx::PgPool) {
         )
         .await;
     list_res.assert_status_ok();
-    assert!(!list_res.json::<Value>()["items"].as_array().unwrap().is_empty());
+    assert!(
+        !list_res.json::<Value>()["data"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
 
     let update_res = server
         .put(&format!("/api/transactions/{tx_id}"))
@@ -884,7 +898,10 @@ async fn transactions_crud_and_bulk(pool: sqlx::PgPool) {
         }))
         .await;
     update_res.assert_status_ok();
-    assert_eq!(update_res.json::<Value>()["data"]["description"], "Coffee beans");
+    assert_eq!(
+        update_res.json::<Value>()["data"]["description"],
+        "Coffee beans"
+    );
 
     let bulk_res = server
         .patch("/api/transactions/bulk")
@@ -941,7 +958,7 @@ async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
             "from_account_id": account_a,
             "to_account_id": account_b,
             "amount": "15.00",
-            "date": "2026-03-01",
+            "date": { "year": 2026, "ordinal": 60 },
             "description": "Wallet top-up",
             "method": "internal"
         }))
@@ -963,7 +980,7 @@ async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
             "account_id": account_a,
             "transaction_type": "expense",
             "amount": "-20.00",
-            "date": "2026-03-02",
+            "date": { "year": 2026, "ordinal": 61 },
             "description": "Manual transfer out",
             "tag_ids": []
         }))
@@ -980,7 +997,7 @@ async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
             "account_id": account_b,
             "transaction_type": "income",
             "amount": "20.00",
-            "date": "2026-03-02",
+            "date": { "year": 2026, "ordinal": 61 },
             "description": "Manual transfer in",
             "tag_ids": []
         }))
@@ -1056,7 +1073,12 @@ async fn rules_crud_test_and_suggest(pool: sqlx::PgPool) {
         )
         .await;
     list_res.assert_status_ok();
-    assert!(!list_res.json::<Value>()["items"].as_array().unwrap().is_empty());
+    assert!(
+        !list_res.json::<Value>()["data"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
 
     let get_res = server
         .get(&format!("/api/rules/{rule_id}"))

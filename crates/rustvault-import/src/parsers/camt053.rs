@@ -358,13 +358,13 @@ struct TxDtlsBuilder {
 
 #[cfg(test)]
 mod tests {
-        use super::Camt053Parser;
-        use crate::raw::ImportParser;
+    use super::Camt053Parser;
+    use crate::raw::ImportParser;
 
-        #[test]
-        fn parses_simple_camt053_entry() {
-                let parser = Camt053Parser;
-                let data = br#"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+    #[test]
+    fn parses_simple_camt053_entry() {
+        let parser = Camt053Parser;
+        let data = br#"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <Document xmlns=\"urn:iso:std:iso:20022:tech:xsd:camt.053.001.08\">
     <BkToCstmrStmt>
         <Stmt>
@@ -383,9 +383,11 @@ mod tests {
     </BkToCstmrStmt>
 </Document>"#;
 
-                let rows = parser.parse(data, None).expect("camt053 parse should succeed");
-                assert_eq!(rows.len(), 1);
-                assert_eq!(rows[0].description, "Coffee Shop");
-                assert_eq!(rows[0].amount.to_string(), "-12.34");
-        }
+        let rows = parser
+            .parse(data, None)
+            .expect("camt053 parse should succeed");
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].description, "Coffee Shop");
+        assert_eq!(rows[0].amount.to_string(), "-12.34");
+    }
 }

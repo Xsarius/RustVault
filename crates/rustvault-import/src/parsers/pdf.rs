@@ -11,9 +11,9 @@ use std::str::FromStr;
 use regex::Regex;
 use rust_decimal::Decimal;
 
+use crate::ImportResult;
 use crate::error::ImportError;
 use crate::raw::{ColumnMapping, ImportParser, RawTransaction};
-use crate::ImportResult;
 
 use super::date::parse_date;
 
@@ -34,8 +34,9 @@ impl ImportParser for PdfParser {
         data: &[u8],
         _mapping: Option<&ColumnMapping>,
     ) -> ImportResult<Vec<RawTransaction>> {
-        let text = pdf_extract::extract_text_from_mem(data)
-            .map_err(|e| ImportError::ParseFailed(format!("failed to extract text from PDF: {e}")))?;
+        let text = pdf_extract::extract_text_from_mem(data).map_err(|e| {
+            ImportError::ParseFailed(format!("failed to extract text from PDF: {e}"))
+        })?;
 
         parse_transactions_from_text(&text)
     }
@@ -155,8 +156,7 @@ fn parse_amount_token(token: &str) -> Option<Decimal> {
     //  123.45-
     static AMOUNT_RE: std::sync::OnceLock<Regex> = std::sync::OnceLock::new();
     let re = AMOUNT_RE.get_or_init(|| {
-        Regex::new(r"^[+-]?\(?\p{Sc}?[0-9][0-9\s.,]*\)?-?$")
-            .expect("amount regex must compile")
+        Regex::new(r"^[+-]?\(?\p{Sc}?[0-9][0-9\s.,]*\)?-?$").expect("amount regex must compile")
     });
 
     if !re.is_match(token) {
@@ -177,7 +177,9 @@ fn parse_amount_token(token: &str) -> Option<Decimal> {
 
     // Remove leading currency symbols and explicit '+' sign.
     s = s
-        .trim_start_matches(|c: char| c.is_ascii_whitespace() || c == '+' || c == '$' || c == '€' || c == '£')
+        .trim_start_matches(|c: char| {
+            c.is_ascii_whitespace() || c == '+' || c == '$' || c == '€' || c == '£'
+        })
         .to_owned();
 
     // Handle decimal/thousands separators.
@@ -210,10 +212,30 @@ mod tests {
 
     #[test]
     fn parses_common_amount_variants() {
-        assert_eq!(parse_amount_token("-123.45").map(|d| d.to_string()).as_deref(), Some("-123.45"));
-        assert_eq!(parse_amount_token("123,45").map(|d| d.to_string()).as_deref(), Some("123.45"));
-        assert_eq!(parse_amount_token("(12.30)").map(|d| d.to_string()).as_deref(), Some("-12.30"));
-        assert_eq!(parse_amount_token("123.45-").map(|d| d.to_string()).as_deref(), Some("-123.45"));
+        assert_eq!(
+            parse_amount_token("-123.45")
+                .map(|d| d.to_string())
+                .as_deref(),
+            Some("-123.45")
+        );
+        assert_eq!(
+            parse_amount_token("123,45")
+                .map(|d| d.to_string())
+                .as_deref(),
+            Some("123.45")
+        );
+        assert_eq!(
+            parse_amount_token("(12.30)")
+                .map(|d| d.to_string())
+                .as_deref(),
+            Some("-12.30")
+        );
+        assert_eq!(
+            parse_amount_token("123.45-")
+                .map(|d| d.to_string())
+                .as_deref(),
+            Some("-123.45")
+        );
     }
 
     #[test]

@@ -317,13 +317,13 @@ fn parse_ofx_date(s: &str) -> ImportResult<Date> {
 
 #[cfg(test)]
 mod tests {
-        use super::OfxParser;
-        use crate::raw::ImportParser;
+    use super::OfxParser;
+    use crate::raw::ImportParser;
 
-        #[test]
-        fn parses_basic_ofx_xml_transaction() {
-                let parser = OfxParser;
-                let data = br#"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+    #[test]
+    fn parses_basic_ofx_xml_transaction() {
+        let parser = OfxParser;
+        let data = br#"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <OFX>
     <BANKMSGSRSV1>
         <STMTTRNRS>
@@ -343,9 +343,9 @@ mod tests {
     </BANKMSGSRSV1>
 </OFX>"#;
 
-                let rows = parser.parse(data, None).expect("ofx parse should succeed");
-                assert_eq!(rows.len(), 1);
-                assert!(rows[0].description.contains("Coffee Shop"));
-                assert_eq!(rows[0].amount.to_string(), "-12.34");
-        }
+        let rows = parser.parse(data, None).expect("ofx parse should succeed");
+        assert_eq!(rows.len(), 1);
+        assert!(rows[0].description.contains("Coffee Shop"));
+        assert_eq!(rows[0].amount.to_string(), "-12.34");
+    }
 }
