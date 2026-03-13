@@ -28,6 +28,7 @@ pub fn build_test_app(pool: PgPool) -> Router {
             max_body_size: "10MB".into(),
             max_upload_size: "50MB".into(),
             locales_dir: workspace_locales_dir(),
+            static_dir: String::new(),
         },
         database: rustvault_server::config::DatabaseConfig::default(),
         auth: rustvault_server::config::AuthConfig::default(),
