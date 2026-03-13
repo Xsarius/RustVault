@@ -28,7 +28,7 @@ pub enum ImportStatus {
 
 /// A single parsed row ready for the import pipeline.
 ///
-/// This mirrors [`RawTransaction`] from `rustvault-import` but lives in core
+/// This mirrors `RawTransaction` from `rustvault-import` but lives in core
 /// so that the pipeline can be invoked without a circular dependency.
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct ParsedRow {
