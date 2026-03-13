@@ -7,6 +7,7 @@
 pub mod accounts;
 pub mod auth;
 pub mod banks;
+pub mod budgets;
 pub mod categories;
 pub mod health;
 pub mod i18n;
@@ -120,6 +121,26 @@ fn protected_routes(state: AppState) -> Router<AppState> {
             "/api/rules/{id}",
             get(rules::get).put(rules::update).delete(rules::delete),
         )
+        // Budgets
+        .route("/api/budgets", get(budgets::list).post(budgets::create))
+        .route(
+            "/api/budgets/{id}",
+            get(budgets::get).put(budgets::update).delete(budgets::delete),
+        )
+        .route("/api/budgets/{id}/summary", get(budgets::summary))
+        .route("/api/budgets/{id}/copy", post(budgets::copy))
+        .route(
+            "/api/budgets/{id}/lines",
+            get(budgets::list_lines).post(budgets::add_line),
+        )
+        .route("/api/budgets/{id}/lines/bulk", post(budgets::bulk_set_lines))
+        .route(
+            "/api/budgets/{id}/lines/{line_id}",
+            put(budgets::update_line).delete(budgets::delete_line),
+        )
+        // Exchange Rates
+        .route("/api/exchange-rates", get(budgets::list_rates))
+        .route("/api/exchange-rates/refresh", post(budgets::refresh_rates))
         .layer(middleware::from_fn_with_state(state, auth_middleware))
 }
 

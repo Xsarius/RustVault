@@ -25,3 +25,7 @@ pub mod tag;
 pub mod transaction;
 /// Transfer service — create, link, unlink, detect matches.
 pub mod transfer;
+/// Budget service — CRUD, summary, copy, recurring budget generation.
+pub mod budget;
+/// Exchange rate service — ECB feed fetcher and currency conversion helpers.
+pub mod exchange_rate;

@@ -418,6 +418,112 @@ export interface TestRuleResponse {
   matched: boolean;
 }
 
+// ── Budgets ───────────────────────────────────────────────────
+
+export interface Budget {
+  id: string;
+  user_id: string;
+  name: string;
+  period_start: string; // ISO date (YYYY-MM-DD)
+  period_end: string;   // ISO date (YYYY-MM-DD)
+  currency: string;
+  is_recurring: boolean;
+  recurrence_rule: string | null;
+  is_archived: boolean;
+  notes: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewBudget {
+  name: string;
+  period_start: string;
+  period_end: string;
+  currency: string;
+  is_recurring?: boolean;
+  recurrence_rule?: string;
+  notes?: string;
+}
+
+export interface UpdateBudget {
+  name?: string;
+  period_start?: string;
+  period_end?: string;
+  currency?: string;
+  is_recurring?: boolean;
+  recurrence_rule?: string | null;
+  notes?: string | null;
+}
+
+export interface BudgetLine {
+  id: string;
+  budget_id: string;
+  category_id: string | null;
+  planned_amount: string; // Decimal as string
+  actual_amount_cache: string; // Decimal as string
+  notes: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NewBudgetLine {
+  category_id?: string;
+  planned_amount: string;
+  notes?: string;
+  sort_order?: number;
+}
+
+export interface UpdateBudgetLine {
+  planned_amount?: string;
+  notes?: string | null;
+  sort_order?: number;
+}
+
+export interface BulkBudgetLines {
+  lines: NewBudgetLine[];
+}
+
+export interface BudgetLineSummary {
+  id: string;
+  category_id: string | null;
+  planned_amount: string;
+  actual_amount: string;
+  remaining: string;
+  percent_used: string;
+}
+
+export interface BudgetSummary {
+  budget_id: string;
+  total_planned_income: string;
+  total_actual_income: string;
+  total_planned_expenses: string;
+  total_actual_expenses: string;
+  net_planned: string;
+  net_actual: string;
+  lines: BudgetLineSummary[];
+  over_budget_categories: string[];
+}
+
+export interface CopyBudgetRequest {
+  name: string;
+  period_start: string;
+  period_end: string;
+}
+
+// ── Exchange Rates ────────────────────────────────────────────
+
+export interface ExchangeRate {
+  id: number;
+  base_currency: string;
+  target_currency: string;
+  rate: string; // Decimal as string
+  date: string; // ISO date
+  source: string;
+  fetched_at: string;
+}
+
 export interface SuggestRuleRequest {
   description: string;
   payee?: string;

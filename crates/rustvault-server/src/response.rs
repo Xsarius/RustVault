@@ -214,6 +214,10 @@ impl From<CoreError> for ApiError {
                 tracing::error!(?db_err, "database error");
                 Self::Internal("Internal server error".into())
             }
+            CoreError::ExternalService(msg) => {
+                tracing::error!(%msg, "external service error");
+                Self::Internal("External service unavailable".into())
+            }
             CoreError::Internal(msg) => {
                 tracing::error!(%msg, "internal error");
                 Self::Internal("Internal server error".into())

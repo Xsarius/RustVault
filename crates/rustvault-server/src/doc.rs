@@ -20,6 +20,8 @@ use utoipa::OpenApi;
         (name = "Tags", description = "Transaction tags / labels"),
         (name = "Settings", description = "User preferences and configuration"),
         (name = "i18n", description = "Internationalisation — available locales"),
+        (name = "Budgets", description = "Budget planning — per-period spending envelopes with per-category lines"),
+        (name = "Exchange Rates", description = "Currency exchange rates — ECB feed and manual refresh"),
     ),
     paths(
         // Health
@@ -60,6 +62,22 @@ use utoipa::OpenApi;
         crate::routes::settings::update,
         // i18n
         crate::routes::i18n::list_locales,
+        // Budgets
+        crate::routes::budgets::list,
+        crate::routes::budgets::create,
+        crate::routes::budgets::get,
+        crate::routes::budgets::update,
+        crate::routes::budgets::delete,
+        crate::routes::budgets::summary,
+        crate::routes::budgets::copy,
+        crate::routes::budgets::list_lines,
+        crate::routes::budgets::add_line,
+        crate::routes::budgets::bulk_set_lines,
+        crate::routes::budgets::update_line,
+        crate::routes::budgets::delete_line,
+        // Exchange Rates
+        crate::routes::budgets::list_rates,
+        crate::routes::budgets::refresh_rates,
     ),
     components(
         schemas(
@@ -93,8 +111,20 @@ use utoipa::OpenApi;
             rustvault_core::models::settings::UserSettings,
             rustvault_core::models::settings::UpdateSettings,
             rustvault_core::i18n::LocaleInfo,
+            // Budget models
+            rustvault_core::models::budget::Budget,
+            rustvault_core::models::budget::NewBudget,
+            rustvault_core::models::budget::UpdateBudget,
+            rustvault_core::models::budget::BudgetLine,
+            rustvault_core::models::budget::NewBudgetLine,
+            rustvault_core::models::budget::UpdateBudgetLine,
+            rustvault_core::models::budget::BulkBudgetLines,
+            rustvault_core::models::budget::BudgetSummary,
+            rustvault_core::models::budget::BudgetLineSummary,
+            rustvault_core::models::budget::ExchangeRate,
             // Server-level request types
             crate::routes::auth::RefreshRequest,
+            crate::routes::budgets::CopyBudgetRequest,
         ),
     ),
     security(

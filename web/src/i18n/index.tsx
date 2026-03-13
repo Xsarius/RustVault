@@ -45,6 +45,7 @@ export type RawDictionary = {
   transactions: typeof import("~/locales/en-US/transactions.json");
   import: typeof import("~/locales/en-US/import.json");
   rules: typeof import("~/locales/en-US/rules.json");
+  budget: typeof import("~/locales/en-US/budget.json");
 };
 
 /** Flattened dictionary with dot-separated keys (e.g. "common.nav.dashboard"). */
@@ -59,7 +60,7 @@ export type Dictionary = i18n.Flatten<RawDictionary>;
  * a flattened dictionary. New namespaces must be added here when created.
  */
 async function fetchDictionary(locale: Locale): Promise<Dictionary> {
-  const [common, auth, banks, categories, tags, settings, transactions, imp, rules] = await Promise.all([
+  const [common, auth, banks, categories, tags, settings, transactions, imp, rules, budget] = await Promise.all([
     import(`../locales/${locale}/common.json`).then((m) => m.default ?? m),
     import(`../locales/${locale}/auth.json`).then((m) => m.default ?? m),
     import(`../locales/${locale}/banks.json`).then((m) => m.default ?? m),
@@ -69,9 +70,10 @@ async function fetchDictionary(locale: Locale): Promise<Dictionary> {
     import(`../locales/${locale}/transactions.json`).then((m) => m.default ?? m),
     import(`../locales/${locale}/import.json`).then((m) => m.default ?? m),
     import(`../locales/${locale}/rules.json`).then((m) => m.default ?? m),
+    import(`../locales/${locale}/budget.json`).then((m) => m.default ?? m),
   ]);
 
-  const raw: RawDictionary = { common, auth, banks, categories, tags, settings, transactions, import: imp, rules };
+  const raw: RawDictionary = { common, auth, banks, categories, tags, settings, transactions, import: imp, rules, budget };
   return i18n.flatten(raw) as Dictionary;
 }
 

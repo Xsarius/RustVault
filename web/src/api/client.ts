@@ -227,3 +227,108 @@ export async function postFormData<T>(path: string, formData: FormData): Promise
 
   return res.json();
 }
+
+// ── Budget API ───────────────────────────────────────────────
+
+import type {
+  Budget,
+  BudgetLine,
+  BudgetSummary,
+  CopyBudgetRequest,
+  ExchangeRate,
+  NewBudget,
+  NewBudgetLine,
+  BulkBudgetLines,
+  UpdateBudget,
+  UpdateBudgetLine,
+} from "./types";
+
+/** List all budgets. */
+export async function listBudgets(includeArchived = false): Promise<Budget[]> {
+  const qs = includeArchived ? "?include_archived=true" : "";
+  const res = await get<PaginatedResponse<Budget>>(`/api/budgets${qs}`);
+  return res.data;
+}
+
+/** Get a single budget. */
+export function getBudget(id: string): Promise<Budget> {
+  return fetchOne<Budget>(`/api/budgets/${id}`);
+}
+
+/** Create a budget. */
+export function createBudget(body: NewBudget): Promise<Budget> {
+  return createOne<Budget>("/api/budgets", body);
+}
+
+/** Update a budget. */
+export function updateBudget(id: string, body: UpdateBudget): Promise<Budget> {
+  return updateOne<Budget>(`/api/budgets/${id}`, body);
+}
+
+/** Delete a budget. */
+export function deleteBudget(id: string): Promise<void> {
+  return del<void>(`/api/budgets/${id}`);
+}
+
+/** Get planned vs. actual summary for a budget. */
+export function getBudgetSummary(id: string): Promise<BudgetSummary> {
+  return fetchOne<BudgetSummary>(`/api/budgets/${id}/summary`);
+}
+
+/** Copy a budget's lines into a new period. */
+export function copyBudget(id: string, body: CopyBudgetRequest): Promise<Budget> {
+  return createOne<Budget>(`/api/budgets/${id}/copy`, body);
+}
+
+// ── Budget Line API ──────────────────────────────────────────
+
+/** List all lines for a budget. */
+export async function listBudgetLines(budgetId: string): Promise<BudgetLine[]> {
+  const res = await get<PaginatedResponse<BudgetLine>>(`/api/budgets/${budgetId}/lines`);
+  return res.data;
+}
+
+/** Add a line to a budget. */
+export function addBudgetLine(budgetId: string, body: NewBudgetLine): Promise<BudgetLine> {
+  return createOne<BudgetLine>(`/api/budgets/${budgetId}/lines`, body);
+}
+
+/** Replace all lines on a budget. */
+export async function bulkSetBudgetLines(
+  budgetId: string,
+  body: BulkBudgetLines,
+): Promise<BudgetLine[]> {
+  const res = await post<PaginatedResponse<BudgetLine>>(
+    `/api/budgets/${budgetId}/lines/bulk`,
+    body,
+  );
+  return res.data;
+}
+
+/** Update a budget line. */
+export function updateBudgetLine(
+  budgetId: string,
+  lineId: string,
+  body: UpdateBudgetLine,
+): Promise<BudgetLine> {
+  return updateOne<BudgetLine>(`/api/budgets/${budgetId}/lines/${lineId}`, body);
+}
+
+/** Delete a budget line. */
+export function deleteBudgetLine(budgetId: string, lineId: string): Promise<void> {
+  return del<void>(`/api/budgets/${budgetId}/lines/${lineId}`);
+}
+
+// ── Exchange Rate API ────────────────────────────────────────
+
+/** List the latest exchange rates. */
+export async function listExchangeRates(): Promise<ExchangeRate[]> {
+  const res = await get<PaginatedResponse<ExchangeRate>>("/api/exchange-rates");
+  return res.data;
+}
+
+/** Trigger a fresh rate fetch from the ECB feed. */
+export async function refreshExchangeRates(): Promise<number> {
+  const res = await post<ApiResponse<number>>("/api/exchange-rates/refresh");
+  return res.data;
+}

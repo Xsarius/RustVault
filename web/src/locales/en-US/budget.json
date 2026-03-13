@@ -1,0 +1,124 @@
+{
+  "nav": {
+    "title": "Budget"
+  },
+  "page": {
+    "title": "Budgets",
+    "empty": "No budgets yet. Create your first budget to start planning your finances.",
+    "archivedBadge": "Archived",
+    "recurringBadge": "Recurring"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "lines": "Budget Lines",
+    "comparison": "Comparison"
+  },
+  "create": {
+    "button": "New Budget",
+    "title": "Create Budget",
+    "editTitle": "Edit Budget"
+  },
+  "copy": {
+    "button": "Copy Budget",
+    "title": "Copy Budget",
+    "newName": "New budget name",
+    "newNamePlaceholder": "e.g. June 2025"
+  },
+  "form": {
+    "name": "Name",
+    "namePlaceholder": "e.g. May 2025",
+    "currency": "Currency",
+    "periodStart": "Period Start",
+    "periodEnd": "Period End",
+    "isRecurring": "Recurring budget",
+    "recurrenceRule": "Recurrence rule (RRULE)",
+    "recurrenceRulePlaceholder": "e.g. FREQ=MONTHLY;INTERVAL=1",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional notes about this budget\u2026",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update"
+  },
+  "summary": {
+    "totalPlanned": "Total Planned",
+    "totalActual": "Total Actual",
+    "totalRemaining": "Remaining",
+    "percentUsed": "{{pct}}% used",
+    "overBudget": "Over budget",
+    "onTrack": "On track",
+    "loading": "Loading summary\u2026"
+  },
+  "lines": {
+    "title": "Budget Lines",
+    "empty": "No budget lines. Add categories to track spending.",
+    "addLine": "Add Category",
+    "category": "Category",
+    "planned": "Planned",
+    "actual": "Actual",
+    "remaining": "Remaining",
+    "progress": "Progress",
+    "notes": "Notes",
+    "notesPlaceholder": "Optional notes\u2026",
+    "deleteLine": "Remove",
+    "refresh": "Refresh Actuals",
+    "addTitle": "Add Budget Line",
+    "editTitle": "Edit Budget Line",
+    "selectCategory": "Select a category"
+  },
+  "comparison": {
+    "title": "Budget Comparison",
+    "description": "Compare this budget side-by-side with another.",
+    "selectOther": "Select a budget to compare",
+    "noBudgets": "No other budgets to compare.",
+    "category": "Category",
+    "thisPlanned": "Planned",
+    "thisActual": "Actual",
+    "otherPlanned": "Planned",
+    "otherActual": "Actual"
+  },
+  "exchangeRates": {
+    "title": "Exchange Rates",
+    "lastUpdated": "Last updated",
+    "refresh": "Refresh Rates",
+    "refreshing": "Refreshing\u2026",
+    "base": "Base",
+    "target": "Target",
+    "rate": "Rate",
+    "date": "Date",
+    "empty": "No exchange rates available. Refresh to fetch latest rates.",
+    "source": "Source"
+  },
+  "delete": {
+    "title": "Delete Budget",
+    "confirm": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+    "button": "Delete",
+    "cancel": "Cancel"
+  },
+  "archive": {
+    "button": "Archive",
+    "unarchive": "Unarchive"
+  },
+  "toast": {
+    "created": "Budget created",
+    "updated": "Budget updated",
+    "deleted": "Budget deleted",
+    "copied": "Budget copied",
+    "archived": "Budget archived",
+    "unarchived": "Budget unarchived",
+    "lineAdded": "Budget line added",
+    "lineUpdated": "Budget line updated",
+    "lineDeleted": "Budget line removed",
+    "actualsRefreshed": "Actuals refreshed",
+    "ratesRefreshed": "Exchange rates refreshed"
+  },
+  "error": {
+    "load": "Failed to load budgets",
+    "save": "Failed to save budget",
+    "delete": "Failed to delete budget",
+    "copy": "Failed to copy budget",
+    "loadLines": "Failed to load budget lines",
+    "saveLine": "Failed to save budget line",
+    "deleteLine": "Failed to remove budget line"
+  }
+}

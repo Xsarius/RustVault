@@ -80,6 +80,10 @@ pub enum CoreError {
     #[error(transparent)]
     Db(#[from] rustvault_db::DbError),
 
+    /// External service error (e.g. ECB rate feed, OIDC provider).
+    #[error("external service error: {0}")]
+    ExternalService(String),
+
     /// Internal / unexpected error.
     #[error("internal error: {0}")]
     Internal(String),

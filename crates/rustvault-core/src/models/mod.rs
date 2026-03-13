@@ -29,3 +29,5 @@ pub mod transaction;
 pub mod transfer;
 /// User identity model.
 pub mod user;
+/// Budget model — planned spending envelopes with per-category lines.
+pub mod budget;

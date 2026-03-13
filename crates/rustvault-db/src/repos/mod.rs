@@ -25,3 +25,7 @@ pub mod transaction;
 pub mod transfer;
 /// User repository — SQL operations on the `users` table.
 pub mod user;
+/// Budget repository — SQL operations on `budgets` and `budget_lines`.
+pub mod budget;
+/// Exchange rate repository — SQL operations on the `exchange_rates` table.
+pub mod exchange_rate;

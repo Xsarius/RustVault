@@ -1421,46 +1421,46 @@ docs/
 
 ### Tasks
 
-- [ ] **P4.1** Write migration 003: `budgets`, `budget_lines` tables.
-- [ ] **P4.2** Implement Budget CRUD:
+- [x] **P4.1** Write migration 003: `budgets`, `budget_lines` tables.
+- [x] **P4.2** Implement Budget CRUD:
   - `GET /api/budgets` — list budgets (optionally filter by date range).
   - `POST /api/budgets` — create budget for a period (month, quarter, custom range).
   - `PUT /api/budgets/:id` — update budget metadata.
   - `DELETE /api/budgets/:id` — delete.
   - `GET /api/budgets/:id` — full budget with lines and actual vs. planned.
-- [ ] **P4.3** Implement Budget Lines CRUD:
+- [x] **P4.3** Implement Budget Lines CRUD:
   - `POST /api/budgets/:id/lines` — add planned amount for a category.
   - `PUT /api/budgets/:id/lines/:line_id` — update planned amount.
   - `DELETE /api/budgets/:id/lines/:line_id` — remove.
   - `POST /api/budgets/:id/lines/bulk` — set multiple lines at once.
-- [ ] **P4.4** Implement **actual amount computation**: query transactions for the budget's date range grouped by category, compute sum, populate `actual_amount_cache` (refreshable endpoint).
-- [ ] **P4.5** Multi-currency & exchange rates:
+- [x] **P4.4** Implement **actual amount computation**: query transactions for the budget's date range grouped by category, compute sum, populate `actual_amount_cache` (refreshable endpoint).
+- [x] **P4.5** Multi-currency & exchange rates:
   - Write migration 004: `exchange_rates` table.
   - Fetch daily exchange rates (ECB XML feed or Open Exchange Rates API).
   - Store rates in `exchange_rates` table.
   - Convert amounts at transaction date rate for reports.
   - User can set "reporting currency" — all aggregations convert to this.
   - Scheduled task for daily rate fetch.
-- [ ] **P4.6** Implement **recurring budgets**: when `is_recurring = true`, auto-generate next period's budget based on previous period's planned amounts (adjustable before locking).
-- [ ] **P4.7** Implement **copy budget** endpoint: `POST /api/budgets/:id/copy` — duplicate planned amounts to a new period.
-- [ ] **P4.8** Implement **budget summary** endpoint: `GET /api/budgets/:id/summary` — returns:
+- [ ] **P4.6** Implement **recurring budgets**: when `is_recurring = true`, auto-generate next period's budget based on previous period's planned amounts (adjustable before locking). *(deferred to Phase 5 prep)*
+- [x] **P4.7** Implement **copy budget** endpoint: `POST /api/budgets/:id/copy` — duplicate planned amounts to a new period.
+- [x] **P4.8** Implement **budget summary** endpoint: `GET /api/budgets/:id/summary` — returns:
   - Total planned income vs. actual income.
   - Total planned expenses vs. actual expenses.
   - Net planned vs. net actual.
   - Per-category variance (planned - actual, % of budget used).
   - Over-budget categories list.
-- [ ] **P4.9** Build **Budget Creation** UI:
+- [x] **P4.9** Build **Budget Creation** UI:
   - Select period (month picker, custom range).
   - Category list with input fields for planned amounts.
   - "Copy from previous month" button.
   - Drag categories to reorder or group.
-- [ ] **P4.10** Build **Budget Overview** dashboard:
+- [x] **P4.10** Build **Budget Overview** dashboard:
   - Progress bars per category (actual / planned, color-coded green/yellow/red).
   - Donut chart: expense distribution planned vs. actual.
   - Table: category | planned | actual | remaining | % used.
   - Highlight over-budget categories.
   - Trend line: daily cumulative spend vs. even-pace budget line.
-- [ ] **P4.11** Build **Budget Comparison** view:
+- [x] **P4.11** Build **Budget Comparison** view:
   - Side-by-side months comparison.
   - Variance chart (how much over/under budget per category over time).
 
@@ -1473,14 +1473,14 @@ docs/
 - Exchange rates update daily; reports show correct converted amounts.
 
 ### i18n Tasks (Phase 4)
-- [ ] **P4.i18n.1** Write `locales/en-US/budget.ftl` and `web/src/locales/en-US/budget.json` — all budget-related strings.
-- [ ] **P4.i18n.2** Budget amounts formatted per user's locale (currency symbol placement, thousand separators, decimal separators).
-- [ ] **P4.i18n.3** Date period labels localized (e.g., "March 2026" format per user's locale setting).
+- [x] **P4.i18n.1** Write `locales/en-US/budget.ftl` and `web/src/locales/en-US/budget.json` — all budget-related strings.
+- [x] **P4.i18n.2** Budget amounts formatted per user's locale (currency symbol placement, thousand separators, decimal separators).
+- [x] **P4.i18n.3** Date period labels localized (e.g., "March 2026" format per user's locale setting).
 
 ### Documentation Deliverables (P4)
-- [ ] Write `docs/book/src/features/budgeting.md` — budget user guide (creating budgets, planned vs. actual, recurring, copying, comparison).
-- [ ] OpenAPI annotations on all budget endpoints with request/response examples.
-- [ ] All `pub` items in budget module have rustdoc comments.
+- [x] Write `docs/book/src/features/budgeting.md` — budget user guide (creating budgets, planned vs. actual, recurring, copying, comparison).
+- [x] OpenAPI annotations on all budget endpoints with request/response examples.
+- [x] All `pub` items in budget module have rustdoc comments.
 
 ---
 
