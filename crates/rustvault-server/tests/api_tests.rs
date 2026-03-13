@@ -8,7 +8,13 @@ mod helpers;
 use axum_test::multipart::{MultipartForm, Part};
 use helpers::{TEST_EMAIL, TEST_PASSWORD, TEST_USER, register_and_login, test_server};
 use serde_json::{Value, json};
+use time::{Date, Month};
 use uuid::Uuid;
+
+fn json_date(year: i32, month: Month, day: u8) -> Value {
+    let date = Date::from_calendar_date(year, month, day).expect("valid date");
+    serde_json::to_value(date).expect("date should serialize")
+}
 
 async fn create_bank_and_account(server: &axum_test::TestServer, auth: &str) -> String {
     let suffix = Uuid::new_v4().to_string();
@@ -858,7 +864,7 @@ async fn transactions_crud_and_bulk(pool: sqlx::PgPool) {
             "category_id": null,
             "transaction_type": "expense",
             "amount": "-12.34",
-            "date": { "year": 2026, "ordinal": 60 },
+            "date": json_date(2026, Month::March, 1),
             "description": "Coffee shop",
             "payee": "Coffee Shop",
             "notes": "morning",
@@ -958,7 +964,7 @@ async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
             "from_account_id": account_a,
             "to_account_id": account_b,
             "amount": "15.00",
-            "date": { "year": 2026, "ordinal": 60 },
+            "date": json_date(2026, Month::March, 1),
             "description": "Wallet top-up",
             "method": "internal"
         }))
@@ -980,7 +986,7 @@ async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
             "account_id": account_a,
             "transaction_type": "expense",
             "amount": "-20.00",
-            "date": { "year": 2026, "ordinal": 61 },
+            "date": json_date(2026, Month::March, 2),
             "description": "Manual transfer out",
             "tag_ids": []
         }))
@@ -997,7 +1003,7 @@ async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
             "account_id": account_b,
             "transaction_type": "income",
             "amount": "20.00",
-            "date": { "year": 2026, "ordinal": 61 },
+            "date": json_date(2026, Month::March, 2),
             "description": "Manual transfer in",
             "tag_ids": []
         }))
@@ -1012,7 +1018,7 @@ async fn transfers_create_detect_and_unlink(pool: sqlx::PgPool) {
         )
         .await;
     detect_res.assert_status_ok();
-    assert!(detect_res.json::<Value>()["items"].is_array());
+    assert!(detect_res.json::<Value>()["data"].is_array());
 
     let unlink_res = server
         .delete(&format!("/api/transfers/{transfer_id}"))
