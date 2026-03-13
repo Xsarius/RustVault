@@ -75,10 +75,7 @@ pub async fn find_by_transaction_id(
 }
 
 /// List all transfers for a user.
-pub async fn list_by_user(
-    pool: &PgPool,
-    user_id: Uuid,
-) -> Result<Vec<TransferRow>, DbError> {
+pub async fn list_by_user(pool: &PgPool, user_id: Uuid) -> Result<Vec<TransferRow>, DbError> {
     let rows = sqlx::query_as::<_, TransferRow>(
         "SELECT id, user_id, debit_tx_id, credit_tx_id,
                 method::text, status::text, exchange_rate, confidence,

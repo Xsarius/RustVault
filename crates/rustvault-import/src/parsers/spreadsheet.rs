@@ -1,14 +1,14 @@
 //! Spreadsheet parser for XLSX, XLS and ODS files using calamine.
 
-use calamine::{open_workbook_auto_from_rs, Data, Reader};
+use calamine::{Data, Reader, open_workbook_auto_from_rs};
 use rust_decimal::Decimal;
 use std::collections::HashMap;
 use std::io::Cursor;
 use std::str::FromStr;
 
+use crate::ImportResult;
 use crate::error::ImportError;
 use crate::raw::{ColumnMapping, ImportParser, RawTransaction};
-use crate::ImportResult;
 
 use super::date::parse_date;
 
@@ -34,9 +34,9 @@ impl ImportParser for SpreadsheetParser {
             .map_err(|e| ImportError::ParseFailed(format!("failed to open spreadsheet: {e}")))?;
 
         let sheet_name = pick_sheet(&workbook, mapping)?;
-        let range = workbook
-            .worksheet_range(&sheet_name)
-            .map_err(|e| ImportError::ParseFailed(format!("cannot read sheet '{sheet_name}': {e}")))?;
+        let range = workbook.worksheet_range(&sheet_name).map_err(|e| {
+            ImportError::ParseFailed(format!("cannot read sheet '{sheet_name}': {e}"))
+        })?;
 
         let rows: Vec<Vec<Data>> = range.rows().map(|r| r.to_vec()).collect();
         if rows.is_empty() {
@@ -115,10 +115,29 @@ struct ColumnIndices {
 
 /// Synonyms for auto-detecting header columns.
 const HEADER_SYNONYMS: &[(&str, &[&str])] = &[
-    ("date", &["date", "datum", "data", "booking", "valuta", "buchungstag"]),
-    ("amount", &["amount", "betrag", "kwota", "value", "sum", "total"]),
-    ("description", &["description", "details", "narrative", "text", "verwendungszweck", "opis"]),
-    ("payee", &["payee", "recipient", "empfänger", "beneficiary", "odbiorca"]),
+    (
+        "date",
+        &["date", "datum", "data", "booking", "valuta", "buchungstag"],
+    ),
+    (
+        "amount",
+        &["amount", "betrag", "kwota", "value", "sum", "total"],
+    ),
+    (
+        "description",
+        &[
+            "description",
+            "details",
+            "narrative",
+            "text",
+            "verwendungszweck",
+            "opis",
+        ],
+    ),
+    (
+        "payee",
+        &["payee", "recipient", "empfänger", "beneficiary", "odbiorca"],
+    ),
     ("currency", &["currency", "ccy", "währung", "waluta"]),
     ("reference", &["reference", "ref", "referenz", "numer"]),
 ];
@@ -139,11 +158,9 @@ fn auto_detect_columns(
         .collect();
 
     let find = |synonyms: &[&str]| -> Option<usize> {
-        headers.iter().position(|h| {
-            synonyms
-                .iter()
-                .any(|s| h.contains(s))
-        })
+        headers
+            .iter()
+            .position(|h| synonyms.iter().any(|s| h.contains(s)))
     };
 
     let date = find(HEADER_SYNONYMS[0].1)
@@ -172,9 +189,8 @@ fn explicit_columns(fields: &HashMap<String, String>) -> ImportResult<ColumnIndi
             .parse::<usize>()
             .map_err(|e| ImportError::MappingRequired(format!("bad column index for {key}: {e}")))
     };
-    let opt = |key: &str| -> Option<usize> {
-        fields.get(key).and_then(|v| v.parse::<usize>().ok())
-    };
+    let opt =
+        |key: &str| -> Option<usize> { fields.get(key).and_then(|v| v.parse::<usize>().ok()) };
 
     Ok(ColumnIndices {
         date: get("date")?,
@@ -243,7 +259,10 @@ fn parse_row(
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn pick_sheet<RS: std::io::Read + std::io::Seek, R: Reader<RS>>(workbook: &R, mapping: Option<&ColumnMapping>) -> ImportResult<String> {
+fn pick_sheet<RS: std::io::Read + std::io::Seek, R: Reader<RS>>(
+    workbook: &R,
+    mapping: Option<&ColumnMapping>,
+) -> ImportResult<String> {
     let sheets = workbook.sheet_names();
     if sheets.is_empty() {
         return Err(ImportError::ParseFailed("workbook has no sheets".into()));
@@ -287,8 +306,8 @@ fn excel_date_to_time(dt: calamine::ExcelDateTime) -> ImportResult<time::Date> {
     // ExcelDateTime exposes as_f64() returning Excel serial number.
     // Excel epoch: 1899-12-30 (accounting for the Lotus 1-2-3 bug).
     let serial = dt.as_f64() as i64;
-    let epoch = time::Date::from_calendar_date(1899, time::Month::December, 30)
-        .expect("valid epoch date");
+    let epoch =
+        time::Date::from_calendar_date(1899, time::Month::December, 30).expect("valid epoch date");
     epoch
         .checked_add(time::Duration::days(serial))
         .ok_or_else(|| ImportError::ParseFailed(format!("invalid Excel date serial: {serial}")))

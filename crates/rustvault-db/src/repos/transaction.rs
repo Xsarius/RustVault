@@ -362,10 +362,7 @@ pub async fn find_duplicates(
 }
 
 /// Get tag IDs for a transaction.
-pub async fn get_tag_ids(
-    pool: &PgPool,
-    transaction_id: Uuid,
-) -> Result<Vec<Uuid>, DbError> {
+pub async fn get_tag_ids(pool: &PgPool, transaction_id: Uuid) -> Result<Vec<Uuid>, DbError> {
     let rows = sqlx::query_scalar::<_, Uuid>(
         "SELECT tag_id FROM transaction_tags WHERE transaction_id = $1",
     )
@@ -443,13 +440,11 @@ pub async fn delete_by_import(
     user_id: Uuid,
     import_id: Uuid,
 ) -> Result<u64, DbError> {
-    let result = sqlx::query(
-        "DELETE FROM transactions WHERE user_id = $1 AND import_id = $2",
-    )
-    .bind(user_id)
-    .bind(import_id)
-    .execute(pool)
-    .await?;
+    let result = sqlx::query("DELETE FROM transactions WHERE user_id = $1 AND import_id = $2")
+        .bind(user_id)
+        .bind(import_id)
+        .execute(pool)
+        .await?;
 
     Ok(result.rows_affected())
 }

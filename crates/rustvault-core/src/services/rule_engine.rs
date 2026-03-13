@@ -268,7 +268,10 @@ pub fn apply_rules(rules: &[AutoRule], candidate: &MatchCandidate) -> RuleApplic
                 "set_metadata" => {
                     if let Some(obj) = action.value.as_object() {
                         for (k, v) in obj {
-                            result.metadata.entry(k.clone()).or_insert_with(|| v.clone());
+                            result
+                                .metadata
+                                .entry(k.clone())
+                                .or_insert_with(|| v.clone());
                         }
                     }
                 }
@@ -329,11 +332,61 @@ pub fn suggest_rule(
 fn extract_keyword(description: &str) -> String {
     // Take the longest word that isn't a common stop-word or number
     let stop_words = [
-        "the", "a", "an", "of", "for", "to", "in", "on", "at", "by", "from", "with", "and",
-        "or", "is", "was", "are", "has", "had", "have", "do", "does", "did", "will", "would",
-        "can", "could", "may", "might", "shall", "should", "no", "not", "nor", "but", "yet",
-        "so", "as", "if", "than", "that", "this", "it", "be", "been", "am", "its", "card",
-        "payment", "direct", "debit", "credit", "transfer", "ref", "reference",
+        "the",
+        "a",
+        "an",
+        "of",
+        "for",
+        "to",
+        "in",
+        "on",
+        "at",
+        "by",
+        "from",
+        "with",
+        "and",
+        "or",
+        "is",
+        "was",
+        "are",
+        "has",
+        "had",
+        "have",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "can",
+        "could",
+        "may",
+        "might",
+        "shall",
+        "should",
+        "no",
+        "not",
+        "nor",
+        "but",
+        "yet",
+        "so",
+        "as",
+        "if",
+        "than",
+        "that",
+        "this",
+        "it",
+        "be",
+        "been",
+        "am",
+        "its",
+        "card",
+        "payment",
+        "direct",
+        "debit",
+        "credit",
+        "transfer",
+        "ref",
+        "reference",
     ];
 
     description
@@ -441,16 +494,14 @@ mod tests {
     fn apply_rules_merges_actions() {
         let cat_id = Uuid::new_v4();
         let tag_id = Uuid::new_v4();
-        let rules = vec![
-            make_rule(
-                serde_json::json!([{ "field": "payee_contains", "value": "spotify" }]),
-                serde_json::json!([
-                    { "type": "set_category", "value": cat_id.to_string() },
-                    { "type": "add_tags", "value": [tag_id.to_string()] },
-                    { "type": "set_payee", "value": "Spotify" },
-                ]),
-            ),
-        ];
+        let rules = vec![make_rule(
+            serde_json::json!([{ "field": "payee_contains", "value": "spotify" }]),
+            serde_json::json!([
+                { "type": "set_category", "value": cat_id.to_string() },
+                { "type": "add_tags", "value": [tag_id.to_string()] },
+                { "type": "set_payee", "value": "Spotify" },
+            ]),
+        )];
 
         let result = apply_rules(&rules, &make_candidate());
         assert_eq!(result.category_id, Some(cat_id));

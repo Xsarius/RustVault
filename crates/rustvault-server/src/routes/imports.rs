@@ -47,9 +47,7 @@ fn parse_max_file_size(s: &str) -> usize {
 
 /// Extract file extension from a filename (lowercase, no dot).
 fn file_extension(name: &str) -> Option<String> {
-    name.rsplit('.')
-        .next()
-        .map(|ext| ext.to_lowercase())
+    name.rsplit('.').next().map(|ext| ext.to_lowercase())
 }
 
 // ── request / response bodies ──────────────────────────────────
@@ -141,10 +139,10 @@ pub async fn upload(
                     .text()
                     .await
                     .map_err(|e| ApiError::BadRequest(format!("invalid account_id: {e}")))?;
-                account_id = Some(
-                    Uuid::parse_str(&text)
-                        .map_err(|_| ApiError::BadRequest("account_id must be a valid UUID".into()))?,
-                );
+                account_id =
+                    Some(Uuid::parse_str(&text).map_err(|_| {
+                        ApiError::BadRequest("account_id must be a valid UUID".into())
+                    })?);
             }
             "mapping" => {
                 let text = field
@@ -166,8 +164,8 @@ pub async fn upload(
         file_bytes.ok_or_else(|| ApiError::BadRequest("missing required field: file".into()))?;
     let file_name =
         file_name.ok_or_else(|| ApiError::BadRequest("file must have a filename".into()))?;
-    let account_id =
-        account_id.ok_or_else(|| ApiError::BadRequest("missing required field: account_id".into()))?;
+    let account_id = account_id
+        .ok_or_else(|| ApiError::BadRequest("missing required field: account_id".into()))?;
 
     // Validate extension.
     let ext = file_extension(&file_name)
@@ -284,13 +282,8 @@ pub async fn configure(
     Path(id): Path<Uuid>,
     ValidatedJson(body): ValidatedJson<ConfigureImportRequest>,
 ) -> Result<impl IntoResponse, ApiError> {
-    rustvault_core::services::import::save_mapping(
-        &state.pool,
-        auth.user_id,
-        id,
-        &body.mapping,
-    )
-    .await?;
+    rustvault_core::services::import::save_mapping(&state.pool, auth.user_id, id, &body.mapping)
+        .await?;
     let import = rustvault_core::services::import::get(&state.pool, auth.user_id, id).await?;
     Ok(ApiResponse::ok(import))
 }
@@ -331,13 +324,8 @@ pub async fn execute(
 
     // If a mapping is provided, save it first.
     if let Some(ref mapping) = body.mapping {
-        rustvault_core::services::import::save_mapping(
-            &state.pool,
-            auth.user_id,
-            id,
-            mapping,
-        )
-        .await?;
+        rustvault_core::services::import::save_mapping(&state.pool, auth.user_id, id, mapping)
+            .await?;
     }
 
     // Retrieve stored column mapping.
@@ -415,10 +403,10 @@ pub async fn upload_and_execute(
                     .text()
                     .await
                     .map_err(|e| ApiError::BadRequest(format!("invalid account_id: {e}")))?;
-                account_id = Some(
-                    Uuid::parse_str(&text)
-                        .map_err(|_| ApiError::BadRequest("account_id must be a valid UUID".into()))?,
-                );
+                account_id =
+                    Some(Uuid::parse_str(&text).map_err(|_| {
+                        ApiError::BadRequest("account_id must be a valid UUID".into())
+                    })?);
             }
             "mapping" => {
                 let text = field
@@ -445,8 +433,8 @@ pub async fn upload_and_execute(
         file_bytes.ok_or_else(|| ApiError::BadRequest("missing required field: file".into()))?;
     let file_name =
         file_name.ok_or_else(|| ApiError::BadRequest("file must have a filename".into()))?;
-    let account_id =
-        account_id.ok_or_else(|| ApiError::BadRequest("missing required field: account_id".into()))?;
+    let account_id = account_id
+        .ok_or_else(|| ApiError::BadRequest("missing required field: account_id".into()))?;
 
     // Validate extension.
     let ext = file_extension(&file_name)

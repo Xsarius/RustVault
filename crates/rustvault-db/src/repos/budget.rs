@@ -89,7 +89,11 @@ pub async fn list_by_user(
 }
 
 /// Fetch a single budget by ID, asserting ownership.
-pub async fn find_by_id(pool: &PgPool, user_id: Uuid, budget_id: Uuid) -> Result<BudgetRow, DbError> {
+pub async fn find_by_id(
+    pool: &PgPool,
+    user_id: Uuid,
+    budget_id: Uuid,
+) -> Result<BudgetRow, DbError> {
     let row = sqlx::query_as::<_, BudgetRow>(
         "SELECT id, user_id, name, period_start, period_end, currency,
                 is_recurring, recurrence_rule, is_archived, notes, metadata,
@@ -278,9 +282,7 @@ pub async fn insert_line(
     .fetch_one(pool)
     .await
     .map_err(|e| match &e {
-        sqlx::Error::Database(db_err)
-            if db_err.constraint() == Some("uq_budget_line_category") =>
-        {
+        sqlx::Error::Database(db_err) if db_err.constraint() == Some("uq_budget_line_category") => {
             DbError::UniqueViolation("category already has a line in this budget".into())
         }
         _ => DbError::Sqlx(e),
@@ -323,13 +325,12 @@ pub async fn update_line(
 
 /// Delete a budget line.
 pub async fn delete_line(pool: &PgPool, line_id: Uuid, budget_id: Uuid) -> Result<(), DbError> {
-    let affected =
-        sqlx::query("DELETE FROM budget_lines WHERE id = $1 AND budget_id = $2")
-            .bind(line_id)
-            .bind(budget_id)
-            .execute(pool)
-            .await?
-            .rows_affected();
+    let affected = sqlx::query("DELETE FROM budget_lines WHERE id = $1 AND budget_id = $2")
+        .bind(line_id)
+        .bind(budget_id)
+        .execute(pool)
+        .await?
+        .rows_affected();
 
     if affected == 0 {
         return Err(DbError::NotFound);

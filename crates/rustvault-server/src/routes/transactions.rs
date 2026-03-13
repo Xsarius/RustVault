@@ -168,14 +168,8 @@ pub async fn update(
     Path(id): Path<Uuid>,
     ValidatedJson(body): ValidatedJson<UpdateTransaction>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let payee_ref = body
-        .payee
-        .as_ref()
-        .map(|opt| opt.as_deref());
-    let notes_ref = body
-        .notes
-        .as_ref()
-        .map(|opt| opt.as_deref());
+    let payee_ref = body.payee.as_ref().map(|opt| opt.as_deref());
+    let notes_ref = body.notes.as_ref().map(|opt| opt.as_deref());
 
     let transaction = rustvault_core::services::transaction::update(
         &state.pool,

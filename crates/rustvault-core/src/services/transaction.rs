@@ -70,9 +70,7 @@ pub async fn get(
         })?;
 
     let mut tx = row_to_transaction(row);
-    tx.tag_ids = Some(
-        rustvault_db::repos::transaction::get_tag_ids(pool, transaction_id).await?,
-    );
+    tx.tag_ids = Some(rustvault_db::repos::transaction::get_tag_ids(pool, transaction_id).await?);
     Ok(tx)
 }
 
@@ -210,9 +208,9 @@ pub async fn update(
             entity: "transaction".into(),
             id: transaction_id.to_string(),
         },
-        rustvault_db::DbError::ForeignKeyViolation(_) => CoreError::Validation(
-            "Invalid category_id".into(),
-        ),
+        rustvault_db::DbError::ForeignKeyViolation(_) => {
+            CoreError::Validation("Invalid category_id".into())
+        }
         other => CoreError::Db(other),
     })?;
 
@@ -228,22 +226,15 @@ pub async fn update(
     }
 
     let mut tx = row_to_transaction(row);
-    tx.tag_ids = Some(
-        rustvault_db::repos::transaction::get_tag_ids(pool, transaction_id).await?,
-    );
+    tx.tag_ids = Some(rustvault_db::repos::transaction::get_tag_ids(pool, transaction_id).await?);
     Ok(tx)
 }
 
 /// Soft-delete a transaction.
-pub async fn delete(
-    pool: &PgPool,
-    user_id: Uuid,
-    transaction_id: Uuid,
-) -> Result<(), CoreError> {
+pub async fn delete(pool: &PgPool, user_id: Uuid, transaction_id: Uuid) -> Result<(), CoreError> {
     // If part of a transfer, unlink it first
     if let Some(transfer) =
-        rustvault_db::repos::transfer::find_by_transaction_id(pool, user_id, transaction_id)
-            .await?
+        rustvault_db::repos::transfer::find_by_transaction_id(pool, user_id, transaction_id).await?
     {
         rustvault_db::repos::transfer::delete(pool, user_id, transfer.id).await?;
     }

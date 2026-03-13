@@ -17,16 +17,15 @@ use crate::state::AppState;
 pub fn build_app(state: AppState) -> Router {
     let static_dir = state.config.server.static_dir.clone();
 
-    let mut router = routes::api_routes(state.clone())
-        .merge(Scalar::with_url("/api/docs", ApiDoc::openapi()));
+    let mut router =
+        routes::api_routes(state.clone()).merge(Scalar::with_url("/api/docs", ApiDoc::openapi()));
 
     // Serve the SPA from the configured static directory.
     // All non-API paths fall through to `index.html` so client-side routing works.
     if !static_dir.is_empty() {
         let index = format!("{static_dir}/index.html");
-        router = router.fallback_service(
-            ServeDir::new(&static_dir).fallback(ServeFile::new(index)),
-        );
+        router =
+            router.fallback_service(ServeDir::new(&static_dir).fallback(ServeFile::new(index)));
     }
 
     router

@@ -136,12 +136,7 @@ pub async fn execute(
         // 1. Duplicate detection.
         if skip_duplicates {
             let dupes = rustvault_db::repos::transaction::find_duplicates(
-                pool,
-                user_id,
-                account_id,
-                row.date,
-                row.amount,
-                None,
+                pool, user_id, account_id, row.date, row.amount, None,
             )
             .await?;
 
@@ -173,16 +168,10 @@ pub async fn execute(
         };
 
         // 4. Choose currency (file value or account default).
-        let currency = row
-            .currency
-            .as_deref()
-            .unwrap_or(account.currency.as_str());
+        let currency = row.currency.as_deref().unwrap_or(account.currency.as_str());
 
         // 5. Choose payee (rule override or parsed value).
-        let payee = rule_result
-            .payee
-            .as_deref()
-            .or(row.payee.as_deref());
+        let payee = rule_result.payee.as_deref().or(row.payee.as_deref());
 
         // 6. Insert transaction.
         let tx_result = rustvault_db::repos::transaction::insert(

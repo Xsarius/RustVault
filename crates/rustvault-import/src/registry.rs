@@ -1,6 +1,6 @@
 //! Parser registry — provides format detection and parser lookup.
 
-use crate::detect::{detect_format, FileFormat};
+use crate::detect::{FileFormat, detect_format};
 use crate::raw::ImportParser;
 
 use crate::parsers::camt053::Camt053Parser;

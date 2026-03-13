@@ -159,14 +159,13 @@ pub async fn save_column_mapping(
     import_id: Uuid,
     column_mapping: &serde_json::Value,
 ) -> Result<(), DbError> {
-    let result = sqlx::query(
-        "UPDATE imports SET column_mapping = $3 WHERE id = $1 AND user_id = $2",
-    )
-    .bind(import_id)
-    .bind(user_id)
-    .bind(column_mapping)
-    .execute(pool)
-    .await?;
+    let result =
+        sqlx::query("UPDATE imports SET column_mapping = $3 WHERE id = $1 AND user_id = $2")
+            .bind(import_id)
+            .bind(user_id)
+            .bind(column_mapping)
+            .execute(pool)
+            .await?;
 
     if result.rows_affected() == 0 {
         return Err(DbError::NotFound);

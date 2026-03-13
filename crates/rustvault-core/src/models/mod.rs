@@ -9,6 +9,8 @@ pub mod account;
 pub mod audit;
 /// Bank / financial institution model.
 pub mod bank;
+/// Budget model — planned spending envelopes with per-category lines.
+pub mod budget;
 /// Hierarchical category model (income / expense).
 pub mod category;
 /// Import session model.
@@ -29,5 +31,3 @@ pub mod transaction;
 pub mod transfer;
 /// User identity model.
 pub mod user;
-/// Budget model — planned spending envelopes with per-category lines.
-pub mod budget;

@@ -21,12 +21,14 @@ impl ImportParser for CsvParser {
         &["csv", "tsv", "txt"]
     }
 
-    fn parse(&self, data: &[u8], mapping: Option<&ColumnMapping>) -> ImportResult<Vec<RawTransaction>> {
+    fn parse(
+        &self,
+        data: &[u8],
+        mapping: Option<&ColumnMapping>,
+    ) -> ImportResult<Vec<RawTransaction>> {
         let text = decode_text(data);
         let delimiter = detect_delimiter(&text);
-        let has_header = mapping
-            .and_then(|m| m.has_header)
-            .unwrap_or(true);
+        let has_header = mapping.and_then(|m| m.has_header).unwrap_or(true);
 
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(delimiter)
@@ -46,9 +48,8 @@ impl ImportParser for CsvParser {
 
         let mut transactions = Vec::new();
         for (row_idx, result) in rdr.records().enumerate() {
-            let record = result.map_err(|e| {
-                ImportError::ParseFailed(format!("row {}: {e}", row_idx + 1))
-            })?;
+            let record = result
+                .map_err(|e| ImportError::ParseFailed(format!("row {}: {e}", row_idx + 1)))?;
 
             match parse_row(&record, &field_map, date_format, decimal_sep) {
                 Ok(tx) => transactions.push(tx),
@@ -78,7 +79,11 @@ impl ImportParser for CsvParser {
         // Content-based: is it valid UTF-8 with consistent delimiter counts?
         if let Ok(text) = std::str::from_utf8(data) {
             let trimmed = text.trim_start();
-            if !trimmed.is_empty() && !trimmed.starts_with('{') && !trimmed.starts_with('[') && !trimmed.starts_with('<') {
+            if !trimmed.is_empty()
+                && !trimmed.starts_with('{')
+                && !trimmed.starts_with('[')
+                && !trimmed.starts_with('<')
+            {
                 let delim = detect_delimiter(trimmed);
                 let mut lines = trimmed.lines().take(5);
                 if let Some(first) = lines.next() {
@@ -139,19 +144,27 @@ fn build_field_map_from_headers(rdr: &mut csv::Reader<&[u8]>) -> ImportResult<Fi
         let h = header.trim().to_ascii_lowercase();
         // Map common header synonyms.
         match h.as_str() {
-            "date" | "datum" | "booking date" | "bookingdate" | "value date"
-            | "valuedate" | "transaction date" | "transactiondate" | "posting date" => {
+            "date" | "datum" | "booking date" | "bookingdate" | "value date" | "valuedate"
+            | "transaction date" | "transactiondate" | "posting date" => {
                 map.entry(FIELD_DATE.to_owned()).or_insert(i);
             }
             "amount" | "betrag" | "value" | "sum" | "kwota" | "transaction amount" => {
                 map.entry(FIELD_AMOUNT.to_owned()).or_insert(i);
             }
-            "description" | "beschreibung" | "narrative" | "details" | "memo"
-            | "opis" | "text" | "transaction description" | "remark" | "remarks" => {
+            "description"
+            | "beschreibung"
+            | "narrative"
+            | "details"
+            | "memo"
+            | "opis"
+            | "text"
+            | "transaction description"
+            | "remark"
+            | "remarks" => {
                 map.entry(FIELD_DESCRIPTION.to_owned()).or_insert(i);
             }
-            "payee" | "merchant" | "recipient" | "beneficiary" | "name"
-            | "counterparty" | "odbiorca" | "nadawca" => {
+            "payee" | "merchant" | "recipient" | "beneficiary" | "name" | "counterparty"
+            | "odbiorca" | "nadawca" => {
                 map.entry(FIELD_PAYEE.to_owned()).or_insert(i);
             }
             "reference" | "ref" | "check" | "check number" | "cheque" | "numer" => {
@@ -182,8 +195,7 @@ fn parse_row(
 ) -> ImportResult<RawTransaction> {
     let date_str = get_field(record, fields, FIELD_DATE)?;
     let amount_str = get_field(record, fields, FIELD_AMOUNT)?;
-    let description = get_field_opt(record, fields, FIELD_DESCRIPTION)
-        .unwrap_or_default();
+    let description = get_field_opt(record, fields, FIELD_DESCRIPTION).unwrap_or_default();
 
     let date = parse_date(&date_str, date_format)?;
     let amount = parse_amount(&amount_str, decimal_sep)?;
@@ -199,11 +211,7 @@ fn parse_row(
     })
 }
 
-fn get_field(
-    record: &csv::StringRecord,
-    fields: &FieldMap,
-    name: &str,
-) -> ImportResult<String> {
+fn get_field(record: &csv::StringRecord, fields: &FieldMap, name: &str) -> ImportResult<String> {
     let idx = fields
         .get(name)
         .ok_or_else(|| ImportError::MappingRequired(format!("missing field '{name}'")))?;

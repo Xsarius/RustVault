@@ -65,32 +65,26 @@ pub async fn list(
     user_id: Uuid,
     include_archived: bool,
 ) -> Result<Vec<Budget>, CoreError> {
-    let rows =
-        rustvault_db::repos::budget::list_by_user(pool, user_id, include_archived).await?;
+    let rows = rustvault_db::repos::budget::list_by_user(pool, user_id, include_archived).await?;
     Ok(rows.into_iter().map(row_to_budget).collect())
 }
 
 /// Get a single budget by ID (with ownership check).
 pub async fn get(pool: &PgPool, user_id: Uuid, budget_id: Uuid) -> Result<Budget, CoreError> {
-    let row =
-        rustvault_db::repos::budget::find_by_id(pool, user_id, budget_id)
-            .await
-            .map_err(|e| match e {
-                rustvault_db::DbError::NotFound => CoreError::NotFound {
-                    entity: "budget".into(),
-                    id: budget_id.to_string(),
-                },
-                other => CoreError::Db(other),
-            })?;
+    let row = rustvault_db::repos::budget::find_by_id(pool, user_id, budget_id)
+        .await
+        .map_err(|e| match e {
+            rustvault_db::DbError::NotFound => CoreError::NotFound {
+                entity: "budget".into(),
+                id: budget_id.to_string(),
+            },
+            other => CoreError::Db(other),
+        })?;
     Ok(row_to_budget(row))
 }
 
 /// Create a new budget.
-pub async fn create(
-    pool: &PgPool,
-    user_id: Uuid,
-    input: NewBudget,
-) -> Result<Budget, CoreError> {
+pub async fn create(pool: &PgPool, user_id: Uuid, input: NewBudget) -> Result<Budget, CoreError> {
     if input.period_end < input.period_start {
         return Err(CoreError::Validation(
             "period_end must be on or after period_start".into(),

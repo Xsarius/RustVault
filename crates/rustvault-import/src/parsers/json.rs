@@ -5,9 +5,9 @@ use serde_json::Value;
 use std::collections::HashMap;
 use std::str::FromStr;
 
+use crate::ImportResult;
 use crate::error::ImportError;
 use crate::raw::{ColumnMapping, ImportParser, RawTransaction};
-use crate::ImportResult;
 
 use super::date::parse_date;
 
@@ -132,12 +132,50 @@ fn extract_array(root: &Value) -> ImportResult<&Vec<Value>> {
 
 /// Field synonyms for auto-detection.
 const FIELD_SYNONYMS: &[(&str, &[&str])] = &[
-    ("date", &["date", "datum", "data", "booking_date", "bookingDate", "transaction_date", "transactionDate"]),
-    ("amount", &["amount", "betrag", "kwota", "value", "sum", "total"]),
-    ("description", &["description", "details", "narrative", "text", "memo", "note", "verwendungszweck"]),
-    ("payee", &["payee", "recipient", "merchant", "name", "counterparty"]),
+    (
+        "date",
+        &[
+            "date",
+            "datum",
+            "data",
+            "booking_date",
+            "bookingDate",
+            "transaction_date",
+            "transactionDate",
+        ],
+    ),
+    (
+        "amount",
+        &["amount", "betrag", "kwota", "value", "sum", "total"],
+    ),
+    (
+        "description",
+        &[
+            "description",
+            "details",
+            "narrative",
+            "text",
+            "memo",
+            "note",
+            "verwendungszweck",
+        ],
+    ),
+    (
+        "payee",
+        &["payee", "recipient", "merchant", "name", "counterparty"],
+    ),
     ("currency", &["currency", "ccy"]),
-    ("reference", &["reference", "ref", "id", "transaction_id", "transactionId", "fitid"]),
+    (
+        "reference",
+        &[
+            "reference",
+            "ref",
+            "id",
+            "transaction_id",
+            "transactionId",
+            "fitid",
+        ],
+    ),
 ];
 
 fn auto_detect_fields(obj: &serde_json::Map<String, Value>) -> HashMap<String, String> {
@@ -209,7 +247,8 @@ fn parse_object(
         .map(value_to_string);
 
     // Preserve all extra fields as metadata.
-    let mapped_keys: std::collections::HashSet<&str> = fields.values().map(|s| s.as_str()).collect();
+    let mapped_keys: std::collections::HashSet<&str> =
+        fields.values().map(|s| s.as_str()).collect();
     let mut metadata = HashMap::new();
     for (k, v) in obj {
         if !mapped_keys.contains(k.as_str()) {

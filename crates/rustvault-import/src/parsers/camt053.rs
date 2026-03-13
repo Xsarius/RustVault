@@ -1,14 +1,14 @@
 //! CAMT.053 (ISO 20022) bank-to-customer statement parser.
 
-use quick_xml::events::Event;
 use quick_xml::Reader;
+use quick_xml::events::Event;
 use rust_decimal::Decimal;
 use std::collections::HashMap;
 use std::str::FromStr;
 
+use crate::ImportResult;
 use crate::error::ImportError;
 use crate::raw::{ColumnMapping, ImportParser, RawTransaction};
-use crate::ImportResult;
 
 use super::date::parse_date;
 

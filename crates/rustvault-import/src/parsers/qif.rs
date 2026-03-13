@@ -4,9 +4,9 @@ use rust_decimal::Decimal;
 use std::collections::HashMap;
 use std::str::FromStr;
 
+use crate::ImportResult;
 use crate::error::ImportError;
 use crate::raw::{ColumnMapping, ImportParser, RawTransaction};
-use crate::ImportResult;
 
 use super::date::parse_date;
 
@@ -154,10 +154,7 @@ impl RecordBuilder {
             );
         }
         if let Some(clr) = &self.cleared {
-            metadata.insert(
-                "qif_cleared".into(),
-                serde_json::Value::String(clr.clone()),
-            );
+            metadata.insert("qif_cleared".into(), serde_json::Value::String(clr.clone()));
         }
         if !self.address.is_empty() {
             metadata.insert(

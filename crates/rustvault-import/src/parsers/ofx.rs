@@ -31,7 +31,11 @@ impl ImportParser for OfxParser {
         &["ofx", "qfx"]
     }
 
-    fn parse(&self, data: &[u8], _mapping: Option<&ColumnMapping>) -> ImportResult<Vec<RawTransaction>> {
+    fn parse(
+        &self,
+        data: &[u8],
+        _mapping: Option<&ColumnMapping>,
+    ) -> ImportResult<Vec<RawTransaction>> {
         let text = String::from_utf8_lossy(data);
         let xml = normalise_to_xml(&text);
         parse_ofx_xml(&xml)
@@ -138,14 +142,16 @@ fn normalise_to_xml(text: &str) -> String {
 /// Extract a tag name from `<TAG>...` or `</TAG>`.
 fn extract_tag_name(s: &str) -> &str {
     let s = s.trim_start_matches("</").trim_start_matches('<');
-    let end = s.find(|c: char| c == '>' || c.is_whitespace()).unwrap_or(s.len());
+    let end = s
+        .find(|c: char| c == '>' || c.is_whitespace())
+        .unwrap_or(s.len());
     &s[..end]
 }
 
 /// Parse well-formed OFX XML and extract STMTTRN entries.
 fn parse_ofx_xml(xml: &str) -> ImportResult<Vec<RawTransaction>> {
-    use quick_xml::events::Event;
     use quick_xml::Reader;
+    use quick_xml::events::Event;
 
     let mut reader = Reader::from_str(xml);
 
@@ -212,7 +218,9 @@ fn parse_ofx_xml(xml: &str) -> ImportResult<Vec<RawTransaction>> {
             }
             Ok(Event::Eof) => break,
             Err(e) => {
-                return Err(ImportError::ParseFailed(format!("OFX XML parse error: {e}")));
+                return Err(ImportError::ParseFailed(format!(
+                    "OFX XML parse error: {e}"
+                )));
             }
             _ => {}
         }
@@ -270,7 +278,11 @@ fn build_ofx_transaction(
         amount,
         currency: None,
         description,
-        payee: if name.is_empty() { None } else { Some(name.to_owned()) },
+        payee: if name.is_empty() {
+            None
+        } else {
+            Some(name.to_owned())
+        },
         reference,
         metadata,
     })

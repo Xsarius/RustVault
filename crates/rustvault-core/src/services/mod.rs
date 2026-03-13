@@ -9,8 +9,12 @@ pub mod account;
 pub mod auth;
 /// Bank service — CRUD and archiving.
 pub mod bank;
+/// Budget service — CRUD, summary, copy, recurring budget generation.
+pub mod budget;
 /// Category service — CRUD, bulk creation, hierarchy.
 pub mod category;
+/// Exchange rate service — ECB feed fetcher and currency conversion helpers.
+pub mod exchange_rate;
 /// Import service — list, get, rollback.
 pub mod import;
 /// Auto-rule service — CRUD for auto-categorization rules.
@@ -25,7 +29,3 @@ pub mod tag;
 pub mod transaction;
 /// Transfer service — create, link, unlink, detect matches.
 pub mod transfer;
-/// Budget service — CRUD, summary, copy, recurring budget generation.
-pub mod budget;
-/// Exchange rate service — ECB feed fetcher and currency conversion helpers.
-pub mod exchange_rate;

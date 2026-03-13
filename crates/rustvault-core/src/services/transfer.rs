@@ -63,8 +63,8 @@ pub async fn create(
         pool,
         user_id,
         from_account_id,
-        None,     // category_id
-        None,     // import_id
+        None, // category_id
+        None, // import_id
         "transfer",
         -amount.abs(), // negative for debit
         &from_account.currency,
@@ -82,8 +82,8 @@ pub async fn create(
         pool,
         user_id,
         to_account_id,
-        None,     // category_id
-        None,     // import_id
+        None, // category_id
+        None, // import_id
         "transfer",
         credit_amount.abs(), // positive for credit
         &from_account.currency,
@@ -211,13 +211,33 @@ pub async fn link(
 
     // Update transaction types to "transfer"
     let _ = rustvault_db::repos::transaction::update(
-        pool, user_id, debit_tx_id,
-        None, Some("transfer"), None, None, None, None, None, None,
-    ).await;
+        pool,
+        user_id,
+        debit_tx_id,
+        None,
+        Some("transfer"),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    .await;
     let _ = rustvault_db::repos::transaction::update(
-        pool, user_id, credit_tx_id,
-        None, Some("transfer"), None, None, None, None, None, None,
-    ).await;
+        pool,
+        user_id,
+        credit_tx_id,
+        None,
+        Some("transfer"),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    .await;
 
     Ok(row_to_transfer(row))
 }
@@ -247,13 +267,33 @@ pub async fn unlink(pool: &PgPool, user_id: Uuid, transfer_id: Uuid) -> Result<(
 
     // Revert transaction types: debit → expense, credit → income
     let _ = rustvault_db::repos::transaction::update(
-        pool, user_id, transfer.debit_tx_id,
-        None, Some("expense"), None, None, None, None, None, None,
-    ).await;
+        pool,
+        user_id,
+        transfer.debit_tx_id,
+        None,
+        Some("expense"),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    .await;
     let _ = rustvault_db::repos::transaction::update(
-        pool, user_id, transfer.credit_tx_id,
-        None, Some("income"), None, None, None, None, None, None,
-    ).await;
+        pool,
+        user_id,
+        transfer.credit_tx_id,
+        None,
+        Some("income"),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+    .await;
 
     let _ = rustvault_db::repos::audit::insert(
         pool,
@@ -293,12 +333,8 @@ pub async fn detect(
             continue;
         }
 
-        let confidence = compute_confidence(
-            m.debit_amount,
-            m.credit_amount,
-            m.debit_date,
-            m.credit_date,
-        );
+        let confidence =
+            compute_confidence(m.debit_amount, m.credit_amount, m.debit_date, m.credit_date);
 
         used_tx_ids.insert(m.debit_tx_id);
         used_tx_ids.insert(m.credit_tx_id);

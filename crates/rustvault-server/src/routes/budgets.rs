@@ -12,7 +12,7 @@ use crate::response::{ApiError, ApiResponse, ErrorBody, PaginatedResponse};
 use crate::state::AppState;
 
 use rustvault_core::models::budget::{
-    BulkBudgetLines, BudgetSummary, ExchangeRate, NewBudget, NewBudgetLine, UpdateBudget,
+    BudgetSummary, BulkBudgetLines, ExchangeRate, NewBudget, NewBudgetLine, UpdateBudget,
     UpdateBudgetLine,
 };
 
@@ -57,12 +57,9 @@ pub async fn list(
     auth: AuthUser,
     Query(query): Query<BudgetListQuery>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let budgets = rustvault_core::services::budget::list(
-        &state.pool,
-        auth.user_id,
-        query.include_archived,
-    )
-    .await?;
+    let budgets =
+        rustvault_core::services::budget::list(&state.pool, auth.user_id, query.include_archived)
+            .await?;
 
     Ok(PaginatedResponse::from_vec(budgets))
 }
@@ -86,8 +83,7 @@ pub async fn create(
     auth: AuthUser,
     ValidatedJson(body): ValidatedJson<NewBudget>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let budget =
-        rustvault_core::services::budget::create(&state.pool, auth.user_id, body).await?;
+    let budget = rustvault_core::services::budget::create(&state.pool, auth.user_id, body).await?;
     Ok((StatusCode::CREATED, ApiResponse::ok(budget)))
 }
 
@@ -234,8 +230,7 @@ pub async fn list_lines(
     auth: AuthUser,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let lines =
-        rustvault_core::services::budget::list_lines(&state.pool, auth.user_id, id).await?;
+    let lines = rustvault_core::services::budget::list_lines(&state.pool, auth.user_id, id).await?;
     Ok(PaginatedResponse::from_vec(lines))
 }
 
@@ -284,13 +279,9 @@ pub async fn bulk_set_lines(
     Path(id): Path<Uuid>,
     axum::Json(body): axum::Json<BulkBudgetLines>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let lines = rustvault_core::services::budget::bulk_set_lines(
-        &state.pool,
-        auth.user_id,
-        id,
-        body.lines,
-    )
-    .await?;
+    let lines =
+        rustvault_core::services::budget::bulk_set_lines(&state.pool, auth.user_id, id, body.lines)
+            .await?;
     Ok(PaginatedResponse::from_vec(lines))
 }
 
@@ -317,14 +308,9 @@ pub async fn update_line(
     Path((id, line_id)): Path<(Uuid, Uuid)>,
     ValidatedJson(body): ValidatedJson<UpdateBudgetLine>,
 ) -> Result<impl IntoResponse, ApiError> {
-    let line = rustvault_core::services::budget::update_line(
-        &state.pool,
-        auth.user_id,
-        id,
-        line_id,
-        body,
-    )
-    .await?;
+    let line =
+        rustvault_core::services::budget::update_line(&state.pool, auth.user_id, id, line_id, body)
+            .await?;
     Ok(ApiResponse::ok(line))
 }
 
@@ -348,13 +334,7 @@ pub async fn delete_line(
     auth: AuthUser,
     Path((id, line_id)): Path<(Uuid, Uuid)>,
 ) -> Result<impl IntoResponse, ApiError> {
-    rustvault_core::services::budget::delete_line(
-        &state.pool,
-        auth.user_id,
-        id,
-        line_id,
-    )
-    .await?;
+    rustvault_core::services::budget::delete_line(&state.pool, auth.user_id, id, line_id).await?;
     Ok(StatusCode::NO_CONTENT)
 }
 

@@ -8,8 +8,7 @@ use time::macros::format_description;
 use crate::error::CoreError;
 use rustvault_db::repos::exchange_rate::UpsertRate;
 
-const ECB_FEED_URL: &str =
-    "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
+const ECB_FEED_URL: &str = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
 
 /// Fetch today's rates from the ECB daily XML feed.
 ///

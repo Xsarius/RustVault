@@ -114,7 +114,11 @@ pub trait ImportParser: Send + Sync {
     ///
     /// The parser receives the full file contents as a byte slice so that it
     /// can handle encoding detection internally.
-    fn parse(&self, data: &[u8], mapping: Option<&ColumnMapping>) -> ImportResult<Vec<RawTransaction>>;
+    fn parse(
+        &self,
+        data: &[u8],
+        mapping: Option<&ColumnMapping>,
+    ) -> ImportResult<Vec<RawTransaction>>;
 
     /// Return a preview of the first rows without full parsing.
     ///

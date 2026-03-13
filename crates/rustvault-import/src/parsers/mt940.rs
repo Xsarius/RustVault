@@ -29,7 +29,11 @@ impl ImportParser for Mt940Parser {
         &["mt940", "940", "sta"]
     }
 
-    fn parse(&self, data: &[u8], _mapping: Option<&ColumnMapping>) -> ImportResult<Vec<RawTransaction>> {
+    fn parse(
+        &self,
+        data: &[u8],
+        _mapping: Option<&ColumnMapping>,
+    ) -> ImportResult<Vec<RawTransaction>> {
         let text = String::from_utf8_lossy(data);
         parse_mt940(&text)
     }
@@ -205,9 +209,7 @@ fn parse_field_61(content: &str) -> ImportResult<(Date, Decimal, Option<String>)
     let date = parse_mt940_date(date_str)?;
 
     // Skip optional booking date (4 digits).
-    let rest = if content.len() > 10
-        && content[6..10].chars().all(|c| c.is_ascii_digit())
-    {
+    let rest = if content.len() > 10 && content[6..10].chars().all(|c| c.is_ascii_digit()) {
         &content[10..]
     } else {
         &content[6..]

@@ -35,14 +35,15 @@ pub async fn create(
     conditions: &serde_json::Value,
     actions: &serde_json::Value,
 ) -> Result<AutoRule, CoreError> {
-    let row = rustvault_db::repos::auto_rule::insert(pool, user_id, name, priority, conditions, actions)
-        .await
-        .map_err(|e| match e {
-            rustvault_db::DbError::UniqueViolation(_) => {
-                CoreError::Conflict(format!("rule '{name}' already exists"))
-            }
-            other => CoreError::Db(other),
-        })?;
+    let row =
+        rustvault_db::repos::auto_rule::insert(pool, user_id, name, priority, conditions, actions)
+            .await
+            .map_err(|e| match e {
+                rustvault_db::DbError::UniqueViolation(_) => {
+                    CoreError::Conflict(format!("rule '{name}' already exists"))
+                }
+                other => CoreError::Db(other),
+            })?;
 
     let new_value = serde_json::to_value(row_to_rule(row.clone())).ok();
     let _ = rustvault_db::repos::audit::insert(
@@ -102,7 +103,13 @@ pub async fn delete(pool: &PgPool, user_id: Uuid, rule_id: Uuid) -> Result<(), C
         })?;
 
     let _ = rustvault_db::repos::audit::insert(
-        pool, user_id, "auto_rule", rule_id, "delete", None, None,
+        pool,
+        user_id,
+        "auto_rule",
+        rule_id,
+        "delete",
+        None,
+        None,
     )
     .await;
 

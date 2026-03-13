@@ -12,7 +12,7 @@ pub mod parsers;
 pub mod raw;
 pub mod registry;
 
-pub use detect::{detect_format, FileFormat};
+pub use detect::{FileFormat, detect_format};
 pub use error::ImportError;
 pub use raw::{ColumnMapping, ImportParser, RawTransaction};
 pub use registry::ParserRegistry;
