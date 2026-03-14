@@ -67,6 +67,7 @@ export default function RegisterPage() {
         <TextField
           name="username"
           label={t("auth.register.username") ?? "Username"}
+          autocomplete="username"
           value={username()}
           onInput={(e) => setUsername(e.currentTarget.value)}
           required
@@ -76,6 +77,7 @@ export default function RegisterPage() {
           name="email"
           label={t("auth.register.email") ?? "Email address"}
           type="email"
+          autocomplete="email"
           value={email()}
           onInput={(e) => setEmail(e.currentTarget.value)}
           required
@@ -85,15 +87,17 @@ export default function RegisterPage() {
           name="password"
           label={t("auth.register.password") ?? "Password"}
           type="password"
+          autocomplete="new-password"
           value={password()}
           onInput={(e) => setPassword(e.currentTarget.value)}
           required
         />
 
         <TextField
-          name="confirmPassword"
+          name="confirm-password"
           label={t("auth.register.confirmPassword") ?? "Confirm password"}
           type="password"
+          autocomplete="new-password"
           value={confirmPassword()}
           onInput={(e) => setConfirmPassword(e.currentTarget.value)}
           required

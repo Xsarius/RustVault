@@ -285,7 +285,7 @@ export const ImportWizard: Component<ImportWizardProps> = (props) => {
                         {t("import.upload.description") ?? "Drag and drop a file, or click to browse"}
                       </p>
                       <p class="text-xs text-text-tertiary">
-                        {t("import.upload.supportedFormats") ?? "CSV, MT940, OFX, QIF, CAMT.053, XLSX, JSON"}
+                        {t("import.upload.supportedFormats") ?? "CSV, MT940, OFX, QIF, CAMT.053, XLSX, JSON, PDF"}
                       </p>
                     </>
                   }
@@ -305,7 +305,7 @@ export const ImportWizard: Component<ImportWizardProps> = (props) => {
                   id="import-file-input"
                   type="file"
                   class="hidden"
-                  accept=".csv,.mt940,.sta,.ofx,.qfx,.qif,.xml,.xlsx,.xls,.ods,.json"
+                  accept=".csv,.mt940,.sta,.ofx,.qfx,.qif,.xml,.xlsx,.xls,.ods,.json,.pdf"
                   onChange={handleFileSelect}
                 />
               </div>

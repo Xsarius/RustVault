@@ -14,7 +14,7 @@
     "description": "Drag and drop a bank statement file, or click to browse.",
     "browseFiles": "Browse files",
     "dragDrop": "or drag and drop",
-    "supportedFormats": "Supported formats: CSV, MT940, OFX, QIF, CAMT.053, XLSX, JSON",
+    "supportedFormats": "Supported formats: CSV, MT940, OFX, QIF, CAMT.053, XLSX, JSON, PDF",
     "selectAccount": "Select account",
     "accountRequired": "Please select an account to import into.",
     "formatDetected": "Format detected",

@@ -83,7 +83,7 @@ export function Select(props: SelectProps) {
         </KobalteSelect.Trigger>
       </div>
       <KobalteSelect.Portal>
-        <KobalteSelect.Content class="z-[var(--z-dropdown)] bg-bg border border-border rounded-[var(--radius-md)] shadow-sm overflow-hidden data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[expanded]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95">
+        <KobalteSelect.Content class="rv-select-content z-[var(--z-command)] bg-bg border border-border rounded-[var(--radius-md)] shadow-sm overflow-hidden data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[expanded]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95">
           <KobalteSelect.Listbox class="p-1 max-h-60 overflow-y-auto outline-none" />
         </KobalteSelect.Content>
       </KobalteSelect.Portal>

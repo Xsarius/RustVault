@@ -65,12 +65,9 @@ fn parse_transactions_from_text(text: &str) -> ImportResult<Vec<RawTransaction>>
         }
     }
 
-    if rows.is_empty() {
-        return Err(ImportError::ParseFailed(
-            "no transaction-like rows found in PDF text".into(),
-        ));
-    }
-
+    // Return empty list rather than an error — let the caller decide
+    // whether zero rows is acceptable (e.g. the upload handler will
+    // surface this as total_rows=0 rather than a 400 Bad Request).
     Ok(rows)
 }
 
@@ -85,21 +82,49 @@ fn parse_line(line: &str, line_no: usize) -> ImportResult<Option<RawTransaction>
         return Ok(None);
     }
 
-    // Find first token that parses as a date.
-    let mut date_idx = None;
+    // Find a date: try single tokens first, then pairs and triples of
+    // adjacent tokens to handle formats like "15 Jan 2024" or "Jan 15 2024".
+    let mut date_idx = None;   // index of the LAST token of the matched date
+    let mut date_span = 1usize; // how many tokens the date consumed
     let mut parsed_date = None;
-    for (i, token) in tokens.iter().enumerate() {
-        if let Ok(d) = parse_date(token, None) {
+
+     'outer: for i in 0..tokens.len() {
+        // single token: "2024-01-15", "01/15/2024", etc.
+        if let Ok(d) = parse_date(tokens[i], None) {
             date_idx = Some(i);
+            date_span = 1;
             parsed_date = Some(d);
             break;
         }
+        // two consecutive tokens: "15/Jan/2024" edge cases already covered,
+        // but try anyway.
+        if i + 1 < tokens.len() {
+            let two = format!("{} {}", tokens[i], tokens[i + 1]);
+            if let Ok(d) = parse_date(&two, None) {
+                date_idx = Some(i + 1);
+                date_span = 2;
+                parsed_date = Some(d);
+                break;
+            }
+        }
+        // three consecutive tokens: "15 Jan 2024", "Jan 15 2024".
+        if i + 2 < tokens.len() {
+            let three = format!("{} {} {}", tokens[i], tokens[i + 1], tokens[i + 2]);
+            if let Ok(d) = parse_date(&three, None) {
+                date_idx = Some(i + 2);
+                date_span = 3;
+                parsed_date = Some(d);
+                break 'outer;
+            }
+        }
     }
 
-    let (date_idx, date) = match (date_idx, parsed_date) {
+    let (date_end_idx, date) = match (date_idx, parsed_date) {
         (Some(i), Some(d)) => (i, d),
         _ => return Ok(None),
     };
+    // Treat the logical "date position" as the last consumed token index.
+    let date_idx = date_end_idx;
 
     // Find amount-like token from the end of line.
     let mut amount_idx = None;
@@ -125,6 +150,7 @@ fn parse_line(line: &str, line_no: usize) -> ImportResult<Option<RawTransaction>
     if description.is_empty() {
         return Ok(None);
     }
+    let _ = date_span; // consumed above; suppress unused-variable warning
 
     let mut metadata = HashMap::new();
     metadata.insert("source".to_owned(), serde_json::json!("pdf"));

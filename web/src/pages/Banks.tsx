@@ -34,7 +34,8 @@ import {
   DropdownSeparator,
   showToast,
 } from "~/components/ui";
-import { api, type Bank, type Account } from "~/api";
+import { Select } from "~/components/ui";
+import { api, type Bank, type Account, type NewAccount, type AccountType } from "~/api";
 import { ApiError } from "~/api/client";
 import { useI18n } from "~/i18n";
 
@@ -46,8 +47,8 @@ async function fetchBanks(): Promise<Bank[]> {
 }
 
 async function fetchAccounts(bankId: string): Promise<Account[]> {
-  const res = await api.fetchList<Account>(`/api/banks/${bankId}/accounts`);
-  return res.data;
+  const res = await api.fetchList<Account>("/api/accounts");
+  return res.data.filter((account) => account.bank_id === bankId);
 }
 
 // ── Page ─────────────────────────────────────────────────────
@@ -173,12 +174,56 @@ export default function BanksPage() {
 
 // ── BankCard ─────────────────────────────────────────────────
 
+const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
+  { value: "checking", label: "Checking" },
+  { value: "savings", label: "Savings" },
+  { value: "credit", label: "Credit Card" },
+  { value: "investment", label: "Investment" },
+  { value: "loan", label: "Loan" },
+];
+
 function BankCard(props: { bank: Bank; onRefetch: () => void }) {
   const [expanded, setExpanded] = createSignal(true);
-  const [accounts] = createResource(
+  const [accounts, { refetch: refetchAccounts }] = createResource(
     () => props.bank.id,
     fetchAccounts,
   );
+
+  // ── Add Account dialog ─────────────────────────────────────
+  const [acctDialogOpen, setAcctDialogOpen] = createSignal(false);
+  const [acctName, setAcctName] = createSignal("");
+  const [acctCurrency, setAcctCurrency] = createSignal("USD");
+  const [acctType, setAcctType] = createSignal<AccountType>("checking");
+  const [acctSaving, setAcctSaving] = createSignal(false);
+
+  const openAcctDialog = () => {
+    setAcctName("");
+    setAcctCurrency("USD");
+    setAcctType("checking");
+    setAcctDialogOpen(true);
+  };
+
+  const handleCreateAccount = async () => {
+    if (!acctName().trim()) return;
+    setAcctSaving(true);
+    try {
+      const body: NewAccount = {
+        bank_id: props.bank.id,
+        name: acctName().trim(),
+        currency: acctCurrency().trim().toUpperCase(),
+        type: acctType(),
+      };
+      await api.createOne<Account>("/api/accounts", body);
+      showToast({ title: "Account created", variant: "success" });
+      setAcctDialogOpen(false);
+      refetchAccounts();
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : "Failed to create account.";
+      showToast({ title: msg, variant: "error" });
+    } finally {
+      setAcctSaving(false);
+    }
+  };
 
   return (
     <div class="rounded-[var(--radius-lg)] border border-border bg-surface">
@@ -195,6 +240,11 @@ function BankCard(props: { bank: Bank; onRefetch: () => void }) {
         <span class="font-medium text-text flex-1 truncate">
           {props.bank.name}
         </span>
+
+        <Button variant="ghost" size="sm" onClick={openAcctDialog}>
+          <Plus size={14} />
+          Add Account
+        </Button>
 
         <DropdownMenu
           trigger={
@@ -233,8 +283,8 @@ function BankCard(props: { bank: Bank; onRefetch: () => void }) {
               when={accounts() && accounts()!.length > 0}
               fallback={
                 <div class="px-4 py-3 flex items-center justify-between">
-                  <span class="text-sm text-text-tertiary">No accounts</span>
-                  <Button variant="ghost" size="sm">
+                  <span class="text-sm text-text-tertiary">No accounts yet</span>
+                  <Button variant="ghost" size="sm" onClick={openAcctDialog}>
                     <Plus size={14} />
                     Add Account
                   </Button>
@@ -248,6 +298,54 @@ function BankCard(props: { bank: Bank; onRefetch: () => void }) {
           </Suspense>
         </div>
       </Show>
+
+      {/* Add Account dialog */}
+      <Dialog
+        open={acctDialogOpen()}
+        onOpenChange={(open) => { if (!open) setAcctDialogOpen(false); }}
+        title={`Add Account — ${props.bank.name}`}
+      >
+        <div class="space-y-4 pt-2">
+          <TextField
+            name="acctName"
+            label="Account name"
+            value={acctName()}
+            onInput={(e) => setAcctName(e.currentTarget.value)}
+            placeholder="e.g. Main Checking"
+            required
+          />
+          <TextField
+            name="acctCurrency"
+            label="Currency"
+            value={acctCurrency()}
+            onInput={(e) => setAcctCurrency(e.currentTarget.value)}
+            placeholder="USD"
+            required
+          />
+          <Select
+            name="acctType"
+            label="Account type"
+            options={ACCOUNT_TYPE_OPTIONS}
+            value={acctType()}
+            onChange={(v) => setAcctType(v as AccountType)}
+            required
+          />
+          <div class="flex justify-end gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setAcctDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleCreateAccount}
+              loading={acctSaving()}
+              disabled={!acctName().trim() || !acctCurrency().trim()}
+            >
+              Create
+            </Button>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

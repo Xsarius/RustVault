@@ -51,6 +51,7 @@ export default function LoginPage() {
           name="email"
           label={t("auth.login.email") ?? "Email address"}
           type="email"
+          autocomplete="username"
           value={email()}
           onInput={(e) => setEmail(e.currentTarget.value)}
           required
@@ -60,6 +61,7 @@ export default function LoginPage() {
           name="password"
           label={t("auth.login.password") ?? "Password"}
           type="password"
+          autocomplete="current-password"
           value={password()}
           onInput={(e) => setPassword(e.currentTarget.value)}
           required

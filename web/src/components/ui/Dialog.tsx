@@ -2,7 +2,7 @@
  * Dialog component — modal overlay styled on Kobalte.
  */
 
-import { type JSX, splitProps } from "solid-js";
+import { type JSX, splitProps, createEffect } from "solid-js";
 import { Dialog as KobalteDialog } from "@kobalte/core/dialog";
 import { X } from "lucide-solid";
 
@@ -28,12 +28,28 @@ export function Dialog(props: DialogProps) {
     "children",
   ]);
 
+  createEffect(() => {
+    if (!local.open) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement) {
+      active.blur();
+    }
+  });
+
   return (
     <KobalteDialog open={local.open} onOpenChange={local.onOpenChange}>
       <KobalteDialog.Portal>
-        <KobalteDialog.Overlay class="fixed inset-0 z-[var(--z-overlay)] bg-black/50 data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[closed]:animate-out data-[closed]:fade-out-0" />
-        <div class="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4">
-          <KobalteDialog.Content class="w-full max-w-lg bg-bg border border-border rounded-[var(--radius-lg)] shadow-md overflow-hidden data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[expanded]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95">
+        {/* Overlay handles backdrop click-to-close. */}
+        <KobalteDialog.Overlay
+          class="fixed inset-0 z-[var(--z-overlay)] bg-black/50 data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[closed]:animate-out data-[closed]:fade-out-0"
+          onClick={() => local.onOpenChange(false)}
+        />
+        {/* pointer-events-none so backdrop clicks reach the Overlay above. */}
+        <div class="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 pointer-events-none">
+          <KobalteDialog.Content
+            class="w-full max-w-lg bg-bg border border-border rounded-[var(--radius-lg)] shadow-md overflow-hidden data-[expanded]:animate-in data-[expanded]:fade-in-0 data-[expanded]:zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95 pointer-events-auto"
+            onInteractOutside={(e) => e.preventDefault()}
+          >
             <div class="flex items-center justify-between p-6 pb-0">
               <div class="min-w-0 flex-1 pr-2">
                 <KobalteDialog.Title class="text-lg font-semibold text-text">

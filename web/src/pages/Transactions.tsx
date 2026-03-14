@@ -204,7 +204,7 @@ export default function TransactionsPage() {
     if (ids.length === 0) return;
 
     try {
-      await api.post("/api/transactions/bulk", {
+      await api.patch("/api/transactions/bulk", {
         transaction_ids: ids,
         ...updates,
       });
@@ -362,11 +362,25 @@ export default function TransactionsPage() {
           {t("common.nav.transactions") ?? "Transactions"}
         </h1>
         <div class="flex items-center gap-2">
-          <Button variant="secondary" size="sm" onClick={() => setImportWizardOpen(true)}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={(e) => {
+              e.currentTarget.blur();
+              setImportWizardOpen(true);
+            }}
+          >
             <Upload size={16} />
             {t("import.wizard.title") ?? "Import"}
           </Button>
-          <Button variant="primary" size="sm" onClick={() => setCreateDialogOpen(true)}>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={(e) => {
+              e.currentTarget.blur();
+              setCreateDialogOpen(true);
+            }}
+          >
             <Plus size={16} />
             {t("transactions.form.createTitle") ?? "Add"}
           </Button>
