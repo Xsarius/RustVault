@@ -11,3 +11,9 @@ code = "en-US"
 name = "English (US)"
 native_name = "English (US)"
 direction = "ltr"
+
+[[locales]]
+code = "pl-PL"
+name = "Polish"
+native_name = "Polski"
+direction = "ltr"

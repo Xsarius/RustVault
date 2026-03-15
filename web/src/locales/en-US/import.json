@@ -39,7 +39,7 @@
   "preview": {
     "title": "Preview",
     "description": "Review the parsed transactions before importing.",
-    "rows": "{{count}} transactions to import",
+    "rows": "{{ count }} transactions to import",
     "badges": {
       "new": "New",
       "duplicate": "Possible duplicate",

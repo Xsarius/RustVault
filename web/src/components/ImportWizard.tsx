@@ -404,7 +404,7 @@ export const ImportWizard: Component<ImportWizardProps> = (props) => {
                         {t("import.upload.formatDetected") ?? "Format"}: {result().detected_format}
                       </span>
                       <span class="text-text-secondary">
-                        {result().total_rows} {t("import.preview.rows") ?? "rows"}
+                        {t("import.preview.rows", { count: result().total_rows }) ?? `${result().total_rows} rows`}
                       </span>
                     </div>
 

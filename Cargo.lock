@@ -3163,6 +3163,7 @@ dependencies = [
  "calamine",
  "csv",
  "encoding_rs",
+ "fluent-syntax",
  "infer",
  "pdf-extract",
  "quick-xml",

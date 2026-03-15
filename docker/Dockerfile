@@ -13,6 +13,7 @@ FROM chef AS planner
 
 COPY Cargo.toml Cargo.lock ./
 COPY crates/ crates/
+COPY locales/ locales/
 RUN cargo chef prepare --recipe-path recipe.json
 
 # ============================================================
@@ -35,6 +36,7 @@ RUN if [ "$PROFILE" = "release" ]; then \
 # Build application
 COPY Cargo.toml Cargo.lock ./
 COPY crates/ crates/
+COPY locales/ locales/
 RUN if [ "$PROFILE" = "release" ]; then \
         cargo build --release --bin rustvault; \
     else \
