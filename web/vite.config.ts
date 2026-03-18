@@ -18,10 +18,19 @@ export default defineConfig({
     outDir: "dist",
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["solid-js", "solid-js/web", "solid-js/store", "@solidjs/router"],
-          kobalte: ["@kobalte/core"],
-          charts: ["echarts"],
+        manualChunks(id) {
+          if (id.includes("node_modules/echarts") || id.includes("node_modules/zrender")) {
+            return "charts";
+          }
+          if (id.includes("node_modules/@kobalte")) {
+            return "kobalte";
+          }
+          if (
+            id.includes("node_modules/solid-js") ||
+            id.includes("node_modules/@solidjs")
+          ) {
+            return "vendor";
+          }
         },
       },
     },

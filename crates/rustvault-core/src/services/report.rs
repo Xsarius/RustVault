@@ -61,8 +61,7 @@ fn lttb(data: &[(f64, f64)], threshold: usize) -> Vec<(f64, f64)> {
         let mut max_index = range_start;
 
         for (j, item) in data.iter().enumerate().take(range_end).skip(range_start) {
-            let area =
-                ((ax - avg_x) * (item.1 - ay) - (ax - item.0) * (avg_y - ay)).abs() * 0.5;
+            let area = ((ax - avg_x) * (item.1 - ay) - (ax - item.0) * (avg_y - ay)).abs() * 0.5;
             if area > max_area {
                 max_area = area;
                 max_index = j;
