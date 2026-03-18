@@ -11,8 +11,8 @@ const DATE_FORMATS: &[&str] = &[
     // ISO
     "[year]-[month]-[day]",
     // Verbose with short month name (multi-word, join tokens before calling)
-    "[day] [month repr:short] [year]",          // 15 Jan 2024
-    "[month repr:short] [day] [year]",          // Jan 15 2024
+    "[day] [month repr:short] [year]",               // 15 Jan 2024
+    "[month repr:short] [day] [year]",               // Jan 15 2024
     "[day] [month repr:short] [year repr:last_two]", // 15 Jan 24
     // European
     "[day]/[month]/[year]",

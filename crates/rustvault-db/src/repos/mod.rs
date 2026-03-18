@@ -19,6 +19,8 @@ pub mod category;
 pub mod exchange_rate;
 /// Import repository — SQL operations on the `imports` table.
 pub mod import;
+/// Report repository — aggregation queries for visualisation and analysis.
+pub mod report;
 /// Session repository — refresh-token session persistence.
 pub mod session;
 /// Tag repository — SQL operations on the `tags` table.

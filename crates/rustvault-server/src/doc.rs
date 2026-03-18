@@ -21,7 +21,7 @@ use utoipa::OpenApi;
         (name = "Settings", description = "User preferences and configuration"),
         (name = "i18n", description = "Internationalisation — available locales"),
         (name = "Budgets", description = "Budget planning — per-period spending envelopes with per-category lines"),
-        (name = "Exchange Rates", description = "Currency exchange rates — ECB feed and manual refresh"),
+        (name = "Reports", description = "Visualisation and analysis — dashboard summary, income/expense trends, category analysis, balance history, cash flow"),
     ),
     paths(
         // Health
@@ -70,14 +70,16 @@ use utoipa::OpenApi;
         crate::routes::budgets::delete,
         crate::routes::budgets::summary,
         crate::routes::budgets::copy,
-        crate::routes::budgets::list_lines,
         crate::routes::budgets::add_line,
         crate::routes::budgets::bulk_set_lines,
         crate::routes::budgets::update_line,
         crate::routes::budgets::delete_line,
-        // Exchange Rates
-        crate::routes::budgets::list_rates,
-        crate::routes::budgets::refresh_rates,
+        // Reports
+        crate::routes::reports::summary,
+        crate::routes::reports::income_expense,
+        crate::routes::reports::category_trend,
+        crate::routes::reports::balance_history,
+        crate::routes::reports::cash_flow,
     ),
     components(
         schemas(
@@ -121,10 +123,23 @@ use utoipa::OpenApi;
             rustvault_core::models::budget::BulkBudgetLines,
             rustvault_core::models::budget::BudgetSummary,
             rustvault_core::models::budget::BudgetLineSummary,
-            rustvault_core::models::budget::ExchangeRate,
             // Server-level request types
             crate::routes::auth::RefreshRequest,
             crate::routes::budgets::CopyBudgetRequest,
+            // Report models
+            rustvault_core::models::report::DashboardSummary,
+            rustvault_core::models::report::MonthlyPoint,
+            rustvault_core::models::report::CategorySpend,
+            rustvault_core::models::report::IncomeExpenseReport,
+            rustvault_core::models::report::IncomeExpenseMonth,
+            rustvault_core::models::report::CategoryTrendReport,
+            rustvault_core::models::report::TrendPoint,
+            rustvault_core::models::report::BalanceHistoryReport,
+            rustvault_core::models::report::AccountMeta,
+            rustvault_core::models::report::BalanceSnapshot,
+            rustvault_core::models::report::AccountBalance,
+            rustvault_core::models::report::CashFlowReport,
+            rustvault_core::models::report::CashFlowPeriod,
         ),
     ),
     security(

@@ -17,6 +17,8 @@ pub mod category;
 pub mod exchange_rate;
 /// Import service — list, get, rollback.
 pub mod import;
+/// Report service — dashboard summary, income/expense, category trend, balance history, cash flow.
+pub mod report;
 /// Auto-rule service — CRUD for auto-categorization rules.
 pub mod rule;
 /// Rule engine — condition evaluation, action application, rule suggestions.

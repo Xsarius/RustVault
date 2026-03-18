@@ -1030,6 +1030,9 @@ docs/
   - Add `#![warn(missing_docs)]` to all Rust crate roots.
   - Configure `rustdoc` in CI to fail on warnings.
 
+### Extra Steps (P0)
+- [x] **P0.extra.1** `locales/pl-PL/months.ftl` — Polish month names; first second-locale entry, validates that the locale infra loads multiple locales beyond `en-US`.
+
 ### Documentation Deliverables (P0)
 - [x] README.md with project overview, badges, quick start.
 - [x] CONTRIBUTING.md with dev environment setup.
@@ -1093,11 +1096,13 @@ docs/
   - Write `docs/adr/0009-oidc-design.md` — ADR for OIDC architecture decisions.
 - [x] **P1.4** Implement CRUD for **Banks**:
   - `GET /api/banks` — list user's banks with nested accounts and total balance per currency.
+  - `GET /api/banks/:id` — get a single bank with its accounts.
   - `POST /api/banks` — create bank (name).
   - `PUT /api/banks/:id` — update.
   - `PUT /api/banks/:id/archive` — soft-archive (also archives all accounts within).
 - [x] **P1.5** Implement CRUD for **Accounts**:
   - `GET /api/accounts` — list user's accounts (filterable by bank_id, type, currency, is_archived; group_by bank/type/currency).
+  - `GET /api/accounts/:id` — get a single account.
   - `POST /api/accounts` — create account (bank_id required, name, currency, type, supports_nonstandard_topup).
   - `PUT /api/accounts/:id` — update.
   - `PUT /api/accounts/:id/archive` — soft-archive.
@@ -1212,6 +1217,9 @@ docs/
   - Set up `bundlesize` check in CI (initial JS < 150 KB, per-route < 30 KB).
   - Configure font subsetting and `font-display: swap` with WOFF2 preload.
 
+### Extra Steps (P2)
+- [x] **P2.extra.1** `web/src/pages/More.tsx` — Mobile "More" overflow page: shown as the last bottom-navigation tab on small screens, surfaces secondary routes (Tags, Rules, etc.) that don't fit the main tab bar.
+
 ### Documentation Deliverables (P2)
 - [x] Storybook deployed with all reusable components documented (props, usage examples, variants).
 - [x] Write `docs/book/src/getting-started/quick-tour.md` — UI walkthrough with screenshots.
@@ -1302,14 +1310,17 @@ docs/
 - [x] **P3B.8** Implement **JSON parser** (flexible schema, user maps fields).
 - [x] **P3B.9** Register parsers in a `ParserRegistry` (registry pattern — easy to add more).
 
+### Extra Steps (P3B)
+- [x] **P3B.extra.1** `rustvault-import/src/detect.rs` — File format detection: inspects raw bytes (magic bytes, content patterns) and optional file extension to determine the statement format before routing to the appropriate parser. Exported as `detect_format(data, extension) -> Option<FileFormat>`.
+
 ### 3C — Import Pipeline (orchestration)
 
 - [x] **P3C.1** Implement import endpoint:
   - `POST /api/import/upload` — upload file, detect format, return preview (first 10 rows parsed).
   - `POST /api/import/configure` — submit column mapping (if CSV/JSON), target account.
-  - `POST /api/import/execute` — run full import with the following pipeline:
+  - `POST /api/import/execute` — re-upload the file (`multipart/form-data`: `file`, optional `mapping` override, optional `skip_duplicates`) and run the full import pipeline using the mapping saved via configure (overridable at execute time):
     ```
-    File → Parse → Deduplicate → Auto-Categorize → Detect Transfers → Persist → Summary
+    Parse → Deduplicate → Auto-Categorize → Detect Transfers → Persist → Summary
     ```
   - `GET /api/imports` — list past imports.
   - `GET /api/imports/:id` — import details (stats, errors, linked transactions).
@@ -1490,7 +1501,7 @@ docs/
 
 ### Tasks
 
-- [ ] **P5.1** Implement **Dashboard** page with summary widgets:
+- [x] **P5.1** Implement **Dashboard** page with summary widgets:
   - Net worth over time (line chart, all accounts).
   - Monthly income vs. expenses (bar chart, last 12 months).
   - Current month spending by category (donut/sunburst chart).
@@ -1498,28 +1509,28 @@ docs/
   - Unreviewed transactions badge.
   - Quick stats: total income, total expenses, savings rate (this month + trend).
   - **Performance**: Load all dashboard API calls in parallel (`Promise.all`). Above-the-fold widgets render first; below-fold charts deferred via `IntersectionObserver`. Skeleton dashboard shown during load.
-- [ ] **P5.1.perf** Implement **ECharts performance optimization**:
+- [x] **P5.1.perf** Implement **ECharts performance optimization**:
   - Lazy-load ECharts only on dashboard/report routes: `import('echarts/core')` + register only needed renderers and chart types.
   - Use modular imports: `BarChart`, `LineChart`, `PieChart`, `TooltipComponent`, `GridComponent` only. Never import full `echarts` package.
   - Canvas renderer for performance (not SVG).
   - Data downsampling: backend uses LTTB algorithm for time series > 1000 data points.
   - Enable entry animations, disable animation on data refresh for snappy updates.
   - Debounced chart resize on `ResizeObserver` (100ms).
-- [ ] **P5.2** Implement **Income vs. Expense Report**:
+- [x] **P5.2** Implement **Income vs. Expense Report**:
   - Stacked bar chart by month.
   - Drill-down: click a month's bar → see category breakdown.
   - Toggle between expense categories and income sources.
   - Date range selector.
-- [ ] **P5.3** Implement **Category Analysis**:
+- [x] **P5.3** Implement **Category Analysis**:
   - Treemap or sunburst chart showing expense distribution.
   - Historical trend per category (line chart).
   - Top merchants/payees per category.
   - Anomaly highlight: months where a category is significantly above average.
-- [ ] **P5.4** Implement **Account Balance History**:
+- [x] **P5.4** Implement **Account Balance History**:
   - Line chart per account over time.
   - Overlay multiple accounts.
   - Combined net worth line.
-- [ ] **P5.5** Implement **Cash Flow Forecast** (simple):
+- [x] **P5.5** Implement **Cash Flow Forecast** (simple):
   - Based on last N months' average income/expense, project next 1–3 months.
   - Overlay with budget if defined.
 - [ ] **P5.6** Implement **Custom Report Builder** (stretch goal):
@@ -1527,8 +1538,8 @@ docs/
   - Pick metrics (sum, average, count).
   - Choose chart type (bar, line, pie, table).
   - Save reports as bookmarks.
-- [ ] **P5.7** Implement **Export**: all reports exportable as CSV or PDF.
-- [ ] **P5.8** Implement backend aggregation endpoints:
+- [x] **P5.7** Implement **Export**: all reports exportable as CSV or PDF.
+- [x] **P5.8** Implement backend aggregation endpoints:
   - `GET /api/reports/summary` — dashboard summary data.
   - `GET /api/reports/income-expense` — monthly I/E with category breakdown.
   - `GET /api/reports/category/:id/trend` — category spending over time.
@@ -1544,15 +1555,15 @@ docs/
 - Chart labels, axis labels, tooltips, and legends are fully localized.
 
 ### i18n Tasks (Phase 5)
-- [ ] **P5.i18n.1** Write `locales/en-US/reports.ftl` and `web/src/locales/en-US/reports.json` — all chart labels, report titles, widget names, export strings.
-- [ ] **P5.i18n.2** ECharts locale configuration: number formatting, month/day names on axes, tooltip currency formatting per user locale.
-- [ ] **P5.i18n.3** PDF export with locale-aware formatting (date headers, currency columns).
+- [x] **P5.i18n.1** Write `locales/en-US/reports.ftl` and `web/src/locales/en-US/reports.json` — all chart labels, report titles, widget names, export strings.
+- [x] **P5.i18n.2** ECharts locale configuration: number formatting, month/day names on axes, tooltip currency formatting per user locale.
+- [x] **P5.i18n.3** PDF export with locale-aware formatting (date headers, currency columns).
 
 ### Documentation Deliverables (P5)
-- [ ] Write `docs/book/src/features/reports.md` — reports user guide (each chart type, how to read it, drill-down, date range selection).
-- [ ] Write `docs/book/src/features/multi-currency.md` — how currency conversion works in reports.
-- [ ] Write interactive tooltip help within the dashboard ("? " icon on each widget with explanation).
-- [ ] OpenAPI annotations on all report endpoints.
+- [x] Write `docs/book/src/features/reports.md` — reports user guide (each chart type, how to read it, drill-down, date range selection).
+- [x] Write `docs/book/src/features/multi-currency.md` — how currency conversion works in reports.
+- [x] Write interactive tooltip help within the dashboard ("? " icon on each widget with explanation).
+- [x] OpenAPI annotations on all report endpoints.
 - [ ] Screenshots/GIFs of each chart type in the user guide.
 
 ---

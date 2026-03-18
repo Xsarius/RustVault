@@ -12,6 +12,7 @@ pub mod categories;
 pub mod health;
 pub mod i18n;
 pub mod imports;
+pub mod reports;
 pub mod rules;
 pub mod settings;
 pub mod tags;
@@ -103,10 +104,6 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         .route("/api/imports", get(imports::list))
         .route("/api/imports/upload", post(imports::upload))
         .route(
-            "/api/imports/upload-and-execute",
-            post(imports::upload_and_execute),
-        )
-        .route(
             "/api/imports/{id}",
             get(imports::get).delete(imports::rollback),
         )
@@ -131,16 +128,19 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         .route("/api/budgets/{id}/copy", post(budgets::copy))
         .route(
             "/api/budgets/{id}/lines",
-            get(budgets::list_lines).post(budgets::add_line),
+            post(budgets::add_line),
         )
         .route("/api/budgets/{id}/lines/bulk", post(budgets::bulk_set_lines))
         .route(
             "/api/budgets/{id}/lines/{line_id}",
             put(budgets::update_line).delete(budgets::delete_line),
         )
-        // Exchange Rates
-        .route("/api/exchange-rates", get(budgets::list_rates))
-        .route("/api/exchange-rates/refresh", post(budgets::refresh_rates))
+        // Reports
+        .route("/api/reports/summary", get(reports::summary))
+        .route("/api/reports/income-expense", get(reports::income_expense))
+        .route("/api/reports/categories/{id}/trend", get(reports::category_trend))
+        .route("/api/reports/balance-history", get(reports::balance_history))
+        .route("/api/reports/cash-flow", get(reports::cash_flow))
         .layer(middleware::from_fn_with_state(state, auth_middleware))
 }
 

@@ -1,0 +1,72 @@
+{
+  "title": "Reports",
+  "tabs": {
+    "incomeExpense": "Income & Expense",
+    "categories": "Categories",
+    "balanceHistory": "Balance History",
+    "cashFlow": "Cash Flow"
+  },
+  "dateRange": {
+    "label": "Date range",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
+    "presets": {
+      "last3months": "Last 3 months",
+      "last6months": "Last 6 months",
+      "last12months": "Last 12 months",
+      "thisYear": "This year",
+      "lastYear": "Last year"
+    }
+  },
+  "summary": {
+    "netWorth": "Net worth",
+    "monthIncome": "Income this month",
+    "monthExpenses": "Expenses this month",
+    "savingsRate": "Savings rate",
+    "unreviewed": "Unreviewed transactions",
+    "unreviewedSuffix": "transactions need review"
+  },
+  "incomeExpense": {
+    "title": "Income vs Expenses",
+    "income": "Income",
+    "expenses": "Expenses",
+    "noData": "No transactions found in this period."
+  },
+  "categories": {
+    "title": "Spending by Category",
+    "selectCategory": "Select a category",
+    "noCategory": "Uncategorised",
+    "average": "Monthly average",
+    "noData": "No data for the selected category and period."
+  },
+  "balanceHistory": {
+    "title": "Account Balance History",
+    "allAccounts": "All accounts",
+    "netWorth": "Net worth",
+    "noData": "No account data available."
+  },
+  "cashFlow": {
+    "title": "Cash Flow",
+    "income": "Income",
+    "expenses": "Expenses",
+    "net": "Net",
+    "forecast": "Forecast",
+    "avgIncome": "Avg. income",
+    "avgExpenses": "Avg. expenses",
+    "noData": "No transactions found in this period."
+  },
+  "loading": "Loading report…",
+  "error": "Failed to load report data.",
+  "export": {
+    "csv": "Export CSV",
+    "filename": "report"
+  },
+  "help": {
+    "netWorth": "The combined balance across all your non-archived accounts.",
+    "monthIncome": "Total income transactions recorded in the current calendar month.",
+    "monthExpenses": "Total expense transactions recorded in the current calendar month (positive figure).",
+    "savingsRate": "(Income \u2212 Expenses) \u00f7 Income \u00d7 100 for the current month. Blank when income is zero.",
+    "unreviewed": "Transactions imported or created that have not yet been marked as reviewed."
+  }
+}

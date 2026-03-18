@@ -12,8 +12,7 @@ use crate::response::{ApiError, ApiResponse, ErrorBody, PaginatedResponse};
 use crate::state::AppState;
 
 use rustvault_core::models::budget::{
-    BudgetSummary, BulkBudgetLines, ExchangeRate, NewBudget, NewBudgetLine, UpdateBudget,
-    UpdateBudgetLine,
+    BudgetSummary, BulkBudgetLines, NewBudget, NewBudgetLine, UpdateBudget, UpdateBudgetLine,
 };
 
 // ── Query params ──────────────────────────────────────────────────────────────
@@ -212,28 +211,6 @@ pub async fn copy(
 
 // ── Budget Line handlers ──────────────────────────────────────────────────────
 
-/// `GET /api/budgets/:id/lines` — List all lines for a budget.
-#[utoipa::path(
-    get,
-    path = "/api/budgets/{id}/lines",
-    tag = "Budgets",
-    security(("bearer" = [])),
-    params(("id" = Uuid, Path, description = "Budget ID")),
-    responses(
-        (status = 200, description = "Budget lines",
-         body = inline(PaginatedResponse<rustvault_core::models::budget::BudgetLine>)),
-        (status = 404, description = "Budget not found", body = ErrorBody),
-    ),
-)]
-pub async fn list_lines(
-    State(state): State<AppState>,
-    auth: AuthUser,
-    Path(id): Path<Uuid>,
-) -> Result<impl IntoResponse, ApiError> {
-    let lines = rustvault_core::services::budget::list_lines(&state.pool, auth.user_id, id).await?;
-    Ok(PaginatedResponse::from_vec(lines))
-}
-
 /// `POST /api/budgets/:id/lines` — Add a line to a budget.
 #[utoipa::path(
     post,
@@ -338,43 +315,4 @@ pub async fn delete_line(
     Ok(StatusCode::NO_CONTENT)
 }
 
-// ── Exchange Rate handlers ────────────────────────────────────────────────────
-
-/// `GET /api/exchange-rates` — List the latest exchange rates.
-#[utoipa::path(
-    get,
-    path = "/api/exchange-rates",
-    tag = "Exchange Rates",
-    security(("bearer" = [])),
-    responses(
-        (status = 200, description = "Latest rates",
-         body = inline(PaginatedResponse<ExchangeRate>)),
-        (status = 401, description = "Not authenticated", body = ErrorBody),
-    ),
-)]
-pub async fn list_rates(
-    State(state): State<AppState>,
-    _auth: AuthUser,
-) -> Result<impl IntoResponse, ApiError> {
-    let rates = rustvault_core::services::budget::list_exchange_rates(&state.pool).await?;
-    Ok(PaginatedResponse::from_vec(rates))
-}
-
-/// `POST /api/exchange-rates/refresh` — Fetch fresh rates from the ECB feed.
-#[utoipa::path(
-    post,
-    path = "/api/exchange-rates/refresh",
-    tag = "Exchange Rates",
-    security(("bearer" = [])),
-    responses(
-        (status = 200, description = "Rates refreshed", body = inline(ApiResponse<u64>)),
-        (status = 502, description = "Upstream ECB feed unreachable", body = ErrorBody),
-    ),
-)]
-pub async fn refresh_rates(
-    State(state): State<AppState>,
-    _auth: AuthUser,
-) -> Result<impl IntoResponse, ApiError> {
-    let count = rustvault_core::services::budget::fetch_and_store_rates(&state.pool).await?;
-    Ok(ApiResponse::ok(count))
-}
+// (Exchange rates are refreshed by a scheduled background task; no REST endpoints needed.)

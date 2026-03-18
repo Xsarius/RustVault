@@ -17,6 +17,8 @@ pub mod category;
 pub mod import;
 /// Pagination helpers for list endpoints.
 pub mod pagination;
+/// Report models — response types for visualisation and analysis.
+pub mod report;
 /// Auto-categorization rule model.
 pub mod rule;
 /// Refresh-token session model.

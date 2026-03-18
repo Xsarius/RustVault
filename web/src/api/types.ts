@@ -544,3 +544,101 @@ export interface LocaleInfo {
   completeness: number;
   is_default: boolean;
 }
+
+// ── Reports ───────────────────────────────────────────────────
+
+/** One month's income/expense totals (dashboard trend). */
+export interface MonthlyPoint {
+  /** ISO date string — first day of the month. */
+  month: string;
+  income: string;
+  expenses: string;
+}
+
+/** Total spending for a category in a given period. */
+export interface CategorySpend {
+  category_id: string | null;
+  category_name: string | null;
+  total: string;
+}
+
+/** Dashboard summary response. */
+export interface DashboardSummary {
+  net_worth: string;
+  month_income: string;
+  month_expenses: string;
+  /** Null when income is zero. */
+  savings_rate: number | null;
+  unreviewed_count: number;
+  monthly_trend: MonthlyPoint[];
+  spending_by_category: CategorySpend[];
+}
+
+/** One month in the income/expense report (with category breakdown). */
+export interface IncomeExpenseMonth {
+  month: string;
+  income: string;
+  expenses: string;
+  breakdown: CategorySpend[];
+}
+
+/** Full income vs expense report. */
+export interface IncomeExpenseReport {
+  months: IncomeExpenseMonth[];
+}
+
+/** One period data point in a category trend. */
+export interface TrendPoint {
+  period: string;
+  total: string;
+}
+
+/** Monthly spending trend for a single category. */
+export interface CategoryTrendReport {
+  category_id: string;
+  periods: TrendPoint[];
+  average: string;
+}
+
+/** Lightweight account metadata embedded in balance history. */
+export interface AccountMeta {
+  id: string;
+  name: string;
+  currency: string;
+}
+
+/** One account's balance on a given date. */
+export interface AccountBalance {
+  account_id: string;
+  balance: string;
+}
+
+/** Balance for all requested accounts on a single date. */
+export interface BalanceSnapshot {
+  date: string;
+  balances: AccountBalance[];
+  net_worth: string;
+}
+
+/** Historical account balance report. */
+export interface BalanceHistoryReport {
+  accounts: AccountMeta[];
+  snapshots: BalanceSnapshot[];
+}
+
+/** One period's cash flow (historical or forecast). */
+export interface CashFlowPeriod {
+  period: string;
+  income: string;
+  expenses: string;
+  net: string;
+  is_forecast: boolean;
+}
+
+/** Cash flow report with forecast. */
+export interface CashFlowReport {
+  periods: CashFlowPeriod[];
+  avg_income: string;
+  avg_expenses: string;
+  forecast: CashFlowPeriod[];
+}

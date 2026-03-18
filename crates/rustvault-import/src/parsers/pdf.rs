@@ -54,10 +54,7 @@ macro_rules! locale_months {
     };
 }
 
-const LOCALE_SOURCES: &[&str] = &[
-    locale_months!("en-US"),
-    locale_months!("pl-PL"),
-];
+const LOCALE_SOURCES: &[&str] = &[locale_months!("en-US"), locale_months!("pl-PL")];
 
 fn build_month_map() -> HashMap<String, u8> {
     let mut map = HashMap::new();
@@ -72,14 +69,24 @@ fn build_month_map() -> HashMap<String, u8> {
             }
         };
         for entry in &resource.body {
-            let ast::Entry::Message(msg) = entry else { continue };
-            let Some(num_str) = msg.id.name.strip_prefix("month-") else { continue };
-            let Ok(num) = num_str.parse::<u8>() else { continue };
+            let ast::Entry::Message(msg) = entry else {
+                continue;
+            };
+            let Some(num_str) = msg.id.name.strip_prefix("month-") else {
+                continue;
+            };
+            let Ok(num) = num_str.parse::<u8>() else {
+                continue;
+            };
             if let Some(p) = &msg.value {
-                if let Some(t) = ftl_single_text(p) { map.insert(t.to_lowercase(), num); }
+                if let Some(t) = ftl_single_text(p) {
+                    map.insert(t.to_lowercase(), num);
+                }
             }
             for attr in &msg.attributes {
-                if let Some(t) = ftl_single_text(&attr.value) { map.insert(t.to_lowercase(), num); }
+                if let Some(t) = ftl_single_text(&attr.value) {
+                    map.insert(t.to_lowercase(), num);
+                }
             }
         }
     }
@@ -230,7 +237,7 @@ fn parse_line(line: &str, line_no: usize) -> ImportResult<Option<RawTransaction>
     // adjacent tokens to handle formats like "15 Jan 2024" or "Jan 15 2024".
     // Also tries year-optional variants ("01/15", "15 Jan") so that statements
     // without per-row year columns are still matched.
-    let mut date_idx = None;   // index of the LAST token of the matched date
+    let mut date_idx = None; // index of the LAST token of the matched date
     let mut date_span = 1usize; // how many tokens the date consumed
     let mut parsed_date = None;
 
@@ -370,21 +377,17 @@ fn normalize_whitespace(s: &str) -> String {
 /// - `"mon DD YYYY"` e.g. `"Jan 15 2024"`
 fn parse_date_custom_month(a: &str, b: &str, c: &str) -> Option<Date> {
     // "DD mon YYYY"
-    if let (Ok(day), Some(month), Ok(year)) = (
-        a.parse::<u8>(),
-        parse_month_abbrev(b),
-        c.parse::<i32>(),
-    ) {
+    if let (Ok(day), Some(month), Ok(year)) =
+        (a.parse::<u8>(), parse_month_abbrev(b), c.parse::<i32>())
+    {
         if let Ok(d) = Date::from_calendar_date(year, month, day) {
             return Some(d);
         }
     }
     // "mon DD YYYY"
-    if let (Some(month), Ok(day), Ok(year)) = (
-        parse_month_abbrev(a),
-        b.parse::<u8>(),
-        c.parse::<i32>(),
-    ) {
+    if let (Some(month), Ok(day), Ok(year)) =
+        (parse_month_abbrev(a), b.parse::<u8>(), c.parse::<i32>())
+    {
         if let Ok(d) = Date::from_calendar_date(year, month, day) {
             return Some(d);
         }
@@ -591,19 +594,27 @@ mod tests {
     #[test]
     fn parses_common_amount_variants() {
         assert_eq!(
-            parse_amount_token("-123.45").map(|(d, _)| d.to_string()).as_deref(),
+            parse_amount_token("-123.45")
+                .map(|(d, _)| d.to_string())
+                .as_deref(),
             Some("-123.45")
         );
         assert_eq!(
-            parse_amount_token("123,45").map(|(d, _)| d.to_string()).as_deref(),
+            parse_amount_token("123,45")
+                .map(|(d, _)| d.to_string())
+                .as_deref(),
             Some("123.45")
         );
         assert_eq!(
-            parse_amount_token("(12.30)").map(|(d, _)| d.to_string()).as_deref(),
+            parse_amount_token("(12.30)")
+                .map(|(d, _)| d.to_string())
+                .as_deref(),
             Some("-12.30")
         );
         assert_eq!(
-            parse_amount_token("123.45-").map(|(d, _)| d.to_string()).as_deref(),
+            parse_amount_token("123.45-")
+                .map(|(d, _)| d.to_string())
+                .as_deref(),
             Some("-123.45")
         );
         // Single-character tokens must not be parsed as amounts.
@@ -693,16 +704,17 @@ mod tests {
         let input = "15 sty 2026 Biedronka -24,99\n01 lut 2026 Wynagrodzenie 5000,00\n";
         let rows = parse_transactions_from_text(input).expect("parse should succeed");
         assert_eq!(rows.len(), 2);
-        assert_eq!(rows[0].date.month() as u8, 1);  // January
+        assert_eq!(rows[0].date.month() as u8, 1); // January
         assert_eq!(rows[0].description, "Biedronka");
-        assert_eq!(rows[1].date.month() as u8, 2);  // February
+        assert_eq!(rows[1].date.month() as u8, 2); // February
         assert_eq!(rows[1].description, "Wynagrodzenie");
     }
 
     #[test]
     fn parses_polish_statement_with_zl_currency() {
         // mBank / Santander style: DD.MM.YYYY description amount zł
-        let input = "01.03.2026 Lidl Supermarket -89,90zł\n05.03.2026 Przelew przychodzacy 3500,00zł\n";
+        let input =
+            "01.03.2026 Lidl Supermarket -89,90zł\n05.03.2026 Przelew przychodzacy 3500,00zł\n";
         let rows = parse_transactions_from_text(input).expect("parse should succeed");
         assert_eq!(rows.len(), 2);
         assert_eq!(rows[0].currency.as_deref(), Some("PLN"));

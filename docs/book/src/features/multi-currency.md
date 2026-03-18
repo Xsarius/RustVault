@@ -1,17 +1,47 @@
 # Multi-Currency
 
-> **Status:** Planned for Phase 5. This feature is not yet implemented.
+RustVault supports accounts denominated in different currencies. Each account
+has its own ISO 4217 currency (e.g. `EUR`, `USD`, `GBP`, `PLN`).
 
-RustVault will support managing finances across multiple currencies with automatic exchange rate handling.
+## How accounts work
 
-## Planned Features
+When you create an account you must choose its currency. The currency cannot
+be changed once transactions exist on the account.
 
-- **Per-account currency** — each account has its own currency (e.g. EUR, USD, GBP)
-- **Automatic exchange rates** — daily rates fetched from a public API
-- **Base currency** — all reports and totals converted to your chosen base currency
-- **Manual rate override** — set custom rates for specific transactions
-- **Currency formatting** — locale-aware display (€1.000,00 vs $1,000.00)
+## Exchange rates
 
-## How It Will Work
+RustVault stores exchange rates in the `exchange_rates` table. Rates are fetched
+from the **ECB feed** via `POST /api/exchange-rates/refresh`. The stored rates
+are used for:
 
-Each account is assigned a currency at creation time. When viewing aggregate data (dashboard, reports), RustVault converts all amounts to your base currency using the exchange rate for the transaction date. Transfers between accounts with different currencies are recorded with the rate used.
+- Calculating approximate cross-currency totals in reports.
+- Displaying net worth in your **base currency** (set in Settings).
+
+## Reports & net worth
+
+The dashboard `net_worth` and monthly trend values sum all account balances
+**in their native currencies** without conversion. Full multi-currency
+conversion in reports (using per-date rates) is planned for a future release.
+
+## Currency formatting
+
+All monetary values are stored as arbitrary-precision `NUMERIC` in PostgreSQL
+and serialised as decimal strings (e.g. `"1234.56"`) in the API to avoid
+floating-point rounding.
+
+The frontend uses `Intl.NumberFormat` with the user’s locale and each
+account’s currency code for display:
+
+```ts
+formatCurrency("1234.56", "EUR", "de-DE")  // → "1.234,56 €"
+formatCurrency("1234.56", "USD", "en-US")  // → "$1,234.56"
+```
+
+See `web/src/lib/format.ts` for the implementation.
+
+## ECharts locale
+
+Chart axis labels and tooltip values use the same locale as the browser
+(`navigator.language`). The `initChart` helper in `web/src/lib/chart.ts`
+automatically loads the matching ECharts locale pack when available and falls
+back to EN for unsupported locales.

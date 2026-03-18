@@ -59,15 +59,6 @@ pub struct ConfigureImportRequest {
     pub mapping: serde_json::Value,
 }
 
-/// Request body for the execute-import endpoint.
-#[derive(Debug, Deserialize, validator::Validate, utoipa::ToSchema)]
-pub struct ExecuteImportRequest {
-    /// Column mapping (optional if already saved via configure).
-    pub mapping: Option<serde_json::Value>,
-    /// Whether to skip duplicate transactions (default: true).
-    pub skip_duplicates: Option<bool>,
-}
-
 /// Response body for the upload endpoint.
 #[derive(Debug, serde::Serialize, utoipa::ToSchema)]
 pub struct UploadResponse {
@@ -288,21 +279,32 @@ pub async fn configure(
     Ok(ApiResponse::ok(import))
 }
 
-/// `POST /api/imports/:id/execute` — Execute an import.
+/// `POST /api/imports/:id/execute` — Re-upload the file and run the full import.
 ///
-/// The caller must supply the raw parsed rows (from the upload endpoint).
-/// In a production system the server would re-read the stored file; for
-/// now the client sends the rows as a JSON array.
+/// Accepts the same bank statement file that was uploaded, re-parses it using
+/// the mapping saved via the configure endpoint (or an optional mapping
+/// override), then runs:
+///
+/// ```text
+/// Parse → Deduplicate → Auto-Categorise → Detect Transfers → Persist → Summary
+/// ```
+///
+/// Multipart fields:
+/// - `file` — the bank statement file (binary).
+/// - `mapping` (optional) — JSON column mapping override; overrides any
+///   previously saved mapping for this import.
+/// - `skip_duplicates` (optional, default `"true"`) — `"true"` / `"1"` to
+///   skip transactions that look like duplicates.
 #[utoipa::path(
     post,
     path = "/api/imports/{id}/execute",
     tag = "Imports",
     security(("bearer" = [])),
     params(("id" = Uuid, Path, description = "Import ID")),
-    request_body = ExecuteImportRequest,
+    request_body(content_type = "multipart/form-data", content = inline(String), description = "Form fields: file (binary), mapping (optional JSON override), skip_duplicates (optional bool)"),
     responses(
         (status = 200, description = "Import executed", body = inline(ApiResponse<ImportExecutionResult>)),
-        (status = 400, description = "Validation error", body = ErrorBody),
+        (status = 400, description = "Bad request / file parse error", body = ErrorBody),
         (status = 404, description = "Import not found", body = ErrorBody),
     ),
 )]
@@ -310,11 +312,11 @@ pub async fn execute(
     State(state): State<AppState>,
     auth: AuthUser,
     Path(id): Path<Uuid>,
-    ValidatedJson(body): ValidatedJson<ExecuteImportRequest>,
+    mut multipart: Multipart,
 ) -> Result<impl IntoResponse, ApiError> {
+    // Look up the existing import record.
     let import = rustvault_core::services::import::get(&state.pool, auth.user_id, id).await?;
 
-    // Verify the import is still pending.
     if import.status != rustvault_core::models::import::ImportStatus::Pending {
         return Err(ApiError::BadRequest(format!(
             "import is already {:?} — only pending imports can be executed",
@@ -322,59 +324,10 @@ pub async fn execute(
         )));
     }
 
-    // If a mapping is provided, save it first.
-    if let Some(ref mapping) = body.mapping {
-        rustvault_core::services::import::save_mapping(&state.pool, auth.user_id, id, mapping)
-            .await?;
-    }
-
-    // Retrieve stored column mapping.
-    let import = rustvault_core::services::import::get(&state.pool, auth.user_id, id).await?;
-    let _mapping: Option<ColumnMapping> = import
-        .column_mapping
-        .as_ref()
-        .and_then(|v| serde_json::from_value(v.clone()).ok());
-
-    // Re-parse the file would happen here in production.
-    // For now, the upload endpoint already validated parsing, so we expect
-    // the client to send the file again via multipart. We'll implement a
-    // combined upload+execute flow below.
-    //
-    // This endpoint currently expects the rows to be stored from upload.
-    // Since we don't have file storage yet, we return a helpful placeholder.
-    //
-    // For the MVP, use the upload_and_execute endpoint instead.
-    Err::<axum::Json<()>, _>(ApiError::BadRequest(
-        "use POST /api/imports/upload-and-execute for the complete import flow".into(),
-    ))
-}
-
-/// `POST /api/imports/upload-and-execute` — Upload a file and execute the import in one step.
-///
-/// This is the primary import flow: upload → parse → detect format → apply rules → insert transactions.
-#[utoipa::path(
-    post,
-    path = "/api/imports/upload-and-execute",
-    tag = "Imports",
-    security(("bearer" = [])),
-    request_body(content_type = "multipart/form-data", content = inline(String), description = "Form fields: file (binary), account_id (UUID), mapping (optional JSON), skip_duplicates (optional bool)"),
-    responses(
-        (status = 200, description = "Import executed", body = inline(ApiResponse<ImportExecutionResult>)),
-        (status = 400, description = "Bad request", body = ErrorBody),
-        (status = 404, description = "Account not found", body = ErrorBody),
-    ),
-)]
-pub async fn upload_and_execute(
-    State(state): State<AppState>,
-    auth: AuthUser,
-    mut multipart: Multipart,
-) -> Result<impl IntoResponse, ApiError> {
     let max_size = parse_max_file_size(&state.config.import.max_file_size);
-
     let mut file_bytes: Option<Vec<u8>> = None;
     let mut file_name: Option<String> = None;
-    let mut account_id: Option<Uuid> = None;
-    let mut mapping: Option<ColumnMapping> = None;
+    let mut mapping_override: Option<ColumnMapping> = None;
     let mut skip_duplicates = true;
 
     while let Some(field) = multipart
@@ -398,22 +351,12 @@ pub async fn upload_and_execute(
                 }
                 file_bytes = Some(bytes.to_vec());
             }
-            "account_id" => {
-                let text = field
-                    .text()
-                    .await
-                    .map_err(|e| ApiError::BadRequest(format!("invalid account_id: {e}")))?;
-                account_id =
-                    Some(Uuid::parse_str(&text).map_err(|_| {
-                        ApiError::BadRequest("account_id must be a valid UUID".into())
-                    })?);
-            }
             "mapping" => {
                 let text = field
                     .text()
                     .await
                     .map_err(|e| ApiError::BadRequest(format!("invalid mapping: {e}")))?;
-                mapping = Some(
+                mapping_override = Some(
                     serde_json::from_str(&text)
                         .map_err(|e| ApiError::BadRequest(format!("invalid mapping JSON: {e}")))?,
                 );
@@ -433,8 +376,6 @@ pub async fn upload_and_execute(
         file_bytes.ok_or_else(|| ApiError::BadRequest("missing required field: file".into()))?;
     let file_name =
         file_name.ok_or_else(|| ApiError::BadRequest("file must have a filename".into()))?;
-    let account_id = account_id
-        .ok_or_else(|| ApiError::BadRequest("missing required field: account_id".into()))?;
 
     // Validate extension.
     let ext = file_extension(&file_name)
@@ -445,31 +386,8 @@ pub async fn upload_and_execute(
         )));
     }
 
-    // Detect format and parse.
-    let registry = ParserRegistry::new();
-    let (parser, format) = registry
-        .detect_and_select(&file_bytes, Some(&ext))
-        .ok_or_else(|| ApiError::BadRequest("could not detect file format".into()))?;
-
-    let format_name = format!("{format:?}").to_lowercase();
-    let mapping_ref = mapping.as_ref();
-
-    let all_raw = parser
-        .parse(&file_bytes, mapping_ref)
-        .map_err(|e| ApiError::BadRequest(format!("parse error: {e}")))?;
-
-    // Create import record.
-    let import = rustvault_core::services::import::create(
-        &state.pool,
-        auth.user_id,
-        &file_name,
-        &format_name,
-        account_id,
-    )
-    .await?;
-
-    // Save mapping if provided.
-    if let Some(ref m) = mapping {
+    // Save mapping override before resolving the effective mapping.
+    if let Some(ref m) = mapping_override {
         let mapping_json = serde_json::to_value(m)
             .map_err(|e| ApiError::Internal(format!("mapping serialization: {e}")))?;
         rustvault_core::services::import::save_mapping(
@@ -481,15 +399,31 @@ pub async fn upload_and_execute(
         .await?;
     }
 
-    // Convert to parsed rows.
+    // Resolve effective mapping: runtime override first, then import's saved mapping.
+    let effective_mapping: Option<ColumnMapping> = mapping_override.or_else(|| {
+        import
+            .column_mapping
+            .as_ref()
+            .and_then(|v| serde_json::from_value(v.clone()).ok())
+    });
+
+    // Detect format and parse.
+    let registry = ParserRegistry::new();
+    let (parser, _format) = registry
+        .detect_and_select(&file_bytes, Some(&ext))
+        .ok_or_else(|| ApiError::BadRequest("could not detect file format".into()))?;
+
+    let all_raw = parser
+        .parse(&file_bytes, effective_mapping.as_ref())
+        .map_err(|e| ApiError::BadRequest(format!("parse error: {e}")))?;
+
     let parsed_rows: Vec<ParsedRow> = all_raw.into_iter().map(raw_to_parsed).collect();
 
-    // Execute.
     let result = rustvault_core::services::import::execute(
         &state.pool,
         auth.user_id,
         import.id,
-        account_id,
+        import.account_id,
         &parsed_rows,
         skip_duplicates,
     )

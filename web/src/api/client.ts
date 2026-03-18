@@ -336,3 +336,68 @@ export async function refreshExchangeRates(): Promise<number> {
   const res = await post<ApiResponse<number>>("/api/exchange-rates/refresh");
   return res.data;
 }
+
+// ── Reports API ──────────────────────────────────────────────
+
+import type {
+  DashboardSummary,
+  IncomeExpenseReport,
+  CategoryTrendReport,
+  BalanceHistoryReport,
+  CashFlowReport,
+} from "./types";
+
+/** Fetch dashboard summary (net worth, month totals, trend, top categories). */
+export async function fetchDashboardSummary(): Promise<DashboardSummary> {
+  const res = await get<ApiResponse<DashboardSummary>>("/api/reports/summary");
+  return res.data;
+}
+
+/** Fetch monthly income vs. expense with category breakdown. */
+export async function fetchIncomeExpenseReport(
+  from: string,
+  to: string,
+): Promise<IncomeExpenseReport> {
+  const res = await get<ApiResponse<IncomeExpenseReport>>(
+    `/api/reports/income-expense?from=${from}&to=${to}`,
+  );
+  return res.data;
+}
+
+/** Fetch monthly spending trend for a single category. */
+export async function fetchCategoryTrend(
+  categoryId: string,
+  from: string,
+  to: string,
+): Promise<CategoryTrendReport> {
+  const res = await get<ApiResponse<CategoryTrendReport>>(
+    `/api/reports/categories/${categoryId}/trend?from=${from}&to=${to}`,
+  );
+  return res.data;
+}
+
+/** Fetch historical account balance snapshots. */
+export async function fetchBalanceHistory(
+  from: string,
+  to: string,
+  accountIds?: string[],
+): Promise<BalanceHistoryReport> {
+  const base = `/api/reports/balance-history?from=${from}&to=${to}`;
+  const url =
+    accountIds && accountIds.length > 0
+      ? `${base}&account_ids=${accountIds.join(",")}`
+      : base;
+  const res = await get<ApiResponse<BalanceHistoryReport>>(url);
+  return res.data;
+}
+
+/** Fetch cash flow report with 3-month forecast. */
+export async function fetchCashFlowReport(
+  from: string,
+  to: string,
+): Promise<CashFlowReport> {
+  const res = await get<ApiResponse<CashFlowReport>>(
+    `/api/reports/cash-flow?from=${from}&to=${to}`,
+  );
+  return res.data;
+}

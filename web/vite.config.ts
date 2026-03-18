@@ -21,6 +21,7 @@ export default defineConfig({
         manualChunks: {
           vendor: ["solid-js", "solid-js/web", "solid-js/store", "@solidjs/router"],
           kobalte: ["@kobalte/core"],
+          charts: ["echarts"],
         },
       },
     },
