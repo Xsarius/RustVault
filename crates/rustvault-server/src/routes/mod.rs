@@ -104,10 +104,6 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         .route("/api/imports", get(imports::list))
         .route("/api/imports/upload", post(imports::upload))
         .route(
-            "/api/imports/upload-and-execute",
-            post(imports::upload_and_execute),
-        )
-        .route(
             "/api/imports/{id}",
             get(imports::get).delete(imports::rollback),
         )

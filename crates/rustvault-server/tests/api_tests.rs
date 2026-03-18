@@ -775,8 +775,31 @@ async fn imports_upload_and_execute_then_rollback(pool: sqlx::PgPool) {
 
     let csv_bytes =
         b"date,amount,description\n2026-03-01,-12.34,Coffee\n2026-03-02,100.00,Salary\n";
-    let form = MultipartForm::new()
+
+    // Step 1: upload to create the import record and get the import ID.
+    let upload_form = MultipartForm::new()
         .add_text("account_id", account_id)
+        .add_part(
+            "file",
+            Part::bytes(csv_bytes.as_slice())
+                .file_name("statement.csv")
+                .mime_type("text/csv"),
+        );
+
+    let upload_res = server
+        .post("/api/imports/upload")
+        .add_header(axum::http::header::AUTHORIZATION, &auth)
+        .multipart(upload_form)
+        .await;
+    upload_res.assert_status(axum::http::StatusCode::CREATED);
+    let upload_body: Value = upload_res.json();
+    let import_id = upload_body["data"]["import"]["id"]
+        .as_str()
+        .expect("import id")
+        .to_string();
+
+    // Step 2: execute — re-send the file to the execute endpoint.
+    let execute_form = MultipartForm::new()
         .add_text("skip_duplicates", "true")
         .add_part(
             "file",
@@ -786,18 +809,14 @@ async fn imports_upload_and_execute_then_rollback(pool: sqlx::PgPool) {
         );
 
     let res = server
-        .post("/api/imports/upload-and-execute")
+        .post(&format!("/api/imports/{import_id}/execute"))
         .add_header(axum::http::header::AUTHORIZATION, &auth)
-        .multipart(form)
+        .multipart(execute_form)
         .await;
     res.assert_status_ok();
     let body: Value = res.json();
 
     assert_eq!(body["data"]["imported_count"], 2);
-    let import_id = body["data"]["import"]["id"]
-        .as_str()
-        .expect("import id")
-        .to_string();
 
     let list_res = server
         .get("/api/imports")
