@@ -46,15 +46,15 @@ RUN if [ "$PROFILE" = "release" ]; then \
 # ============================================================
 # Stage 4: Node builder — build frontend assets
 # ============================================================
-FROM node:22-alpine AS node-builder
+FROM oven/bun:1 AS node-builder
 
 WORKDIR /app/web
 
-COPY web/package.json web/bun.lockb* ./
-RUN npm install --frozen-lockfile 2>/dev/null || npm install
+COPY web/package.json web/bun.lock ./
+RUN bun install --frozen-lockfile
 
 COPY web/ .
-RUN npm run build
+RUN bun run build
 
 # ============================================================
 # Stage 5: Runtime — minimal production image
