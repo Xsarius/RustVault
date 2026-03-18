@@ -38,7 +38,7 @@ sha2 = "0.10"
 
 # OIDC
 openidconnect = "4"
-reqwest = { version = "0.13.2", default-features = false, features = ["rustls-tls-webpki-roots", "json"] }
+reqwest = { version = "0.13.2", default-features = false, features = ["rustls", "json"] }
 
 # Utilities
 regex = "1"

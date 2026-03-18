@@ -20,7 +20,6 @@ web/node_modules/
 web/dist/
 web/.vite/
 web/.solid/
-bun.lock
 *.lockb
 
 # ── Environment & Secrets ────────────────────────────────

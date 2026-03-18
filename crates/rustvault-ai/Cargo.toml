@@ -24,7 +24,7 @@ tokio = { workspace = true }
 rustvault-core = { workspace = true }
 
 # HTTP client for AI providers
-reqwest = { version = "0.13.2", default-features = false, features = ["rustls-tls-webpki-roots", "json"] }
+reqwest = { version = "0.13.2", default-features = false, features = ["rustls", "json"] }
 
 # Image encoding
 base64 = "0.22"

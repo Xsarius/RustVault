@@ -153,6 +153,7 @@ pub async fn me(pool: &PgPool, user_id: Uuid) -> Result<UserInfo, CoreError> {
 // ── OIDC ─────────────────────────────────────────────────────
 
 use openidconnect::core::{CoreProviderMetadata, CoreResponseType};
+use openidconnect::reqwest as oidc_reqwest;
 use openidconnect::{
     AdditionalClaims, AuthenticationFlow, AuthorizationCode, ClientId, ClientSecret, CsrfToken,
     IssuerUrl, Nonce, RedirectUrl, Scope, TokenResponse,
@@ -166,12 +167,12 @@ impl AdditionalClaims for EmptyClaims {}
 /// Discover provider metadata and build an HTTP client for OIDC.
 async fn oidc_discover(
     issuer_url: &str,
-) -> Result<(CoreProviderMetadata, reqwest::Client), CoreError> {
+) -> Result<(CoreProviderMetadata, oidc_reqwest::Client), CoreError> {
     let issuer = IssuerUrl::new(issuer_url.to_string())
         .map_err(|e| CoreError::OidcError(format!("invalid issuer URL: {e}")))?;
 
-    let http_client = reqwest::Client::builder()
-        .redirect(reqwest::redirect::Policy::none())
+    let http_client = oidc_reqwest::Client::builder()
+        .redirect(oidc_reqwest::redirect::Policy::none())
         .build()
         .map_err(|e| CoreError::OidcError(format!("HTTP client error: {e}")))?;
 
