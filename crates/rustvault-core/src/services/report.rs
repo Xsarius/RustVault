@@ -60,9 +60,9 @@ fn lttb(data: &[(f64, f64)], threshold: usize) -> Vec<(f64, f64)> {
         let mut max_area = -1.0f64;
         let mut max_index = range_start;
 
-        for j in range_start..range_end {
+        for (j, item) in data.iter().enumerate().take(range_end).skip(range_start) {
             let area =
-                ((ax - avg_x) * (data[j].1 - ay) - (ax - data[j].0) * (avg_y - ay)).abs() * 0.5;
+                ((ax - avg_x) * (item.1 - ay) - (ax - item.0) * (avg_y - ay)).abs() * 0.5;
             if area > max_area {
                 max_area = area;
                 max_index = j;
@@ -93,8 +93,7 @@ pub async fn summary(pool: &PgPool, user_id: Uuid) -> Result<DashboardSummary, C
     let month_expenses = totals.month_expenses.unwrap_or(Decimal::ZERO);
 
     let savings_rate = if month_income > Decimal::ZERO {
-        let rate = ((month_income - month_expenses) / month_income * Decimal::from(100)).to_f64();
-        rate
+        ((month_income - month_expenses) / month_income * Decimal::from(100)).to_f64()
     } else {
         None
     };

@@ -343,8 +343,8 @@ mod tests {
     #[test]
     fn resolve_locale_quality() {
         let i18n = I18n::load(&test_locales_dir()).expect("should load locales");
-        // Even with quality weights, en-US is the only available locale
-        assert_eq!(i18n.resolve_locale(Some("pl;q=0.9,en-US;q=0.8")), "en-US");
+        // pl has higher quality (0.9) than en-US (0.8) and pl-PL is available
+        assert_eq!(i18n.resolve_locale(Some("pl;q=0.9,en-US;q=0.8")), "pl-PL");
     }
 
     #[test]

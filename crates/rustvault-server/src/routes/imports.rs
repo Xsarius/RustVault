@@ -432,6 +432,160 @@ pub async fn execute(
     Ok(ApiResponse::ok(result))
 }
 
+/// `POST /api/imports/upload-and-execute` — Upload and immediately execute an import.
+///
+/// Convenience endpoint that combines upload + execute in a single request.
+/// Accepts the same multipart fields as the upload endpoint plus `skip_duplicates`.
+///
+/// Multipart fields:
+/// - `file` — the bank statement file (binary).
+/// - `account_id` — UUID of the target account.
+/// - `mapping` (optional) — JSON column mapping.
+/// - `skip_duplicates` (optional, default `"true"`) — `"true"` / `"1"` to skip duplicates.
+#[utoipa::path(
+    post,
+    path = "/api/imports/upload-and-execute",
+    tag = "Imports",
+    security(("bearer" = [])),
+    request_body(content_type = "multipart/form-data", content = inline(String), description = "Form fields: file (binary), account_id (UUID), mapping (optional JSON), skip_duplicates (optional bool)"),
+    responses(
+        (status = 200, description = "Import executed", body = inline(ApiResponse<ImportExecutionResult>)),
+        (status = 400, description = "Bad request / file parse error", body = ErrorBody),
+        (status = 404, description = "Account not found", body = ErrorBody),
+    ),
+)]
+pub async fn upload_and_execute(
+    State(state): State<AppState>,
+    auth: AuthUser,
+    mut multipart: Multipart,
+) -> Result<impl IntoResponse, ApiError> {
+    let max_size = parse_max_file_size(&state.config.import.max_file_size);
+
+    let mut file_bytes: Option<Vec<u8>> = None;
+    let mut file_name: Option<String> = None;
+    let mut account_id: Option<Uuid> = None;
+    let mut mapping: Option<ColumnMapping> = None;
+    let mut skip_duplicates = true;
+
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|e| ApiError::BadRequest(format!("multipart error: {e}")))?
+    {
+        let name = field.name().unwrap_or_default().to_string();
+        match name.as_str() {
+            "file" => {
+                file_name = field.file_name().map(String::from);
+                let bytes = field
+                    .bytes()
+                    .await
+                    .map_err(|e| ApiError::BadRequest(format!("failed to read file: {e}")))?;
+                if bytes.len() > max_size {
+                    return Err(ApiError::BadRequest(format!(
+                        "file too large (max {})",
+                        state.config.import.max_file_size
+                    )));
+                }
+                file_bytes = Some(bytes.to_vec());
+            }
+            "account_id" => {
+                let text = field
+                    .text()
+                    .await
+                    .map_err(|e| ApiError::BadRequest(format!("invalid account_id: {e}")))?;
+                account_id =
+                    Some(Uuid::parse_str(&text).map_err(|_| {
+                        ApiError::BadRequest("account_id must be a valid UUID".into())
+                    })?);
+            }
+            "mapping" => {
+                let text = field
+                    .text()
+                    .await
+                    .map_err(|e| ApiError::BadRequest(format!("invalid mapping: {e}")))?;
+                mapping = Some(
+                    serde_json::from_str(&text)
+                        .map_err(|e| ApiError::BadRequest(format!("invalid mapping JSON: {e}")))?,
+                );
+            }
+            "skip_duplicates" => {
+                let text = field
+                    .text()
+                    .await
+                    .map_err(|e| ApiError::BadRequest(format!("invalid skip_duplicates: {e}")))?;
+                skip_duplicates = text.trim().eq_ignore_ascii_case("true") || text.trim() == "1";
+            }
+            _ => {}
+        }
+    }
+
+    let file_bytes =
+        file_bytes.ok_or_else(|| ApiError::BadRequest("missing required field: file".into()))?;
+    let file_name =
+        file_name.ok_or_else(|| ApiError::BadRequest("file must have a filename".into()))?;
+    let account_id = account_id
+        .ok_or_else(|| ApiError::BadRequest("missing required field: account_id".into()))?;
+
+    // Validate extension.
+    let ext = file_extension(&file_name)
+        .ok_or_else(|| ApiError::BadRequest("file must have an extension".into()))?;
+    if !state.config.import.allowed_extensions.contains(&ext) {
+        return Err(ApiError::BadRequest(format!(
+            "unsupported file extension: .{ext}"
+        )));
+    }
+
+    // Detect format and parse.
+    let registry = ParserRegistry::new();
+    let (parser, format) = registry
+        .detect_and_select(&file_bytes, Some(&ext))
+        .ok_or_else(|| ApiError::BadRequest("could not detect file format".into()))?;
+
+    let format_name = format!("{format:?}").to_lowercase();
+    let mapping_ref = mapping.as_ref();
+    let all_raw = parser
+        .parse(&file_bytes, mapping_ref)
+        .map_err(|e| ApiError::BadRequest(format!("parse error: {e}")))?;
+
+    let parsed_rows: Vec<ParsedRow> = all_raw.into_iter().map(raw_to_parsed).collect();
+
+    // Create the import record.
+    let import = rustvault_core::services::import::create(
+        &state.pool,
+        auth.user_id,
+        &file_name,
+        &format_name,
+        account_id,
+    )
+    .await?;
+
+    // Save mapping if provided.
+    if let Some(ref m) = mapping {
+        let mapping_json = serde_json::to_value(m)
+            .map_err(|e| ApiError::Internal(format!("mapping serialization: {e}")))?;
+        rustvault_core::services::import::save_mapping(
+            &state.pool,
+            auth.user_id,
+            import.id,
+            &mapping_json,
+        )
+        .await?;
+    }
+
+    // Execute immediately.
+    let result = rustvault_core::services::import::execute(
+        &state.pool,
+        auth.user_id,
+        import.id,
+        import.account_id,
+        &parsed_rows,
+        skip_duplicates,
+    )
+    .await?;
+
+    Ok(ApiResponse::ok(result))
+}
+
 /// `GET /api/imports` — List past imports.
 #[utoipa::path(
     get,
