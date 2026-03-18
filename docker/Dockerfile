@@ -44,7 +44,7 @@ RUN if [ "$PROFILE" = "release" ]; then \
     fi
 
 # ============================================================
-# Stage 4: Node builder — build frontend assets
+# Stage 4: Bun builder — build frontend assets
 # ============================================================
 FROM oven/bun:1 AS node-builder
 
