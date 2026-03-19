@@ -1594,6 +1594,7 @@ docs/
   - Queue mutations when offline, sync when reconnected.
 - [x] **P6.5** Configure app icons, splash screens, and native metadata.
 - [x] **P6.6** Set up Fastlane for automated iOS/Android builds (CI).
+- [x] **P6.7** Write tests for mobile utilities and UI components.
 
 ### Acceptance Criteria
 - App builds and runs on iOS simulator and Android emulator.
