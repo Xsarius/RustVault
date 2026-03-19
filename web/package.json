@@ -10,9 +10,26 @@
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static"
+    "build-storybook": "storybook build -o storybook-static",
+    "mobile:sync": "bun run build && cap sync",
+    "mobile:ios": "bun run build && cap open ios",
+    "mobile:android": "bun run build && cap open android",
+    "mobile:run:ios": "bun run build && cap run ios",
+    "mobile:run:android": "bun run build && cap run android",
+    "mobile:icons": "capacitor-assets generate --config capacitor.assets.config.cjs"
   },
   "dependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/camera": "^8.0.2",
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/device": "^8.0.1",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/ios": "^8.2.0",
+    "@capacitor/network": "^8.0.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/push-notifications": "^8.0.2",
+    "@capacitor/share": "^8.0.1",
     "@kobalte/core": "^0.13.0",
     "@modular-forms/solid": "^0.25.1",
     "@solid-primitives/i18n": "^2.1.0",
@@ -24,6 +41,7 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@tailwindcss/vite": "^4.0.0",
     "storybook": "^10.2.19",
     "storybook-solidjs-vite": "^10.0.9",

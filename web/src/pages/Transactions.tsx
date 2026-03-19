@@ -50,6 +50,7 @@ import {
 import { ApiError } from "~/api/client";
 import { useI18n } from "~/i18n";
 import { ImportWizard } from "~/components/ImportWizard";
+import { PullToRefresh, SwipeableRow } from "~/components/mobile";
 
 // ── Data fetching helpers ────────────────────────────────────
 
@@ -277,6 +278,16 @@ export default function TransactionsPage() {
     }
   };
 
+  // ── Pull-to-refresh ──────────────────────────────────────
+
+  const [refreshing, setRefreshing] = createSignal(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadTransactions(false);
+    setRefreshing(false);
+  };
+
   // ── Import wizard ─────────────────────────────────────────
 
   const [importWizardOpen, setImportWizardOpen] = createSignal(false);
@@ -355,6 +366,8 @@ export default function TransactionsPage() {
   };
 
   return (
+    <>
+    <PullToRefresh onRefresh={handleRefresh} refreshing={refreshing()}>
     <div class="space-y-4">
       {/* Header */}
       <div class="flex items-center justify-between">
@@ -548,14 +561,36 @@ export default function TransactionsPage() {
             {/* Rows */}
             <For each={transactions()}>
               {(tx) => (
-                <TransactionRow
-                  tx={tx}
-                  selected={selectedIds().has(tx.id)}
-                  onToggleSelect={() => toggleSelect(tx.id)}
-                  onClick={() => setDetailTxId(tx.id)}
-                  categoryName={categoryName(tx.category_id)}
-                  accountName={accountName(tx.account_id)}
-                />
+                <SwipeableRow
+                  actions={[
+                    {
+                      label: t("transactions.detail.review") ?? "Review",
+                      color: "bg-income",
+                      icon: <CheckCircle2 size={18} />,
+                      onAction: () => bulkAction({ is_reviewed: true }),
+                    },
+                    {
+                      label: t("transactions.bulk.delete") ?? "Delete",
+                      color: "bg-red-500",
+                      icon: <Trash2 size={18} />,
+                      onAction: async () => {
+                        try {
+                          await api.del(`/api/transactions/${tx.id}`);
+                          loadTransactions(false);
+                        } catch (_e) {}
+                      },
+                    },
+                  ]}
+                >
+                  <TransactionRow
+                    tx={tx}
+                    selected={selectedIds().has(tx.id)}
+                    onToggleSelect={() => toggleSelect(tx.id)}
+                    onClick={() => setDetailTxId(tx.id)}
+                    categoryName={categoryName(tx.category_id)}
+                    accountName={accountName(tx.account_id)}
+                  />
+                </SwipeableRow>
               )}
             </For>
           </div>
@@ -709,7 +744,10 @@ export default function TransactionsPage() {
         </div>
       </Dialog>
 
-      {/* Transaction detail slide-over */}
+    </div>
+    </PullToRefresh>
+
+      {/* Transaction detail slide-over (outside PullToRefresh scroll container) */}
       <Show when={detailTxId()}>
         {(id) => (
           <TransactionDetail
@@ -722,7 +760,7 @@ export default function TransactionsPage() {
           />
         )}
       </Show>
-    </div>
+    </>
   );
 }
 

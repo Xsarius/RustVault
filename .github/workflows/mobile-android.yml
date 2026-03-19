@@ -1,0 +1,79 @@
+name: Mobile CI — Android
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Fastlane lane to run (debug | beta | release)'
+        required: true
+        default: 'beta'
+
+concurrency:
+  group: mobile-android-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-android:
+    name: Build & upload Android
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Node dependencies
+        working-directory: web
+        run: bun install --frozen-lockfile
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Ruby & Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: web
+
+      - name: Add Android platform
+        working-directory: web
+        run: bunx cap add android || true   # no-op if already added
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > /tmp/rustvault.jks
+        if: ${{ inputs.lane != 'debug' }}
+
+      - name: Run Fastlane
+        working-directory: web
+        env:
+          ANDROID_KEYSTORE_PATH: /tmp/rustvault.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GOOGLE_PLAY_JSON_KEY_PATH: ${{ runner.temp }}/play-key.json
+          BUILD_NUMBER: ${{ github.run_number }}
+          CI: "true"
+        run: |
+          echo '${{ secrets.GOOGLE_PLAY_JSON_KEY }}' > ${{ runner.temp }}/play-key.json
+          bundle exec fastlane android ${{ inputs.lane || 'beta' }}
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RustVault-android-${{ github.run_number }}.aab
+          path: web/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 14

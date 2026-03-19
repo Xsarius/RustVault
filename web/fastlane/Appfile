@@ -1,0 +1,7 @@
+# fastlane/Appfile
+# App identifiers used across lanes.
+
+app_identifier("app.rustvault")
+apple_id(ENV["APPLE_ID"])
+itc_team_id(ENV["ITC_TEAM_ID"])     # App Store Connect team
+team_id(ENV["APPLE_TEAM_ID"])       # Developer Portal team

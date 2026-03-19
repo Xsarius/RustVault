@@ -1,0 +1,180 @@
+########################################################################################
+# RustVault — Fastfile
+#
+# Lanes:
+#   fastlane ios beta        — build & upload to TestFlight
+#   fastlane ios release     — submit to App Store
+#   fastlane android beta    — build & upload to Firebase App Distribution
+#   fastlane android release — build & upload to Google Play (internal track)
+#   fastlane ios screenshots — generate App Store screenshots
+#
+# Prerequisites:
+#   - bundle install (from web/ directory)
+#   - All secrets in environment variables (see docs/contributing/mobile-builds.md)
+########################################################################################
+
+default_platform(:ios)
+
+# ── Shared helpers ─────────────────────────────────────────────────────────────
+
+def build_web
+  Dir.chdir("..") do
+    sh("bun install --frozen-lockfile")
+    sh("bun run build")
+    sh("bunx cap sync")
+  end
+end
+
+def bump_version(platform:)
+  # Read version from package.json
+  package_json = File.read("../package.json")
+  version = package_json.match(/"version":\s*"([^"]+)"/)[1]
+
+  case platform
+  when :ios
+    Dir.chdir("../ios/App") do
+      # Update CFBundleShortVersionString and build number.
+      increment_version_number(version_number: version)
+      increment_build_number(build_number: ENV.fetch("BUILD_NUMBER", Time.now.strftime("%Y%m%d%H%M")))
+    end
+  when :android
+    # Handled by Gradle — bump versionCode from env.
+  end
+end
+
+# ── iOS ────────────────────────────────────────────────────────────────────────
+
+platform :ios do
+  desc "Sync certificates & provisioning profiles (Match)"
+  lane :certificates do
+    match(
+      type: ENV.fetch("MATCH_TYPE", "appstore"),
+      readonly: ENV["CI"] ? true : false,
+      git_url: ENV["MATCH_GIT_URL"],
+      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTH"],
+    )
+  end
+
+  desc "Build the iOS app for TestFlight"
+  lane :beta do
+    build_web
+    bump_version(platform: :ios)
+    certificates
+
+    Dir.chdir("../ios/App") do
+      build_app(
+        workspace: "App.xcworkspace",
+        scheme: "App",
+        configuration: "Release",
+        export_method: "app-store",
+        output_directory: "../../build/ios",
+        output_name: "RustVault.ipa",
+        clean: true,
+      )
+    end
+
+    upload_to_testflight(
+      ipa: "build/ios/RustVault.ipa",
+      skip_waiting_for_build_processing: true,
+      changelog: ENV.fetch("CHANGELOG", "Internal beta build."),
+    )
+
+    notification(
+      subtitle: "iOS beta uploaded",
+      message: "RustVault #{lane_context[SharedValues::VERSION_NUMBER]} is available on TestFlight",
+    ) unless ENV["CI"]
+  end
+
+  desc "Submit to the App Store"
+  lane :release do
+    build_web
+    bump_version(platform: :ios)
+    certificates
+
+    Dir.chdir("../ios/App") do
+      build_app(
+        workspace: "App.xcworkspace",
+        scheme: "App",
+        configuration: "Release",
+        export_method: "app-store",
+        output_directory: "../../build/ios",
+        output_name: "RustVault.ipa",
+        clean: true,
+      )
+    end
+
+    deliver(
+      ipa: "build/ios/RustVault.ipa",
+      metadata_path: "./metadata/ios",
+      screenshots_path: "./metadata/ios/screenshots",
+      submit_for_review: false,
+      automatic_release: false,
+      force: true,
+    )
+  end
+
+  desc "Generate App Store screenshots on simulators"
+  lane :screenshots do
+    capture_ios_screenshots(
+      workspace: "ios/App/App.xcworkspace",
+      scheme: "App",
+      devices: ["iPhone 15 Pro Max", "iPhone SE (3rd generation)", "iPad Pro (12.9-inch) (6th generation)"],
+      languages: ["en-US"],
+      clear_previous_screenshots: true,
+      output_directory: "./metadata/ios/screenshots",
+    )
+  end
+end
+
+# ── Android ────────────────────────────────────────────────────────────────────
+
+platform :android do
+  desc "Build a debug APK for device testing"
+  lane :debug do
+    build_web
+    gradle(
+      project_dir: "android",
+      task: "assemble",
+      build_type: "Debug",
+    )
+  end
+
+  desc "Build a signed release AAB and upload to Google Play (internal)"
+  lane :beta do
+    build_web
+
+    gradle(
+      project_dir: "android",
+      task: "bundle",
+      build_type: "Release",
+      properties: {
+        "android.injected.signing.store.file" => ENV["ANDROID_KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["ANDROID_KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["ANDROID_KEY_ALIAS"],
+        "android.injected.signing.key.password" => ENV["ANDROID_KEY_PASSWORD"],
+        "versionCode" => ENV.fetch("BUILD_NUMBER", Time.now.strftime("%Y%m%d%H%M").to_i),
+      },
+    )
+
+    upload_to_play_store(
+      track: "internal",
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      json_key: ENV["GOOGLE_PLAY_JSON_KEY_PATH"],
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+
+  desc "Promote internal build to production track"
+  lane :release do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "production",
+      json_key: ENV["GOOGLE_PLAY_JSON_KEY_PATH"],
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+    )
+  end
+end

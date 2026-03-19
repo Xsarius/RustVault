@@ -1,0 +1,22 @@
+<!-- RustVault app icon — 1024×1024 source SVG.
+     Convert to PNG with: bunx sharp-cli -i icon.svg -o icon-only.png --resize 1024 1024
+     Or use any SVG→PNG tool (Inkscape, rsvg-convert, etc.)
+  -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <rect width="1024" height="1024" fill="transparent"/>
+  <!-- Shield body -->
+  <path d="M512 96 L896 240 L896 528 C896 720 730 880 512 960 C294 880 128 720 128 528 L128 240 Z"
+        fill="#4f46e5" opacity="0.15"/>
+  <path d="M512 128 L864 264 L864 528 C864 704 712 856 512 928 C312 856 160 704 160 528 L160 264 Z"
+        fill="none" stroke="#4f46e5" stroke-width="24"/>
+  <!-- Stylised vault dial -->
+  <circle cx="512" cy="512" r="160" fill="none" stroke="#4f46e5" stroke-width="28"/>
+  <circle cx="512" cy="512" r="60" fill="#4f46e5"/>
+  <!-- Dial notches -->
+  <line x1="512" y1="336" x2="512" y2="372" stroke="#4f46e5" stroke-width="20" stroke-linecap="round"/>
+  <line x1="512" y1="652" x2="512" y2="688" stroke="#4f46e5" stroke-width="20" stroke-linecap="round"/>
+  <line x1="336" y1="512" x2="372" y2="512" stroke="#4f46e5" stroke-width="20" stroke-linecap="round"/>
+  <line x1="652" y1="512" x2="688" y2="512" stroke="#4f46e5" stroke-width="20" stroke-linecap="round"/>
+  <!-- Dial handle -->
+  <line x1="512" y1="512" x2="600" y2="400" stroke="#4f46e5" stroke-width="16" stroke-linecap="round"/>
+</svg>

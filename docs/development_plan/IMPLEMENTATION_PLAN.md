@@ -1574,26 +1574,26 @@ docs/
 
 ### Tasks
 
-- [ ] **P6.1** Initialize Capacitor project in `mobile/`:
+- [x] **P6.1** Initialize Capacitor project in `mobile/`:
   - `npx @capacitor/cli init`.
   - Add iOS and Android platforms.
   - Configure to build from `web/dist`.
-- [ ] **P6.2** Configure Capacitor plugins:
+- [x] **P6.2** Configure Capacitor plugins:
   - **Camera** (for receipt photo capture → send to AI module).
   - **Filesystem** (for importing files from device).
   - **Share** (receive shared bank statement files from other apps).
   - **Push Notifications** (optional, for budget alerts).
   - **Biometric Auth** (fingerprint/face to unlock app).
-- [ ] **P6.3** Adapt UI for mobile:
+- [x] **P6.3** Adapt UI for mobile:
   - Bottom tab navigation on small screens.
   - Pull-to-refresh on transaction list.
   - Swipe actions on transactions (quick categorize, delete).
   - Camera FAB for receipt capture (visible only if AI features are enabled in settings).
-- [ ] **P6.4** Implement **offline support** (stretch):
+- [x] **P6.4** Implement **offline support** (stretch):
   - Cache recent data in local storage.
   - Queue mutations when offline, sync when reconnected.
-- [ ] **P6.5** Configure app icons, splash screens, and native metadata.
-- [ ] **P6.6** Set up Fastlane for automated iOS/Android builds (CI).
+- [x] **P6.5** Configure app icons, splash screens, and native metadata.
+- [x] **P6.6** Set up Fastlane for automated iOS/Android builds (CI).
 
 ### Acceptance Criteria
 - App builds and runs on iOS simulator and Android emulator.
@@ -1603,15 +1603,15 @@ docs/
 - App respects device locale and allows override in settings.
 
 ### i18n Tasks (Phase 6)
-- [ ] **P6.i18n.1** Configure Capacitor to detect device locale and pass to SolidJS app.
-- [ ] **P6.i18n.2** Ensure all mobile-specific UI (native dialogs, permission prompts) use localized strings.
-- [ ] **P6.i18n.3** App Store / Play Store metadata in multiple languages (title, description, screenshots).
+- [x] **P6.i18n.1** Configure Capacitor to detect device locale and pass to SolidJS app.
+- [x] **P6.i18n.2** Ensure all mobile-specific UI (native dialogs, permission prompts) use localized strings.
+- [x] **P6.i18n.3** App Store / Play Store metadata in multiple languages (title, description, screenshots).
 - [ ] **P6.i18n.4** Test RTL layout on both iOS and Android simulators.
 
 ### Documentation Deliverables (P6)
-- [ ] Write mobile setup guide in `docs/book/src/self-hosting/` — how to connect mobile app to self-hosted backend.
-- [ ] Document Capacitor build process for contributors in `docs/contributing/`.
-- [ ] App Store / Play Store listing copy in en-US.
+- [x] Write mobile setup guide in `docs/book/src/self-hosting/` — how to connect mobile app to self-hosted backend.
+- [x] Document Capacitor build process for contributors in `docs/contributing/`.
+- [x] App Store / Play Store listing copy in en-US.
 
 ---
 

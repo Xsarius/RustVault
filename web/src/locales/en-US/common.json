@@ -68,5 +68,41 @@
     "security": "Security",
     "dangerZone": "Danger Zone",
     "dangerDescription": "Permanently delete your account and all associated data. This action cannot be undone."
+  },
+  "mobile": {
+    "offline": "You are offline — changes will sync when reconnected.",
+    "offlinePending": "{count} pending",
+    "syncing": "Syncing {count} pending changes…",
+    "syncReady": "{count} offline changes ready to sync.",
+    "syncNow": "Sync now",
+    "pullToRefresh": "Pull to refresh",
+    "releaseToRefresh": "Release to refresh",
+    "refreshing": "Refreshing…",
+    "quickActions": "Quick Actions",
+    "importFile": "Import File",
+    "addBank": "Add Bank",
+    "addCategory": "Add Category",
+    "addTag": "Add Tag",
+    "biometric": {
+      "enable": "Enable Biometric Unlock",
+      "disable": "Disable Biometric Unlock",
+      "prompt": "Use Face ID / Touch ID to unlock RustVault.",
+      "unavailable": "Biometric authentication is not available on this device.",
+      "enrollFirst": "Please enroll a biometric credential in your device settings first."
+    },
+    "camera": {
+      "captureReceipt": "Capture Receipt",
+      "chooseLibrary": "Choose from Library",
+      "permissionDenied": "Camera permission denied. Please enable it in Settings.",
+      "uploading": "Uploading receipt…"
+    },
+    "permissions": {
+      "cameraTitle": "Camera Access",
+      "cameraMessage": "RustVault needs camera access to capture receipts for AI-powered categorization.",
+      "notificationsTitle": "Push Notifications",
+      "notificationsMessage": "RustVault can notify you when you're approaching a budget limit.",
+      "allow": "Allow",
+      "deny": "Deny"
+    }
   }
 }

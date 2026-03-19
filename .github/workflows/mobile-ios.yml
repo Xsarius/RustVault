@@ -1,0 +1,75 @@
+name: Mobile CI — iOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: 'Fastlane lane to run (beta | release)'
+        required: true
+        default: 'beta'
+
+concurrency:
+  group: mobile-ios-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-ios:
+    name: Build & upload iOS
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Node dependencies
+        working-directory: web
+        run: bun install --frozen-lockfile
+
+      - name: Set up Ruby & Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: web
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: Add iOS platform
+        working-directory: web
+        run: bunx cap add ios || true   # no-op if already added
+
+      - name: Install CocoaPods
+        working-directory: web/ios/App
+        run: pod install --repo-update
+
+      - name: Run Fastlane
+        working-directory: web
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+          MATCH_TYPE: appstore
+          BUILD_NUMBER: ${{ github.run_number }}
+          CHANGELOG: ${{ github.event.head_commit.message || 'CI build' }}
+          CI: "true"
+        run: bundle exec fastlane ios ${{ inputs.lane || 'beta' }}
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RustVault-ios-${{ github.run_number }}.ipa
+          path: web/build/ios/RustVault.ipa
+          retention-days: 14
