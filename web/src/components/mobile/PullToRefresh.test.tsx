@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@solidjs/testing-library";
-import userEvent from "@testing-library/user-event";
 import { PullToRefresh } from "~/components/mobile/PullToRefresh";
 
 // Helper: fire a complete touch gesture on an element.

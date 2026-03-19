@@ -5,6 +5,8 @@
  * These stubs replace them during unit / component tests.
  */
 
+import { vi } from "vitest";
+
 export const mockPreferencesStore: Record<string, string> = {};
 
 export const Preferences = {
