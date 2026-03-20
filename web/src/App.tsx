@@ -2,17 +2,21 @@
  * App root — sets up the router with lazy-loaded pages.
  */
 
-import { lazy, type Component } from "solid-js";
+import { lazy, Show, type Component } from "solid-js";
 import { Router, Route } from "@solidjs/router";
 import { AppShell } from "~/components/layout";
 import { AuthGuard } from "~/components/AuthGuard";
 import { ToastRegion } from "~/components/ui";
+import DemoBanner from "~/components/DemoBanner";
+
+declare const __DEMO_MODE__: boolean;
 
 // ── Lazy-loaded pages ────────────────────────────────────────
 
 const Login = lazy(() => import("~/pages/Login"));
 const Register = lazy(() => import("~/pages/Register"));
 const OidcCallback = lazy(() => import("~/pages/OidcCallback"));
+const ServerSetup = lazy(() => import("~/pages/ServerSetup"));
 
 const Dashboard = lazy(() => import("~/pages/Dashboard"));
 const Transactions = lazy(() => import("~/pages/Transactions"));
@@ -39,10 +43,14 @@ const ProtectedLayout: Component<{ children?: any }> = (props) => (
 const App: Component = () => {
   return (
     <>
+      <Show when={__DEMO_MODE__}>
+        <DemoBanner />
+      </Show>
       <Router>
         {/* Public auth routes — no shell */}
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
+        <Route path="/server-setup" component={ServerSetup} />
         <Route path="/auth/oidc/callback" component={OidcCallback} />
 
         {/* Protected routes — inside AppShell */}
