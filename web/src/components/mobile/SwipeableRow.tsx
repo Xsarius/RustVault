@@ -113,8 +113,9 @@ export const SwipeableRow: ParentComponent<SwipeableRowProps> = (props) => {
         ))}
       </div>
 
-      {/* Row content */}
+      {/* Row content — bg-surface is essential to cover hidden action buttons */}
       <div
+        class="bg-surface"
         style={{
           transform: `translateX(${offset()}px)`,
           transition: tracking ? "none" : "transform 0.2s ease",
