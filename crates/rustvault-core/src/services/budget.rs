@@ -546,7 +546,7 @@ fn advance_period(
     end: Date,
     rule: &str,
 ) -> Result<(Date, Date), CoreError> {
-    use time::{Duration, Month};
+    use time::Month;
 
     let rule_upper = rule.to_uppercase();
 

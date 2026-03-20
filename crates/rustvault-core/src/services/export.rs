@@ -18,8 +18,11 @@ use crate::models::transaction::Transaction;
 /// Supported export formats.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ExportFormat {
+    /// Comma-separated values format.
     Csv,
+    /// JSON format.
     Json,
+    /// Quicken Interchange Format.
     Qif,
 }
 
