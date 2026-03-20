@@ -22,6 +22,13 @@ web/.vite/
 web/.solid/
 *.lockb
 
+# ── Capacitor native platforms (generated, not committed) ─
+web/android/
+web/ios/
+
+# ── Vite root-level cache (if accidentally run from root) ─
+.vite/
+
 # ── Environment & Secrets ────────────────────────────────
 .env
 .env.local
