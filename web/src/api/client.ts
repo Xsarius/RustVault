@@ -17,6 +17,25 @@ let accessToken: string | null = null;
 let refreshToken: string | null = null;
 let refreshPromise: Promise<boolean> | null = null;
 
+// ── Server base URL (set by serverStore on mobile) ──────────
+
+let baseUrl: string = "";
+
+/** Set the API base URL (e.g. "https://vault.example.com"). Empty string means relative paths. */
+export function setBaseUrl(url: string): void {
+  baseUrl = url;
+}
+
+/** Returns the current API base URL. */
+export function getBaseUrl(): string {
+  return baseUrl;
+}
+
+/** Resolves an API path to a full URL when a base URL is configured. */
+function resolveUrl(path: string): string {
+  return baseUrl && path.startsWith("/") ? `${baseUrl}${path}` : path;
+}
+
 /** Store tokens after login/refresh. */
 export function setTokens(access: string, refresh: string) {
   accessToken = access;
@@ -66,7 +85,7 @@ async function request<T>(
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const res = await fetch(path, {
+  const res = await fetch(resolveUrl(path), {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -115,7 +134,7 @@ async function doRefresh(): Promise<boolean> {
 
   refreshPromise = (async () => {
     try {
-      const res = await fetch("/api/auth/refresh", {
+      const res = await fetch(resolveUrl("/api/auth/refresh"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refreshToken }),
@@ -191,7 +210,7 @@ export async function postFormData<T>(path: string, formData: FormData): Promise
     headers["Authorization"] = `Bearer ${accessToken}`;
   }
 
-  const res = await fetch(path, {
+  const res = await fetch(resolveUrl(path), {
     method: "POST",
     headers,
     body: formData,
@@ -201,7 +220,7 @@ export async function postFormData<T>(path: string, formData: FormData): Promise
     const refreshed = await doRefresh();
     if (refreshed) {
       headers["Authorization"] = `Bearer ${accessToken}`;
-      const retry = await fetch(path, { method: "POST", headers, body: formData });
+      const retry = await fetch(resolveUrl(path), { method: "POST", headers, body: formData });
       if (!retry.ok) {
         let errorBody: ApiErrorBody | undefined;
         try { errorBody = await retry.json(); } catch { /* not JSON */ }
