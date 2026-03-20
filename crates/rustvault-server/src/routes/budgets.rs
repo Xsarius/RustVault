@@ -315,4 +315,29 @@ pub async fn delete_line(
     Ok(StatusCode::NO_CONTENT)
 }
 
+/// `POST /api/budgets/:id/generate-next` — Generate the next period for a recurring budget (P4.6).
+#[utoipa::path(
+    post,
+    path = "/api/budgets/{id}/generate-next",
+    tag = "Budgets",
+    security(("bearer" = [])),
+    params(("id" = Uuid, Path, description = "Source recurring budget ID")),
+    responses(
+        (status = 201, description = "Next-period budget created",
+         body = inline(ApiResponse<rustvault_core::models::budget::Budget>)),
+        (status = 400, description = "Budget is not recurring or unsupported rule", body = ErrorBody),
+        (status = 404, description = "Budget not found", body = ErrorBody),
+    ),
+)]
+pub async fn generate_next(
+    State(state): State<AppState>,
+    auth: AuthUser,
+    Path(id): Path<Uuid>,
+) -> Result<impl IntoResponse, ApiError> {
+    let budget =
+        rustvault_core::services::budget::generate_next_period(&state.pool, auth.user_id, id)
+            .await?;
+    Ok((StatusCode::CREATED, ApiResponse::ok(budget)))
+}
+
 // (Exchange rates are refreshed by a scheduled background task; no REST endpoints needed.)

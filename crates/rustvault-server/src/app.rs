@@ -10,6 +10,7 @@ use utoipa_scalar::{Scalar, Servable};
 
 use crate::doc::ApiDoc;
 use crate::middleware::locale::locale_middleware;
+use crate::middleware::security_headers::security_headers_middleware;
 use crate::routes;
 use crate::state::AppState;
 
@@ -36,5 +37,7 @@ pub fn build_app(state: AppState) -> Router {
         ))
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::permissive())
+        // Security headers (outermost — applied to every response including errors).
+        .layer(axum_mw::from_fn(security_headers_middleware))
         .with_state(state)
 }

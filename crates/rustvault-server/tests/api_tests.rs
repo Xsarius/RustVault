@@ -1289,3 +1289,1328 @@ async fn user_data_isolation(pool: sqlx::PgPool) {
         .await;
     res.assert_status(axum::http::StatusCode::NOT_FOUND);
 }
+
+// ============================================================================
+// Real-world Scenarios — Budgets
+// ============================================================================
+
+/// Full budget workflow: create budget, bulk-set lines per category, then verify
+/// the budget summary reflects actual spending from manually created transactions.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn budget_planned_vs_actual_scenario(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Create two expense categories.
+    let groceries_id = server
+        .post("/api/categories")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "Groceries", "category_type": "expense" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let rent_id = server
+        .post("/api/categories")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "Rent", "category_type": "expense" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Create a budget covering March 2026.
+    let budget_res = server
+        .post("/api/budgets")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "name": "March 2026",
+            "period_start": json_date(2026, Month::March, 1),
+            "period_end":   json_date(2026, Month::March, 31),
+            "currency": "EUR",
+            "is_recurring": false
+        }))
+        .await;
+    budget_res.assert_status(axum::http::StatusCode::CREATED);
+    let budget_id = budget_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Bulk-set two lines: Groceries 400 EUR, Rent 1200 EUR.
+    let lines_res = server
+        .post(&format!("/api/budgets/{budget_id}/lines/bulk"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "lines": [
+                { "category_id": groceries_id, "planned_amount": "400.00", "sort_order": 0 },
+                { "category_id": rent_id,      "planned_amount": "1200.00", "sort_order": 1 }
+            ]
+        }))
+        .await;
+    lines_res.assert_status(axum::http::StatusCode::CREATED);
+    assert_eq!(lines_res.json::<Value>()["data"].as_array().unwrap().len(), 2);
+
+    // Create transactions that fall inside the budget period.
+    for (desc, amount, cat) in [
+        ("Lidl weekly shop", "-85.20", &groceries_id),
+        ("Kaufland big shop", "-112.50", &groceries_id),
+        ("Monthly rent",     "-1200.00", &rent_id),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "category_id": cat,
+                "transaction_type": "expense",
+                "amount": amount,
+                "date": json_date(2026, Month::March, 5),
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    // Fetch budget summary — actuals should reflect the transactions above.
+    let summary_res = server
+        .get(&format!("/api/budgets/{budget_id}/summary"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    summary_res.assert_status_ok();
+    let summary = summary_res.json::<Value>();
+
+    // Total planned expenses = 400 + 1200 = 1600 EUR.
+    assert_eq!(summary["data"]["total_planned_expenses"], "1600");
+
+    // Total actual expenses for the period = 85.20 + 112.50 + 1200 = 1397.70.
+    let actual: f64 = summary["data"]["total_actual_expenses"]
+        .as_str()
+        .unwrap_or("0")
+        .parse()
+        .unwrap_or(0.0);
+    assert!(
+        (actual - 1397.70).abs() < 0.01,
+        "expected ~1397.70 actual expenses, got {actual}"
+    );
+
+    // Rent line should show 100% utilisation.
+    let lines_arr = summary["data"]["lines"].as_array().unwrap();
+    let rent_line = lines_arr
+        .iter()
+        .find(|l| l["category_id"].as_str() == Some(&rent_id))
+        .expect("rent line present");
+    assert_eq!(rent_line["actual_amount"], "1200");
+    assert_eq!(rent_line["remaining"], "0");
+}
+
+/// Recurring budget: create with FREQ=MONTHLY, then manually trigger next-period
+/// generation via the `/api/budgets/:id/generate-next` endpoint.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn budget_recurring_generate_next_period(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+
+    // Create a recurring budget for January 2026.
+    let create_res = server
+        .post("/api/budgets")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "name":            "Jan 2026",
+            "period_start":    json_date(2026, Month::January, 1),
+            "period_end":      json_date(2026, Month::January, 31),
+            "currency":        "EUR",
+            "is_recurring":    true,
+            "recurrence_rule": "FREQ=MONTHLY"
+        }))
+        .await;
+    create_res.assert_status(axum::http::StatusCode::CREATED);
+    let budget_id = create_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Add one line so the generated budget has something to copy.
+    server
+        .post(&format!("/api/budgets/{budget_id}/lines"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "category_id": null, "planned_amount": "500.00" }))
+        .await
+        .assert_status(axum::http::StatusCode::CREATED);
+
+    // Call the generate-next endpoint.
+    let gen_res = server
+        .post(&format!("/api/budgets/{budget_id}/generate-next"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    gen_res.assert_status(axum::http::StatusCode::CREATED);
+    let new_budget = gen_res.json::<Value>();
+
+    // Generated budget should cover February 2026.
+    assert_eq!(new_budget["data"]["period_start"], "2026-02-01");
+    assert_eq!(new_budget["data"]["period_end"],   "2026-02-28");
+    // The generated budget itself is non-recurring (copies start as snapshots).
+    assert_eq!(new_budget["data"]["is_recurring"], false);
+
+    // Verify lines were copied.
+    let lines_res = server
+        .get(&format!("/api/budgets/{}/lines", new_budget["data"]["id"].as_str().unwrap()))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    lines_res.assert_status_ok();
+    assert_eq!(lines_res.json::<Value>()["data"].as_array().unwrap().len(), 1);
+}
+
+/// Budget copy creates an independent new period with identical lines.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn budget_copy_clones_lines(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+
+    let budget_id = {
+        let res = server
+            .post("/api/budgets")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "name": "Feb 2026", "period_start": json_date(2026, Month::February, 1),
+                "period_end": json_date(2026, Month::February, 28), "currency": "EUR",
+            }))
+            .await;
+        res.assert_status(axum::http::StatusCode::CREATED);
+        res.json::<Value>()["data"]["id"].as_str().unwrap().to_string()
+    };
+
+    // Add two lines.
+    for amount in ["300.00", "150.00"] {
+        server
+            .post(&format!("/api/budgets/{budget_id}/lines"))
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({ "category_id": null, "planned_amount": amount }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    // Copy into March 2026.
+    let copy_res = server
+        .post(&format!("/api/budgets/{budget_id}/copy"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "name": "Mar 2026",
+            "period_start": json_date(2026, Month::March, 1),
+            "period_end":   json_date(2026, Month::March, 31)
+        }))
+        .await;
+    copy_res.assert_status(axum::http::StatusCode::CREATED);
+    let new_id = copy_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Copied budget has 2 lines with identical planned amounts.
+    let lines = server
+        .get(&format!("/api/budgets/{new_id}/lines"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .json::<Value>();
+    assert_eq!(lines["data"].as_array().unwrap().len(), 2);
+
+    // Modifying the copy does not affect the original.
+    let first_line_id = lines["data"][0]["id"].as_str().unwrap().to_string();
+    server
+        .put(&format!("/api/budgets/{new_id}/lines/{first_line_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "planned_amount": "999.00" }))
+        .await
+        .assert_status_ok();
+
+    let orig_lines = server
+        .get(&format!("/api/budgets/{budget_id}/lines"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .json::<Value>();
+    // Original planned amounts are unchanged (300 and 150).
+    let orig_amounts: Vec<&str> = orig_lines["data"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|l| l["planned_amount"].as_str().unwrap())
+        .collect();
+    assert!(orig_amounts.iter().any(|&a| a == "300"), "original 300 line untouched");
+    assert!(orig_amounts.iter().any(|&a| a == "150"), "original 150 line untouched");
+}
+
+// ============================================================================
+// Real-world Scenarios — Reports
+// ============================================================================
+
+/// Dashboard summary returns sensible totals once transactions exist.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn reports_summary_reflects_transactions(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    let today = time::OffsetDateTime::now_utc().date();
+    let (y, m, d) = (today.year(), today.month() as u8, today.day());
+    let today_json = json!(format!("{y:04}-{m:02}-{d:02}"));
+
+    // Create one income and two expense transactions dated today.
+    for (tx_type, amount, desc) in [
+        ("income",  "3000.00", "Salary"),
+        ("expense", "-800.00",  "Rent"),
+        ("expense", "-150.00",  "Utilities"),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "transaction_type": tx_type,
+                "amount": amount,
+                "date": today_json,
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    let res = server
+        .get("/api/reports/summary")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let body = res.json::<Value>();
+
+    let income: f64 = body["data"]["month_income"].as_str().unwrap_or("0").parse().unwrap_or(0.0);
+    let expenses: f64 = body["data"]["month_expenses"].as_str().unwrap_or("0").parse().unwrap_or(0.0);
+
+    assert!(income >= 3000.0,    "month_income should include 3000 salary, got {income}");
+    assert!(expenses >= 950.0,   "month_expenses should include 950 total, got {expenses}");
+    assert!(body["data"]["savings_rate"].is_string() || body["data"]["savings_rate"].is_f64(),
+        "savings_rate should be present");
+
+    // unreviewed_count increases for new (unreviewed) transactions.
+    let unreviewed = body["data"]["unreviewed_count"].as_i64().unwrap_or(0);
+    assert!(unreviewed >= 3, "unreviewed_count should be ≥ 3, got {unreviewed}");
+}
+
+/// Income-vs-expense report over a two-month range returns per-month breakdown.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn reports_income_expense_monthly_breakdown(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Seed two months of transactions.
+    for (month, tx_type, amount, desc) in [
+        (Month::January,  "income",  "4000.00", "Jan Salary"),
+        (Month::January,  "expense", "-500.00",  "Jan Rent"),
+        (Month::February, "income",  "4200.00", "Feb Salary"),
+        (Month::February, "expense", "-520.00",  "Feb Rent"),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "transaction_type": tx_type,
+                "amount": amount,
+                "date": json_date(2026, month, 15),
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    let res = server
+        .get("/api/reports/income-expense?from=2026-01-01&to=2026-02-28")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let body = res.json::<Value>();
+    let months = body["data"]["months"].as_array().unwrap();
+
+    // Should have at least 2 months in range.
+    assert!(months.len() >= 2, "expected ≥2 months in range, got {}", months.len());
+
+    // Verify January totals.
+    let jan = months
+        .iter()
+        .find(|m| m["month"].as_str().unwrap_or("").starts_with("2026-01"))
+        .expect("January entry present");
+    let jan_income: f64 = jan["income"].as_str().unwrap_or("0").parse().unwrap_or(0.0);
+    assert!((jan_income - 4000.0).abs() < 1.0, "jan income should be ~4000, got {jan_income}");
+}
+
+/// Balance history returns a data-point per day for the requested account range.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn reports_balance_history_grows_with_transactions(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Seed three days of income.
+    for (day, amount) in [(1u8, "100.00"), (2, "200.00"), (3, "50.00")] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "transaction_type": "income",
+                "amount": amount,
+                "date": json_date(2026, Month::March, day),
+                "description": format!("Day {day} inflow"),
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    let res = server
+        .get(&format!("/api/reports/balance-history?from=2026-03-01&to=2026-03-07&account_ids={account_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let body = res.json::<Value>();
+    let points = body["data"]["points"].as_array().unwrap();
+    assert!(!points.is_empty(), "balance history should have data points");
+}
+
+/// Cash-flow report returns income and expense series over a date range.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn reports_cash_flow_returns_daily_series(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    server
+        .post("/api/transactions")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "account_id": account_id,
+            "transaction_type": "income",
+            "amount": "500.00",
+            "date": json_date(2026, Month::March, 3),
+            "description": "Freelance payment",
+            "tag_ids": []
+        }))
+        .await
+        .assert_status(axum::http::StatusCode::CREATED);
+
+    let res = server
+        .get("/api/reports/cash-flow?from=2026-03-01&to=2026-03-07")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    // Response should at minimum contain income/expense series without error.
+    let body = res.json::<Value>();
+    assert!(body["data"].is_object(), "cash-flow body should be an object");
+}
+
+/// Category trend returns monthly spending points for a specific category.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn reports_category_trend_over_three_months(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Create a "Groceries" category.
+    let cat_id = server
+        .post("/api/categories")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "Groceries", "category_type": "expense" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Seed one grocery transaction per month for 3 months.
+    for (month, amount) in [
+        (Month::January,  "-95.00"),
+        (Month::February, "-102.50"),
+        (Month::March,    "-88.75"),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "category_id": cat_id,
+                "transaction_type": "expense",
+                "amount": amount,
+                "date": json_date(2026, month, 10),
+                "description": "Grocery run",
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    let res = server
+        .get(&format!("/api/reports/categories/{cat_id}/trend?from=2026-01-01&to=2026-03-31"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let body = res.json::<Value>();
+    assert_eq!(body["data"]["category_id"], cat_id);
+    let periods = body["data"]["periods"].as_array().unwrap();
+    assert!(periods.len() >= 3, "expected ≥3 monthly trend points, got {}", periods.len());
+}
+
+// ============================================================================
+// Real-world Scenarios — Rule Engine + Import
+// ============================================================================
+
+/// End-to-end: rules auto-categorize transactions upon import execution.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn rule_engine_auto_categorizes_on_import(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Create an "Entertainment" category.
+    let spotify_cat_id = server
+        .post("/api/categories")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "Entertainment", "category_type": "expense" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Create a rule: description_contains "spotify" → set_category to Entertainment.
+    server
+        .post("/api/rules")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "name": "Spotify",
+            "priority": 10,
+            "is_enabled": true,
+            "conditions": [
+                { "field": "description_contains", "value": "spotify", "logic": "and" }
+            ],
+            "actions": [
+                { "type": "set_category", "value": spotify_cat_id }
+            ]
+        }))
+        .await
+        .assert_status(axum::http::StatusCode::CREATED);
+
+    // Build a CSV where one transaction mentions "Spotify".
+    let csv = format!(
+        "date,amount,description\n\
+         2026-03-01,-9.99,Spotify Premium\n\
+         2026-03-02,-50.00,Supermarket\n"
+    );
+    let csv_bytes = csv.as_bytes().to_vec();
+
+    // Step 1 – preview (upload).
+    let preview_form = MultipartForm::new()
+        .add_text("account_id", &account_id)
+        .add_text("skip_duplicates", "true")
+        .add_part(
+            "file",
+            Part::bytes(csv_bytes.as_slice())
+                .file_name("bank.csv")
+                .mime_type("text/csv"),
+        );
+    let preview_res = server
+        .post("/api/imports/upload")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(preview_form)
+        .await;
+    preview_res.assert_status(axum::http::StatusCode::CREATED);
+    let import_id = preview_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Step 2 – execute.
+    let execute_form = MultipartForm::new()
+        .add_text("skip_duplicates", "true")
+        .add_part(
+            "file",
+            Part::bytes(csv_bytes.as_slice())
+                .file_name("bank.csv")
+                .mime_type("text/csv"),
+        );
+    let exec_res = server
+        .post(&format!("/api/imports/{import_id}/execute"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(execute_form)
+        .await;
+    exec_res.assert_status_ok();
+    assert_eq!(exec_res.json::<Value>()["data"]["imported_count"], 2);
+
+    // Fetch imported transactions filtered by account.
+    let txns = server
+        .get(&format!("/api/transactions?account_id={account_id}&limit=50"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .json::<Value>();
+    let rows = txns["data"].as_array().unwrap();
+    assert_eq!(rows.len(), 2, "imported 2 transactions");
+
+    // The Spotify transaction should have category = spotify_cat_id.
+    let spotify_txn = rows
+        .iter()
+        .find(|t| t["description"].as_str().unwrap_or("").to_lowercase().contains("spotify"))
+        .expect("Spotify transaction present");
+    assert_eq!(
+        spotify_txn["category_id"].as_str().unwrap_or(""),
+        spotify_cat_id,
+        "rule should auto-categorize Spotify transaction"
+    );
+}
+
+/// Rule test endpoint correctly evaluates conditions against sample input.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn rule_test_endpoint_matches_and_misses(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Match — description contains "netflix".
+    let match_res = server
+        .post("/api/rules/test")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "conditions": [
+                { "field": "description_contains", "value": "netflix", "logic": "and" }
+            ],
+            "description": "Netflix monthly subscription",
+            "payee": "Netflix Inc.",
+            "amount": "-15.99",
+            "account_id": account_id
+        }))
+        .await;
+    match_res.assert_status_ok();
+    assert_eq!(match_res.json::<Value>()["data"]["matched"], true);
+
+    // No match — description does not contain "netflix".
+    let miss_res = server
+        .post("/api/rules/test")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "conditions": [
+                { "field": "description_contains", "value": "netflix", "logic": "and" }
+            ],
+            "description": "Lidl grocery store",
+            "payee": "Lidl",
+            "amount": "-33.10",
+            "account_id": account_id
+        }))
+        .await;
+    miss_res.assert_status_ok();
+    assert_eq!(miss_res.json::<Value>()["data"]["matched"], false);
+}
+
+// ============================================================================
+// Real-world Scenarios — Transaction Filtering
+// ============================================================================
+
+/// Filter transactions by date range returns only transactions within range.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transaction_filter_by_date_range(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Create transactions on Jan 10, Feb 10, Mar 10.
+    for (month, desc) in [
+        (Month::January,  "Jan payment"),
+        (Month::February, "Feb payment"),
+        (Month::March,    "Mar payment"),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "transaction_type": "expense",
+                "amount": "-10.00",
+                "date": json_date(2026, month, 10),
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    // Filter: only February.
+    let res = server
+        .get("/api/transactions?date_from=2026-02-01&date_to=2026-02-28&limit=50")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let txns = res.json::<Value>();
+    let rows = txns["data"].as_array().unwrap();
+    assert_eq!(rows.len(), 1, "only Feb transaction in range");
+    assert!(
+        rows[0]["description"].as_str().unwrap().contains("Feb"),
+        "expected Feb payment"
+    );
+}
+
+/// Filter transactions by type returns only matching types.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transaction_filter_by_type(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    for (tx_type, amount, desc) in [
+        ("income",  "1000.00", "Salary"),
+        ("expense", "-200.00",  "Bills"),
+        ("expense", "-50.00",   "Coffee"),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "transaction_type": tx_type,
+                "amount": amount,
+                "date": json_date(2026, Month::March, 1),
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    // Filter: income only.
+    let res = server
+        .get("/api/transactions?transaction_type=income&limit=50")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let rows = res.json::<Value>();
+    let income_txns = rows["data"].as_array().unwrap();
+    assert_eq!(income_txns.len(), 1);
+    assert_eq!(income_txns[0]["description"], "Salary");
+
+    // Filter: expense only.
+    let res2 = server
+        .get("/api/transactions?transaction_type=expense&limit=50")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res2.assert_status_ok();
+    assert_eq!(
+        res2.json::<Value>()["data"].as_array().unwrap().len(),
+        2,
+        "two expense transactions"
+    );
+}
+
+/// Filter transactions by category returns only categorized transactions.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transaction_filter_by_category(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    let food_id = server
+        .post("/api/categories")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "Food", "category_type": "expense" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let utilities_id = server
+        .post("/api/categories")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "Utilities", "category_type": "expense" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    for (cat, desc, amount) in [
+        (&food_id,      "Lidl",        "-55.00"),
+        (&food_id,      "Aldi",        "-30.00"),
+        (&utilities_id, "Electric",   "-100.00"),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "category_id": cat,
+                "transaction_type": "expense",
+                "amount": amount,
+                "date": json_date(2026, Month::March, 5),
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    let res = server
+        .get(&format!("/api/transactions?category_id={food_id}&limit=50"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    assert_eq!(
+        res.json::<Value>()["data"].as_array().unwrap().len(),
+        2,
+        "two food transactions"
+    );
+}
+
+/// Full-text search on transactions returns matches by description.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transaction_fulltext_search(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    for (desc, amount) in [
+        ("Apple Store in-app purchase", "-4.99"),
+        ("Pret A Manger sandwich",       "-7.50"),
+        ("Apple iCloud storage",         "-0.99"),
+    ] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "transaction_type": "expense",
+                "amount": amount,
+                "date": json_date(2026, Month::March, 1),
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    // Search for "Apple" should return the two Apple transactions.
+    let res = server
+        .get("/api/transactions?q=Apple&limit=50")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    assert_eq!(
+        res.json::<Value>()["data"].as_array().unwrap().len(),
+        2,
+        "two Apple transactions found by search"
+    );
+}
+
+// ============================================================================
+// Real-world Scenarios — Tags
+// ============================================================================
+
+/// Tags assigned at transaction creation are returned in list and detail views.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn transaction_tags_roundtrip(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Create two tags.
+    let vacation_id = server
+        .post("/api/tags")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "vacation", "color": "#3b82f6" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let business_id = server
+        .post("/api/tags")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "business", "color": "#10b981" }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Create a transaction carrying both tags.
+    let tx_res = server
+        .post("/api/transactions")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "account_id": account_id,
+            "transaction_type": "expense",
+            "amount": "-250.00",
+            "date": json_date(2026, Month::March, 10),
+            "description": "Business hotel",
+            "tag_ids": [vacation_id, business_id]
+        }))
+        .await;
+    tx_res.assert_status(axum::http::StatusCode::CREATED);
+    let tx_id = tx_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Retrieve the transaction and confirm both tags are present.
+    let get_res = server
+        .get(&format!("/api/transactions/{tx_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    get_res.assert_status_ok();
+    let tag_ids = get_res.json::<Value>()["data"]["tag_ids"]
+        .as_array()
+        .cloned()
+        .unwrap_or_default();
+    let tag_strings: Vec<&str> = tag_ids.iter()
+        .filter_map(|v| v.as_str())
+        .collect();
+    assert!(tag_strings.contains(&vacation_id.as_str()), "vacation tag present");
+    assert!(tag_strings.contains(&business_id.as_str()),  "business tag present");
+
+    // Filter transactions by tag should return this transaction.
+    let filter_res = server
+        .get(&format!("/api/transactions?tag_id={vacation_id}&limit=50"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    filter_res.assert_status_ok();
+    let filtered = filter_res.json::<Value>();
+    assert_eq!(filtered["data"].as_array().unwrap().len(), 1);
+    assert_eq!(filtered["data"][0]["id"], tx_id);
+
+    // Bulk-update: remove vacation tag (replace with only business).
+    let bulk_res = server
+        .patch("/api/transactions/bulk")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "transaction_ids": [tx_id],
+            "add_tag_ids": []
+        }))
+        .await;
+    bulk_res.assert_status_ok();
+}
+
+// ============================================================================
+// Real-world Scenarios — Import pipeline (multiple formats)
+// ============================================================================
+
+/// MT940 import fully workflows from upload through execute.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn import_mt940_full_pipeline(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Minimal MT940 statement with two transactions.
+    let mt940 = b":20:STMT001\n\
+                   :25:NL21ABNA0417164300\n\
+                   :28C:1/1\n\
+                   :60F:C260301EUR1000,00\n\
+                   :61:2603010301D50,00NTRFNONREF\n\
+                   :86:Supermarket payment\n\
+                   :61:2603020302C200,00NTRFNONREF\n\
+                   :86:Salary deposit\n\
+                   :62F:C260302EUR1150,00\n" as &[u8];
+
+    let preview_form = MultipartForm::new()
+        .add_text("account_id", &account_id)
+        .add_text("skip_duplicates", "true")
+        .add_part(
+            "file",
+            Part::bytes(mt940)
+                .file_name("statement.mt940")
+                .mime_type("application/octet-stream"),
+        );
+    let preview_res = server
+        .post("/api/imports/upload")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(preview_form)
+        .await;
+    preview_res.assert_status(axum::http::StatusCode::CREATED);
+    let body = preview_res.json::<Value>();
+    let import_id = body["data"]["id"].as_str().unwrap();
+
+    // Verify preview shows 2 rows.
+    assert_eq!(body["data"]["total_rows"], 2,
+        "MT940 with 2 transactions should preview 2 rows");
+
+    // Execute.
+    let execute_form = MultipartForm::new()
+        .add_text("skip_duplicates", "true")
+        .add_part(
+            "file",
+            Part::bytes(mt940)
+                .file_name("statement.mt940")
+                .mime_type("application/octet-stream"),
+        );
+    let exec_res = server
+        .post(&format!("/api/imports/{import_id}/execute"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(execute_form)
+        .await;
+    exec_res.assert_status_ok();
+    assert_eq!(exec_res.json::<Value>()["data"]["imported_count"], 2);
+
+    // Imported transactions are visible on the account.
+    let txns = server
+        .get(&format!("/api/transactions?account_id={account_id}&limit=50"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .json::<Value>();
+    assert_eq!(txns["data"].as_array().unwrap().len(), 2);
+}
+
+/// Duplicate detection: re-importing the same CSV with skip_duplicates=true
+/// does not create duplicate transactions.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn import_csv_skip_duplicates(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    let csv = b"date,amount,description\n2026-03-01,-20.00,Coffee\n2026-03-02,-50.00,Lunch\n" as &[u8];
+
+    // First import.
+    let exec_form_1 = MultipartForm::new()
+        .add_text("account_id", &account_id)
+        .add_text("skip_duplicates", "true")
+        .add_part("file", Part::bytes(csv).file_name("bank.csv").mime_type("text/csv"));
+    let first = server
+        .post("/api/imports/upload")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(exec_form_1)
+        .await;
+    first.assert_status(axum::http::StatusCode::CREATED);
+    let import_id_1 = first.json::<Value>()["data"]["id"].as_str().unwrap().to_string();
+
+    let ex1 = MultipartForm::new()
+        .add_text("skip_duplicates", "true")
+        .add_part("file", Part::bytes(csv).file_name("bank.csv").mime_type("text/csv"));
+    server
+        .post(&format!("/api/imports/{import_id_1}/execute"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(ex1)
+        .await
+        .assert_status_ok();
+
+    // Second import of identical CSV with skip_duplicates=true.
+    let exec_form_2 = MultipartForm::new()
+        .add_text("account_id", &account_id)
+        .add_text("skip_duplicates", "true")
+        .add_part("file", Part::bytes(csv).file_name("bank.csv").mime_type("text/csv"));
+    let second = server
+        .post("/api/imports/upload")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(exec_form_2)
+        .await;
+    second.assert_status(axum::http::StatusCode::CREATED);
+    let import_id_2 = second.json::<Value>()["data"]["id"].as_str().unwrap().to_string();
+
+    let ex2 = MultipartForm::new()
+        .add_text("skip_duplicates", "true")
+        .add_part("file", Part::bytes(csv).file_name("bank.csv").mime_type("text/csv"));
+    let second_exec = server
+        .post(&format!("/api/imports/{import_id_2}/execute"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .multipart(ex2)
+        .await;
+    second_exec.assert_status_ok();
+
+    // Total transactions should still be 2 (duplicates skipped).
+    let txns = server
+        .get(&format!("/api/transactions?account_id={account_id}&limit=50"))
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .json::<Value>();
+    let count = txns["data"].as_array().unwrap().len();
+    assert!(count <= 2, "expected ≤2 transactions after duplicate re-import, got {count}");
+}
+
+// ============================================================================
+// Real-world Scenarios — Security: Cross-User Resource Isolation
+// ============================================================================
+
+/// Authenticated user B cannot access, modify or delete user A's budgets.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn cross_user_budget_isolation(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+
+    let (token_a, _) = {
+        server.post("/api/auth/register")
+            .json(&json!({ "username": "alice", "email": "alice@example.com", "password": TEST_PASSWORD }))
+            .await;
+        let res = server.post("/api/auth/login")
+            .json(&json!({ "email": "alice@example.com", "password": TEST_PASSWORD }))
+            .await;
+        let body = res.json::<Value>();
+        (body["data"]["access_token"].as_str().unwrap().to_string(),
+         body["data"]["refresh_token"].as_str().unwrap().to_string())
+    };
+    let (token_b, _) = {
+        server.post("/api/auth/register")
+            .json(&json!({ "username": "bob", "email": "bob@example.com", "password": TEST_PASSWORD }))
+            .await;
+        let res = server.post("/api/auth/login")
+            .json(&json!({ "email": "bob@example.com", "password": TEST_PASSWORD }))
+            .await;
+        let body = res.json::<Value>();
+        (body["data"]["access_token"].as_str().unwrap().to_string(),
+         body["data"]["refresh_token"].as_str().unwrap().to_string())
+    };
+
+    let auth_a = format!("Bearer {token_a}");
+    let auth_b = format!("Bearer {token_b}");
+
+    // Alice creates a budget.
+    let budget_id = server
+        .post("/api/budgets")
+        .add_header(axum::http::header::AUTHORIZATION, auth_a.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "name": "Alice Budget",
+            "period_start": json_date(2026, Month::March, 1),
+            "period_end":   json_date(2026, Month::March, 31),
+            "currency": "EUR"
+        }))
+        .await
+        .json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // Bob cannot read Alice's budget.
+    server
+        .get(&format!("/api/budgets/{budget_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth_b.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .assert_status(axum::http::StatusCode::NOT_FOUND);
+
+    // Bob cannot update Alice's budget.
+    server
+        .put(&format!("/api/budgets/{budget_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth_b.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({ "name": "Bob's takeover" }))
+        .await
+        .assert_status(axum::http::StatusCode::NOT_FOUND);
+
+    // Bob cannot delete Alice's budget.
+    server
+        .delete(&format!("/api/budgets/{budget_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth_b.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .assert_status(axum::http::StatusCode::NOT_FOUND);
+}
+
+/// Authenticated user B cannot access user A's transactions or accounts.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn cross_user_transaction_isolation(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+
+    let reg_and_login = |username: &str, email: &str| {
+        let server = &server;
+        let un = username.to_string();
+        let em = email.to_string();
+        async move {
+            server.post("/api/auth/register")
+                .json(&json!({ "username": un, "email": em, "password": TEST_PASSWORD }))
+                .await;
+            let res = server.post("/api/auth/login")
+                .json(&json!({ "email": em, "password": TEST_PASSWORD }))
+                .await;
+            res.json::<Value>()["data"]["access_token"].as_str().unwrap().to_string()
+        }
+    };
+
+    let token_a = reg_and_login("userZ", "z@example.com").await;
+    let token_b = reg_and_login("userY", "y@example.com").await;
+    let auth_a = format!("Bearer {token_a}");
+    let auth_b = format!("Bearer {token_b}");
+
+    // User A creates an account and a transaction.
+    let account_id = create_bank_and_account(&server, &auth_a).await;
+    let tx_res = server
+        .post("/api/transactions")
+        .add_header(axum::http::header::AUTHORIZATION, auth_a.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "account_id": account_id,
+            "transaction_type": "expense",
+            "amount": "-5.00",
+            "date": json_date(2026, Month::March, 1),
+            "description": "Secret data",
+            "tag_ids": []
+        }))
+        .await;
+    tx_res.assert_status(axum::http::StatusCode::CREATED);
+    let tx_id = tx_res.json::<Value>()["data"]["id"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    // User B's transaction list is empty.
+    let b_txns = server
+        .get("/api/transactions?limit=50")
+        .add_header(axum::http::header::AUTHORIZATION, auth_b.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .json::<Value>();
+    assert_eq!(b_txns["data"].as_array().unwrap().len(), 0);
+
+    // User B cannot read User A's transaction by ID.
+    server
+        .get(&format!("/api/transactions/{tx_id}"))
+        .add_header(axum::http::header::AUTHORIZATION, auth_b.parse::<axum::http::HeaderValue>().unwrap())
+        .await
+        .assert_status(axum::http::StatusCode::NOT_FOUND);
+}
+
+// ============================================================================
+// Real-world Scenarios — Settings
+// ============================================================================
+
+/// Settings are initialised with defaults and can be partially updated.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn settings_default_then_partial_update(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+
+    // Defaults are returned immediately after registration.
+    let defaults = server
+        .get("/api/settings")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    defaults.assert_status_ok();
+    let before = defaults.json::<Value>();
+    assert!(before["data"]["default_currency"].is_string(),
+        "default_currency should be a string");
+    assert!(before["data"]["locale"].is_string(), "locale should be present");
+
+    // Partial update: change default_currency and theme.
+    let update_res = server
+        .put("/api/settings")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "default_currency": "PLN",
+            "theme": "dark"
+        }))
+        .await;
+    update_res.assert_status_ok();
+    let after = update_res.json::<Value>();
+    assert_eq!(after["data"]["default_currency"], "PLN");
+    assert_eq!(after["data"]["theme"], "dark");
+
+    // Other settings not in the update payload remain at their defaults.
+    assert_eq!(
+        after["data"]["locale"],
+        before["data"]["locale"],
+        "unmodified locale should be unchanged"
+    );
+}
+
+// ============================================================================
+// Real-world Scenarios — Data Export
+// ============================================================================
+
+/// Export endpoint returns CSV when format=csv is requested.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn export_transactions_as_csv(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    // Seed two transactions.
+    for (amount, desc) in [("-15.00", "Groceries"), ("2000.00", "Paycheck")] {
+        server
+            .post("/api/transactions")
+            .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+            .json(&json!({
+                "account_id": account_id,
+                "transaction_type": if amount.starts_with('-') { "expense" } else { "income" },
+                "amount": amount,
+                "date": json_date(2026, Month::March, 1),
+                "description": desc,
+                "tag_ids": []
+            }))
+            .await
+            .assert_status(axum::http::StatusCode::CREATED);
+    }
+
+    let res = server
+        .get("/api/export?format=csv")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let content_type = res
+        .headers()
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    assert!(
+        content_type.contains("csv") || content_type.contains("text"),
+        "content-type should indicate CSV, got: {content_type}"
+    );
+    let body = res.text();
+    assert!(body.contains("date") || body.contains("Date") || body.contains("amount") || body.contains("Amount"),
+        "CSV response should contain column headers");
+    assert!(body.contains("Groceries") || body.contains("Paycheck"),
+        "CSV should contain transaction descriptions");
+}
+
+/// Export endpoint returns JSON when format=json is requested.
+#[sqlx::test(migrations = "../rustvault-db/migrations")]
+async fn export_transactions_as_json(pool: sqlx::PgPool) {
+    let server = test_server(pool);
+    let (token, _) = register_and_login(&server).await;
+    let auth = format!("Bearer {token}");
+    let account_id = create_bank_and_account(&server, &auth).await;
+
+    server
+        .post("/api/transactions")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .json(&json!({
+            "account_id": account_id,
+            "transaction_type": "expense",
+            "amount": "-25.00",
+            "date": json_date(2026, Month::March, 1),
+            "description": "Test purchase",
+            "tag_ids": []
+        }))
+        .await
+        .assert_status(axum::http::StatusCode::CREATED);
+
+    let res = server
+        .get("/api/export?format=json")
+        .add_header(axum::http::header::AUTHORIZATION, auth.parse::<axum::http::HeaderValue>().unwrap())
+        .await;
+    res.assert_status_ok();
+    let body: Value = res.json();
+    assert!(body.is_array() || body["transactions"].is_array() || body["data"].is_array(),
+        "JSON export should return an array of transactions");
+}

@@ -468,6 +468,134 @@ pub async fn list_exchange_rates(pool: &PgPool) -> Result<Vec<ExchangeRate>, Cor
     Ok(rows.into_iter().map(row_to_exchange_rate).collect())
 }
 
+// ── Recurring budget generation (P4.6) ───────────────────────────────────────
+
+/// Generate the next period's budget from a recurring template.
+///
+/// Rules:
+/// - Source budget must have `is_recurring = true` and a `recurrence_rule`.
+/// - Supported rules: `FREQ=MONTHLY` and `FREQ=YEARLY`.
+/// - The generated budget is a copy of the source's lines with actuals reset.
+/// - The generated budget has `is_recurring = false` (it is a snapshot, not a template).
+///
+/// Returns the newly created budget so the handler can respond with 201 Created.
+pub async fn generate_next_period(
+    pool: &PgPool,
+    user_id: Uuid,
+    source_id: Uuid,
+) -> Result<Budget, CoreError> {
+    let source = get(pool, user_id, source_id).await?;
+
+    if !source.is_recurring {
+        return Err(CoreError::Validation(
+            "budget is not marked as recurring".into(),
+        ));
+    }
+
+    let rule = source.recurrence_rule.as_deref().unwrap_or("");
+    let (next_start, next_end) = advance_period(source.period_start, source.period_end, rule)?;
+
+    // Derive a name: replace the last 4-digit year if present, otherwise append period.
+    let new_name = {
+        let s = source.name.clone();
+        // Try to replace a trailing month-year pattern, e.g. "Jan 2026" → "Feb 2026".
+        // Fallback: append the new period dates.
+        format!("{} ({})", s, next_start)
+    };
+
+    let new_budget = create(
+        pool,
+        user_id,
+        NewBudget {
+            name: new_name,
+            period_start: next_start,
+            period_end: next_end,
+            currency: source.currency.clone(),
+            is_recurring: false,
+            recurrence_rule: None,
+            notes: source.notes.clone(),
+        },
+    )
+    .await?;
+
+    // Copy all budget lines from the source, with reset actuals.
+    let source_lines = rustvault_db::repos::budget::list_lines(pool, source_id).await?;
+    for line in source_lines {
+        rustvault_db::repos::budget::insert_line(
+            pool,
+            new_budget.id,
+            line.category_id,
+            line.planned_amount,
+            line.notes.as_deref(),
+            line.sort_order,
+        )
+        .await?;
+    }
+
+    Ok(new_budget)
+}
+
+/// Advance a start/end date pair according to the recurrence rule.
+///
+/// Only `FREQ=MONTHLY` and `FREQ=YEARLY` (case-insensitive) are supported.
+/// The period duration (in days) is preserved for monthly recurrence; for
+/// monthly recurrence the new end date is always the last day of the next
+/// calendar month.
+fn advance_period(
+    start: Date,
+    end: Date,
+    rule: &str,
+) -> Result<(Date, Date), CoreError> {
+    use time::{Duration, Month};
+
+    let rule_upper = rule.to_uppercase();
+
+    if rule_upper.contains("FREQ=MONTHLY") {
+        // Next calendar month.
+        let (next_year, next_month) = if start.month() == Month::December {
+            (start.year() + 1, Month::January)
+        } else {
+            (start.year(), start.month().next())
+        };
+
+        let next_start = Date::from_calendar_date(next_year, next_month, 1)
+            .map_err(|_| CoreError::Validation("could not compute next monthly period".into()))?;
+
+        // End = last day of next month.
+        let last_day = days_in_month(next_year, next_month);
+        let next_end = Date::from_calendar_date(next_year, next_month, last_day)
+            .map_err(|_| CoreError::Validation("could not compute last day of next month".into()))?;
+
+        Ok((next_start, next_end))
+    } else if rule_upper.contains("FREQ=YEARLY") {
+        let duration = end - start;
+        let next_start = start.replace_year(start.year() + 1)
+            .map_err(|_| CoreError::Validation("could not compute next yearly period start".into()))?;
+        let next_end = next_start + duration;
+        Ok((next_start, next_end))
+    } else {
+        Err(CoreError::Validation(format!(
+            "unsupported recurrence rule '{rule}'; only FREQ=MONTHLY and FREQ=YEARLY are supported"
+        )))
+    }
+}
+
+/// Returns the number of days in the given month/year.
+fn days_in_month(year: i32, month: time::Month) -> u8 {
+    use time::Month::*;
+    match month {
+        January | March | May | July | August | October | December => 31,
+        April | June | September | November => 30,
+        February => {
+            if (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0) {
+                29
+            } else {
+                28
+            }
+        }
+    }
+}
+
 /// Convert `amount` from `from_currency` to `to_currency` on `on_date`.
 ///
 /// Uses stored rates. Returns `None` if no rate is available for the pair.

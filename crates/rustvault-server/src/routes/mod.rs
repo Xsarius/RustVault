@@ -9,6 +9,7 @@ pub mod auth;
 pub mod banks;
 pub mod budgets;
 pub mod categories;
+pub mod export;
 pub mod health;
 pub mod i18n;
 pub mod imports;
@@ -126,6 +127,7 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         )
         .route("/api/budgets/{id}/summary", get(budgets::summary))
         .route("/api/budgets/{id}/copy", post(budgets::copy))
+        .route("/api/budgets/{id}/generate-next", post(budgets::generate_next))
         .route(
             "/api/budgets/{id}/lines",
             post(budgets::add_line),
@@ -141,6 +143,8 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         .route("/api/reports/categories/{id}/trend", get(reports::category_trend))
         .route("/api/reports/balance-history", get(reports::balance_history))
         .route("/api/reports/cash-flow", get(reports::cash_flow))
+        // Export (P7.10)
+        .route("/api/export", get(export::export))
         .layer(middleware::from_fn_with_state(state, auth_middleware))
 }
 

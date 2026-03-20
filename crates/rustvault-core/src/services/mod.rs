@@ -15,6 +15,8 @@ pub mod budget;
 pub mod category;
 /// Exchange rate service — ECB feed fetcher and currency conversion helpers.
 pub mod exchange_rate;
+/// Export service — CSV, JSON, QIF exports (P7.10).
+pub mod export;
 /// Import service — list, get, rollback.
 pub mod import;
 /// Report service — dashboard summary, income/expense, category trend, balance history, cash flow.
