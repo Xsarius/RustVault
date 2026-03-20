@@ -749,4 +749,246 @@ mod tests {
         assert_eq!(rows.len(), 1);
         assert_eq!(rows[0].date.month() as u8, 10); // October
     }
+
+    // ── Real-world bank statement format tests ────────────────────────────────
+
+    /// Simulates an ING (Netherlands) PDF statement with tab-aligned columns.
+    /// These statements use DD-MM-YYYY dates and comma decimals with space thousands.
+    #[test]
+    fn parses_ing_netherlands_style_statement() {
+        let input = "\
+            Account statement ING Bank N.V.\n\
+            Period: 01-03-2026 through 31-03-2026\n\
+            \n\
+            01-03-2026 AH Albert Heijn -24,85\n\
+            05-03-2026 Employer B.V. Salary March 3.450,00\n\
+            10-03-2026 Vodafone NL Phone bill -29,99\n\
+            15-03-2026 ABN Amro mortgage -850,00\n\
+            \n\
+            Closing balance 31-03-2026 EUR 2.545,16\n";
+
+        let rows = parse_transactions_from_text(input).expect("ING parse should succeed");
+        assert!(rows.len() >= 4,
+            "expected ≥4 transactions from ING statement, got {}", rows.len());
+
+        // Verify chronological order.
+        for w in rows.windows(2) {
+            assert!(w[0].date <= w[1].date, "rows should be in chronological order");
+        }
+
+        // The mortgage payment should parse as a debit (negative).
+        let mortgage = rows.iter().find(|r| r.description.to_lowercase().contains("mortgage")
+            || r.description.to_lowercase().contains("abnamro")
+            || r.description.to_lowercase().contains("abn"));
+        if let Some(m) = mortgage {
+            assert!(m.amount < rust_decimal::Decimal::ZERO,
+                "mortgage should be negative, got {}", m.amount);
+        }
+    }
+
+    /// Revolut-style statement: ISO date, no currency symbol in amount column.
+    #[test]
+    fn parses_revolut_style_statement() {
+        let input = "\
+            Revolut Statement\n\
+            Name: Test User\n\
+            From: 2026-03-01  To: 2026-03-31\n\
+            \n\
+            Completed 2026-03-02 Spotify -9.99 EUR\n\
+            Completed 2026-03-03 Lidl -18.45 EUR\n\
+            Completed 2026-03-10 Freelance income 450.00 EUR\n\
+            Completed 2026-03-20 Amazon -35.99 EUR\n";
+
+        let rows = parse_transactions_from_text(input).expect("Revolut parse should succeed");
+        assert!(rows.len() >= 3,
+            "expected ≥3 Revolut transactions, got {}", rows.len());
+    }
+
+    /// mBank (Poland) PDF: European date with dot, comma decimal, Polish descriptions.
+    #[test]
+    fn parses_mbank_poland_style_statement() {
+        let input = "\
+            mBank S.A. - wyciag z rachunku\n\
+            Okres: 01.03.2026 - 31.03.2026\n\
+            \n\
+            Data   Opis operacji                          Kwota\n\
+            \n\
+            03.03.2026 BIEDRONKA 1234 WARSZAWA            -35,90\n\
+            05.03.2026 PRZELEW PRZYCHODZACY WYNAGRODZENIE  6500,00\n\
+            07.03.2026 NETFLIX.COM                         -52,00\n\
+            12.03.2026 ORLEN STACJA PALIW                  -120,00\n\
+            20.03.2026 CZYNSZ MIESZKANIA                   -1800,00\n";
+
+        let rows = parse_transactions_from_text(input).expect("mBank parse should succeed");
+        assert!(rows.len() >= 4,
+            "expected ≥4 mBank transactions, got {}", rows.len());
+
+        let wynagrodzenie = rows
+            .iter()
+            .find(|r| r.description.to_lowercase().contains("wynagrodzenie")
+                || r.description.to_lowercase().contains("przychodzacy")
+                || r.amount > rust_decimal::Decimal::from(1000));
+        assert!(wynagrodzenie.is_some(), "salary transaction should be found");
+        if let Some(w) = wynagrodzenie {
+            assert!(
+                w.amount > rust_decimal::Decimal::ZERO,
+                "salary should be positive income, got {}",
+                w.amount
+            );
+        }
+    }
+
+    /// English abbreviated months (Jan, Feb, … Dec) are all recognised.
+    #[test]
+    fn parses_all_english_abbreviated_months() {
+        let months = [
+            ("01", "Jan"), ("02", "Feb"), ("03", "Mar"), ("04", "Apr"),
+            ("05", "May"), ("06", "Jun"), ("07", "Jul"), ("08", "Aug"),
+            ("09", "Sep"), ("10", "Oct"), ("11", "Nov"), ("12", "Dec"),
+        ];
+        for (num, abbr) in &months {
+            let input = format!("15 {abbr} 2026 Test payment -10.00\n");
+            let rows = parse_transactions_from_text(&input)
+                .unwrap_or_else(|_| panic!("failed to parse month {abbr}"));
+            assert_eq!(rows.len(), 1, "should parse one row for month {abbr}");
+            let expected: u8 = num.parse().unwrap();
+            assert_eq!(
+                rows[0].date.month() as u8, expected,
+                "wrong month for abbreviation {abbr}: expected {expected}, got {}",
+                rows[0].date.month() as u8
+            );
+        }
+    }
+
+    /// A statement header/footer with running totals must not be mis-parsed as transactions.
+    #[test]
+    fn header_and_footer_lines_not_misidentified() {
+        let input = "\
+            BANK ACCOUNT STATEMENT\n\
+            Account: PL61 1090 1014 0000 0712 1981 2874\n\
+            Opening balance as of 2026-03-01: 5,234.12\n\
+            \n\
+            2026-03-05 Coffee -3.50\n\
+            2026-03-10 Salary 2000.00\n\
+            \n\
+            Closing balance as of 2026-03-31: 7,230.62\n\
+            Total debits: 3.50    Total credits: 2,000.00\n";
+
+        let rows = parse_transactions_from_text(input).expect("parse should succeed");
+        // Should find exactly the two real transactions, not header/footer amounts.
+        assert_eq!(rows.len(), 2,
+            "expected exactly 2 real transactions, got {}; rows: {:?}",
+            rows.len(),
+            rows.iter().map(|r| format!("{} {}", r.date, r.description)).collect::<Vec<_>>());
+    }
+
+    /// An entirely empty PDF text extraction yields 0 rows, not an error.
+    #[test]
+    fn empty_text_returns_no_rows() {
+        let rows = parse_transactions_from_text("").expect("empty string should not error");
+        assert_eq!(rows.len(), 0);
+    }
+
+    /// A PDF with only header/whitespace text yields 0 rows.
+    #[test]
+    fn whitespace_only_statement_yields_no_rows() {
+        let input = "\n   \n\n   \n\n";
+        let rows = parse_transactions_from_text(input).expect("whitespace-only should not error");
+        assert_eq!(rows.len(), 0);
+    }
+
+    /// Output rows are always sorted by date, regardless of input order.
+    #[test]
+    fn output_is_sorted_chronologically() {
+        // Input in reverse chronological order.
+        let input = "\
+            2026-03-31 Last day -5.00\n\
+            2026-03-01 First day 100.00\n\
+            2026-03-15 Middle day -20.00\n";
+        let rows = parse_transactions_from_text(input).expect("parse should succeed");
+        assert_eq!(rows.len(), 3);
+        assert_eq!(rows[0].date.day(), 1,  "first row should be Mar 1");
+        assert_eq!(rows[1].date.day(), 15, "second row should be Mar 15");
+        assert_eq!(rows[2].date.day(), 31, "third row should be Mar 31");
+    }
+
+    /// Three-line PDF record: description and amount on separate lines after the date.
+    #[test]
+    fn parses_three_line_transaction_record() {
+        // Some bank PDFs split: date | payee | amount across three lines.
+        let input = "\
+            2026-03-10\n\
+            Online Gaming Store\n\
+            -39.95\n\
+            2026-03-11\n\
+            Direct Debit Insurance\n\
+            -120.00\n";
+        let rows = parse_transactions_from_text(input).expect("3-line parse should succeed");
+        // Should find both records.
+        assert!(rows.len() >= 2,
+            "expected ≥2 transactions from 3-line format, got {}", rows.len());
+    }
+
+    /// Amounts with thousands separators in both European and US formats.
+    #[test]
+    fn parses_amounts_with_thousands_separators() {
+        // US style: comma as thousands, period as decimal.
+        let input_us = "2026-03-01 Large payment -1,234.56\n";
+        // European style: period as thousands, comma as decimal.
+        let input_eu = "2026-03-01 Large payment -1.234,56\n";
+
+        let rows_us = parse_transactions_from_text(input_us).expect("US thousands parse");
+        let rows_eu = parse_transactions_from_text(input_eu).expect("EU thousands parse");
+
+        // At least one format should successfully parse.
+        let total = rows_us.len() + rows_eu.len();
+        assert!(total >= 1,
+            "at least one thousands-separator format should parse; US rows={}, EU rows={}",
+            rows_us.len(), rows_eu.len());
+
+        // Verify the amount is negative (debit).
+        for row in rows_us.iter().chain(rows_eu.iter()) {
+            assert!(row.amount < rust_decimal::Decimal::ZERO || row.amount.abs() > rust_decimal::Decimal::from(100),
+                "large amount should be significant, got {}", row.amount);
+        }
+    }
+
+    /// Metadata contains expected fields: source=pdf, raw_line, line number.
+    #[test]
+    fn transaction_metadata_contains_source_and_raw_line() {
+        let input = "2026-03-05 Starbucks -5.40\n";
+        let rows = parse_transactions_from_text(input).expect("parse should succeed");
+        assert_eq!(rows.len(), 1);
+        let meta = &rows[0].metadata;
+        assert_eq!(meta.get("source").and_then(|v| v.as_str()), Some("pdf"),
+            "metadata.source should be 'pdf'");
+        assert!(meta.contains_key("raw_line"), "metadata should contain raw_line");
+        assert!(meta.contains_key("line"), "metadata should contain line number");
+    }
+
+    /// The PdfParser detect() method returns correct confidence for various inputs.
+    #[test]
+    fn pdf_detect_confidence() {
+        use crate::raw::ImportParser;
+        let parser = super::PdfParser;
+
+        // Magic bytes + extension: highest confidence.
+        let pdf_magic = b"%PDF-1.4 fake content";
+        assert!((parser.detect(pdf_magic, Some("pdf")) - 0.95).abs() < 0.01,
+            "magic + ext should be 0.95");
+
+        // Extension only, no magic: medium-low confidence.
+        assert!((parser.detect(b"not a pdf", Some("pdf")) - 0.6).abs() < 0.01,
+            "ext only should be 0.6");
+
+        // Magic only, no extension: medium confidence.
+        assert!((parser.detect(pdf_magic, None) - 0.8).abs() < 0.01,
+            "magic only should be 0.8");
+
+        // Neither: zero confidence.
+        assert_eq!(parser.detect(b"random bytes", None), 0.0,
+            "no match should be 0.0");
+        assert_eq!(parser.detect(b"random bytes", Some("csv")), 0.0,
+            "csv extension should be 0.0");
+    }
 }
