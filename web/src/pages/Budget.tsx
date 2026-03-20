@@ -8,6 +8,8 @@ import {
   For,
   Show,
   createMemo,
+  createEffect,
+  onCleanup,
 } from "solid-js";
 import {
   PiggyBank,
@@ -44,6 +46,7 @@ import {
 import { ApiError } from "~/api/client";
 import { useI18n, useLocale } from "~/i18n";
 import { formatCurrency, formatAmount, formatDateRange } from "~/lib/format";
+import { initChart, CHART_COLORS } from "~/lib/chart";
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -62,6 +65,79 @@ async function fetchBudgets(includeArchived: boolean): Promise<Budget[]> {
 async function fetchCategories(): Promise<Category[]> {
   const res = await api.fetchList<Category>("/api/categories");
   return res.data;
+}
+
+// ── Budget distribution donut chart ──────────────────────────
+
+function BudgetDistributionChart(props: {
+  lines: BudgetSummary["lines"];
+  currency: string;
+  categories: Category[];
+}) {
+  let container!: HTMLDivElement;
+  const { locale } = useLocale();
+
+  createEffect(async () => {
+    const lines = props.lines.filter((l) => parseFloat(l.planned_amount) > 0);
+    if (!lines.length) return;
+
+    const chart = await initChart(container, locale());
+    onCleanup(() => chart.dispose());
+
+    const fmt = new Intl.NumberFormat(locale(), {
+      style: "currency",
+      currency: props.currency,
+      maximumFractionDigits: 0,
+    });
+
+    const total = lines.reduce((sum, l) => sum + parseFloat(l.planned_amount), 0);
+    const textColor = getComputedStyle(container).getPropertyValue("--color-text").trim() || "#e2e8f0";
+
+    chart.setOption({
+      tooltip: {
+        trigger: "item",
+        formatter: (p: unknown) => {
+          const param = p as { name: string; value: number; percent: number };
+          return `${param.name}<br/>${fmt.format(param.value)} (${param.percent.toFixed(1)}%)`;
+        },
+      },
+      graphic: [
+        {
+          type: "text",
+          left: "center",
+          top: "middle",
+          style: {
+            text: fmt.format(total),
+            fontSize: 15,
+            fontWeight: "bold",
+            fill: textColor,
+            textAlign: "center",
+          },
+        },
+      ],
+      series: [
+        {
+          type: "pie",
+          radius: ["42%", "68%"],
+          center: ["50%", "50%"],
+          avoidLabelOverlap: false,
+          label: { show: false },
+          emphasis: { label: { show: false } },
+          data: lines.map((l, i) => ({
+            name: props.categories.find((c) => c.id === l.category_id)?.name ?? "—",
+            value: parseFloat(l.planned_amount),
+            itemStyle: { color: CHART_COLORS.palette[i % CHART_COLORS.palette.length] },
+          })),
+        },
+      ],
+    });
+
+    const observer = new ResizeObserver(() => chart.resize());
+    observer.observe(container);
+    onCleanup(() => observer.disconnect());
+  });
+
+  return <div ref={container} class="h-56 w-full" />;
 }
 
 // ── Sub-components ────────────────────────────────────────────
@@ -146,61 +222,6 @@ function BudgetDetail(props: { budget: Budget; categories: Category[]; onBack: (
     (id) => api.listBudgetLines(id),
   );
 
-  // ── Add/Edit Line dialog ──────────────────────────────────
-
-  const [lineDialogOpen, setLineDialogOpen] = createSignal(false);
-  const [lineSaving, setLineSaving] = createSignal(false);
-  const [lineCategoryId, setLineCategoryId] = createSignal("");
-  const [linePlanned, setLinePlanned] = createSignal("");
-  const [lineNotes, setLineNotes] = createSignal("");
-  const [editingLine, setEditingLine] = createSignal<BudgetLine | null>(null);
-
-  const openAddLine = () => {
-    setEditingLine(null);
-    setLineCategoryId("");
-    setLinePlanned("");
-    setLineNotes("");
-    setLineDialogOpen(true);
-  };
-
-  const openEditLine = (line: BudgetLine) => {
-    setEditingLine(line);
-    setLineCategoryId(line.category_id ?? "");
-    setLinePlanned(line.planned_amount);
-    setLineNotes(line.notes ?? "");
-    setLineDialogOpen(true);
-  };
-
-  const handleSaveLine = async () => {
-    if (!linePlanned()) return;
-    setLineSaving(true);
-    try {
-      const editing = editingLine();
-      if (editing) {
-        await api.updateBudgetLine(props.budget.id, editing.id, {
-          planned_amount: linePlanned(),
-          notes: lineNotes() || null,
-        });
-        showToast({ title: t("budget.toast.lineUpdated") ?? "Line updated", variant: "success" });
-      } else {
-        await api.addBudgetLine(props.budget.id, {
-          category_id: lineCategoryId() || undefined,
-          planned_amount: linePlanned(),
-          notes: lineNotes() || undefined,
-        });
-        showToast({ title: t("budget.toast.lineAdded") ?? "Line added", variant: "success" });
-      }
-      setLineDialogOpen(false);
-      refetchLines();
-      refetchSummary();
-    } catch (err) {
-      const msg = err instanceof ApiError ? err.message : (t("budget.error.saveLine") ?? "Failed to save line.");
-      showToast({ title: msg, variant: "error" });
-    } finally {
-      setLineSaving(false);
-    }
-  };
-
   const handleDeleteLine = async (line: BudgetLine) => {
     try {
       await api.deleteBudgetLine(props.budget.id, line.id);
@@ -210,6 +231,66 @@ function BudgetDetail(props: { budget: Budget; categories: Category[]; onBack: (
     } catch (err) {
       const msg = err instanceof ApiError ? err.message : (t("budget.error.deleteLine") ?? "Failed to remove.");
       showToast({ title: msg, variant: "error" });
+    }
+  };
+
+  // ── Inline editing state (Lines tab) ─────────────────────
+
+  const [inlineAmounts, setInlineAmounts] = createSignal<Record<string, string>>({});
+  const [savingLineId, setSavingLineId] = createSignal<string | null>(null);
+
+  // All top-level expense categories merged with existing lines
+  const mergedLines = createMemo(() => {
+    const existingLines = lines() ?? [];
+    const expenseCats = props.categories.filter(
+      (c) => c.category_type === "expense" && !c.parent_id,
+    );
+    return expenseCats.map((cat) => ({
+      cat,
+      line: existingLines.find((l) => l.category_id === cat.id) ?? null,
+    }));
+  });
+
+  const effectiveAmount = (catId: string, line: BudgetLine | null) => {
+    const draft = inlineAmounts()[catId];
+    if (draft !== undefined) return parseFloat(draft) || 0;
+    return parseFloat(line?.planned_amount ?? "0") || 0;
+  };
+
+  const totalPlannedInline = createMemo(() =>
+    mergedLines().reduce((sum, { cat, line }) => sum + effectiveAmount(cat.id, line), 0),
+  );
+
+  const totalActualInline = createMemo(() =>
+    (lines() ?? []).reduce((sum, l) => sum + parseFloat(l.actual_amount_cache ?? "0"), 0),
+  );
+
+  const remainingInline = createMemo(() => totalPlannedInline() - totalActualInline());
+
+  const handleInlineBlur = async (cat: Category, line: BudgetLine | null) => {
+    const draft = inlineAmounts()[cat.id];
+    if (draft === undefined) return;
+    const amount = (parseFloat(draft) || 0).toFixed(2);
+    const committed = parseFloat(line?.planned_amount ?? "0").toFixed(2);
+    if (amount === committed) {
+      setInlineAmounts((prev) => { const n = { ...prev }; delete n[cat.id]; return n; });
+      return;
+    }
+    setSavingLineId(cat.id);
+    try {
+      if (line) {
+        await api.updateBudgetLine(props.budget.id, line.id, { planned_amount: amount });
+      } else if (parseFloat(amount) > 0) {
+        await api.addBudgetLine(props.budget.id, { category_id: cat.id, planned_amount: amount });
+      }
+      setInlineAmounts((prev) => { const n = { ...prev }; delete n[cat.id]; return n; });
+      refetchLines();
+      refetchSummary();
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : "Failed to save.";
+      showToast({ title: msg, variant: "error" });
+    } finally {
+      setSavingLineId(null);
     }
   };
 
@@ -310,6 +391,18 @@ function BudgetDetail(props: { budget: Budget; categories: Category[]; onBack: (
                       </div>
                     </div>
 
+                    {/* Planned vs Actual bar chart */}
+                    <div class="rounded-[var(--radius)] border border-border bg-surface px-4 py-3">
+                      <p class="text-xs text-text-secondary uppercase tracking-wide mb-2">
+                        {"Planned vs Actual"}
+                      </p>
+                      <BudgetDistributionChart
+                        lines={s.lines}
+                        currency={props.budget.currency}
+                        categories={props.categories}
+                      />
+                    </div>
+
                     {/* Overall progress bar */}
                     <div>
                       <div class="flex justify-between text-sm mb-1">
@@ -373,55 +466,117 @@ function BudgetDetail(props: { budget: Budget; categories: Category[]; onBack: (
 
         {/* ── Lines tab ────────────────────────────────────────── */}
         <TabContent value="lines">
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-semibold text-text">{t("budget.lines.title") ?? "Budget Lines"}</h3>
-              <Button variant="secondary" size="sm" onClick={openAddLine}>
-                <Plus size={14} />
-                {t("budget.lines.addLine") ?? "Add Category"}
-              </Button>
-            </div>
+          <div class="space-y-3">
             <Show when={lines.state === "ready"} fallback={<ListSkeleton />}>
-              <Show
-                when={(lines()?.length ?? 0) > 0}
-                fallback={
-                  <p class="text-sm text-text-secondary py-8 text-center">
-                    {t("budget.lines.empty") ?? "No budget lines. Add categories to track spending."}
-                  </p>
-                }
-              >
-                <div class="space-y-2">
-                  <For each={lines()}>
-                    {(line) => (
-                      <div class="rounded-[var(--radius)] border border-border bg-surface px-4 py-3 flex items-center justify-between gap-4">
-                        <div class="min-w-0">
-                          <p class="font-medium text-text text-sm">{categoryName(line.category_id)}</p>
-                          <p class="text-xs text-text-secondary mt-0.5">
-                            {t("budget.lines.planned") ?? "Planned"}: {formatCurrency(line.planned_amount, props.budget.currency, locale())} · {t("budget.lines.actual") ?? "Actual"}: {formatCurrency(line.actual_amount_cache, props.budget.currency, locale())}
-                          </p>
-                          <Show when={line.notes}>
-                            <p class="text-xs text-text-tertiary">{line.notes}</p>
+              {/* Total + remaining header */}
+              <div class="rounded-[var(--radius)] border border-border bg-surface px-4 py-3">
+                <div class="flex items-center justify-between gap-4">
+                  <div>
+                    <p class="text-xs text-text-secondary uppercase tracking-wide">Total Budget</p>
+                    <p class="text-2xl font-bold text-text mt-0.5">
+                      {formatCurrency(totalPlannedInline(), props.budget.currency, locale())}
+                    </p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-xs text-text-secondary uppercase tracking-wide">Remaining</p>
+                    <p class={`text-xl font-bold mt-0.5 ${remainingInline() >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                      {remainingInline() < 0 ? "−" : ""}{formatCurrency(Math.abs(remainingInline()), props.budget.currency, locale())}
+                      <span class="text-xs font-normal ml-1 text-text-secondary">
+                        {remainingInline() >= 0 ? "unallocated" : "over budget"}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div class="mt-2.5 h-1.5 rounded-full bg-surface-hover overflow-hidden">
+                  <div
+                    class={`h-full rounded-full transition-all ${totalPlannedInline() > 0 && totalActualInline() / totalPlannedInline() >= 1 ? "bg-red-500" : totalPlannedInline() > 0 && totalActualInline() / totalPlannedInline() >= 0.8 ? "bg-amber-400" : "bg-emerald-500"}`}
+                    style={{ width: `${totalPlannedInline() > 0 ? Math.min(100, (totalActualInline() / totalPlannedInline()) * 100) : 0}%` }}
+                  />
+                </div>
+                <p class="text-xs text-text-tertiary mt-1">
+                  {formatCurrency(totalActualInline(), props.budget.currency, locale())} spent so far
+                </p>
+              </div>
+
+              {/* Category rows */}
+              <div class="rounded-[var(--radius)] border border-border bg-surface divide-y divide-border">
+                <For each={mergedLines()}>
+                  {({ cat, line }) => {
+                    const draftAmount = () => {
+                      const d = inlineAmounts()[cat.id];
+                      if (d !== undefined) return d;
+                      return line ? line.planned_amount : "";
+                    };
+                    const planned = () => parseFloat(draftAmount() || "0") || 0;
+                    const actual = () => parseFloat(line?.actual_amount_cache ?? "0");
+                    const pct = () => planned() > 0 ? Math.min(100, (actual() / planned()) * 100) : 0;
+                    const isSaving = () => savingLineId() === cat.id;
+
+                    return (
+                      <div class="px-4 py-2.5 flex items-center gap-3">
+                        <div
+                          class="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ background: cat.color ?? "#94a3b8" }}
+                        />
+                        <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-text truncate">{cat.name}</p>
+                          <Show when={planned() > 0}>
+                            <div class="flex items-center gap-2 mt-1">
+                              <div class="h-1 rounded-full bg-surface-hover overflow-hidden w-24">
+                                <div
+                                  class={`h-full rounded-full transition-all ${pct() >= 100 ? "bg-red-500" : pct() >= 80 ? "bg-amber-400" : "bg-emerald-500"}`}
+                                  style={{ width: `${pct()}%` }}
+                                />
+                              </div>
+                              <span class="text-xs text-text-tertiary">
+                                {formatCurrency(actual(), props.budget.currency, locale())} spent
+                              </span>
+                            </div>
                           </Show>
                         </div>
-                        <div class="flex items-center gap-1 shrink-0">
-                          <button
-                            class="p-1.5 rounded text-text-secondary hover:text-text hover:bg-surface-hover transition-colors cursor-pointer"
-                            onClick={() => openEditLine(line)}
-                          >
-                            <Pencil size={14} />
-                          </button>
-                          <button
-                            class="p-1.5 rounded text-text-secondary hover:text-danger hover:bg-surface-hover transition-colors cursor-pointer"
-                            onClick={() => handleDeleteLine(line)}
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                        <div class="flex items-center gap-2 shrink-0">
+                          <div class="relative">
+                            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-text-tertiary pointer-events-none select-none">
+                              {props.budget.currency}
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              class="w-32 rounded-[var(--radius-sm)] border border-border bg-surface text-text text-sm text-right pl-8 pr-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary hover:border-text-secondary transition-colors"
+                              placeholder="0.00"
+                              value={draftAmount()}
+                              onInput={(e) =>
+                                setInlineAmounts((prev) => ({ ...prev, [cat.id]: e.currentTarget.value }))
+                              }
+                              onBlur={() => handleInlineBlur(cat, line)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") e.currentTarget.blur();
+                                if (e.key === "Escape") {
+                                  setInlineAmounts((prev) => { const n = { ...prev }; delete n[cat.id]; return n; });
+                                  e.currentTarget.blur();
+                                }
+                              }}
+                              disabled={isSaving()}
+                            />
+                            {isSaving() && (
+                              <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-text-tertiary">…</span>
+                            )}
+                          </div>
                         </div>
+                        <Show when={line}>
+                          <button
+                            class="p-1 rounded text-text-tertiary hover:text-danger hover:bg-surface-hover transition-colors cursor-pointer shrink-0"
+                            onClick={() => handleDeleteLine(line!)}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </Show>
                       </div>
-                    )}
-                  </For>
-                </div>
-              </Show>
+                    );
+                  }}
+                </For>
+              </div>
             </Show>
           </div>
         </TabContent>
@@ -483,57 +638,6 @@ function BudgetDetail(props: { budget: Budget; categories: Category[]; onBack: (
           </div>
         </TabContent>
       </Tabs>
-
-      {/* Add/Edit Line dialog */}
-      <Dialog
-        open={lineDialogOpen()}
-        onOpenChange={(open) => { if (!open) setLineDialogOpen(false); }}
-        title={editingLine() ? (t("budget.lines.editTitle") ?? "Edit Budget Line") : (t("budget.lines.addTitle") ?? "Add Budget Line")}
-      >
-        <div class="space-y-4 pt-2 min-w-[min(28rem,90vw)]">
-          <Show when={!editingLine()}>
-            <div>
-              <label class="block text-sm font-medium text-text mb-1">
-                {t("budget.lines.category") ?? "Category"}
-              </label>
-              <select
-                class="w-full rounded-[var(--radius-sm)] border border-border bg-surface text-text px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                value={lineCategoryId()}
-                onChange={(e) => setLineCategoryId(e.currentTarget.value)}
-              >
-                <option value="">{t("budget.lines.selectCategory") ?? "Select a category"}</option>
-                <For each={props.categories}>
-                  {(c) => <option value={c.id}>{c.name}</option>}
-                </For>
-              </select>
-            </div>
-          </Show>
-          <TextField
-            name="linePlanned"
-            label={t("budget.lines.planned") ?? "Planned Amount"}
-            type="number"
-            value={linePlanned()}
-            onInput={(e) => setLinePlanned(e.currentTarget.value)}
-            placeholder="0.00"
-            required
-          />
-          <TextField
-            name="lineNotes"
-            label={t("budget.lines.notes") ?? "Notes"}
-            value={lineNotes()}
-            onInput={(e) => setLineNotes(e.currentTarget.value)}
-            placeholder={t("budget.lines.notesPlaceholder") ?? "Optional notes…"}
-          />
-          <div class="flex justify-end gap-2 pt-2">
-            <Button variant="secondary" size="sm" onClick={() => setLineDialogOpen(false)}>
-              {t("budget.form.cancel") ?? "Cancel"}
-            </Button>
-            <Button variant="primary" size="sm" onClick={handleSaveLine} disabled={lineSaving()}>
-              {lineSaving() ? "…" : (editingLine() ? (t("budget.form.update") ?? "Update") : (t("budget.form.create") ?? "Add"))}
-            </Button>
-          </div>
-        </div>
-      </Dialog>
     </div>
   );
 }
@@ -544,7 +648,12 @@ export default function BudgetPage() {
   const t = useI18n();
 
   const [includeArchived, setIncludeArchived] = createSignal(false);
-  const [budgets, { refetch }] = createResource(includeArchived, fetchBudgets);
+  // Wrap the boolean in an object so the source is always truthy — SolidJS
+  // won't call the fetcher when the source is a falsy value like `false`.
+  const [budgets, { refetch }] = createResource(
+    () => ({ value: includeArchived() }),
+    (s) => fetchBudgets(s.value),
+  );
   const [categories] = createResource(fetchCategories);
 
   // ── Selected budget (detail view) ────────────────────────

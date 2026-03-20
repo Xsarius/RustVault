@@ -245,7 +245,7 @@ function IncomeExpenseTab() {
           <ExportCsvButton onClick={handleExport} />
         </Show>
       </div>
-      <Suspense fallback={<Skeleton class="h-72" variant="rect" />}>
+      <Suspense fallback={<Skeleton class="h-96" variant="rect" />}>
         <Show when={data.error}>
           <p class="text-sm text-danger">{t("reports.error") ?? "Failed to load."}</p>
         </Show>
@@ -308,7 +308,7 @@ function IncomeExpenseChart(props: { data: IncomeExpenseReport }) {
 
   return (
     <div class="rounded-[var(--radius-lg)] border border-border bg-surface p-4">
-      <div ref={container} class="h-72 w-full" />
+      <div ref={container} class="h-96 w-full" />
     </div>
   );
 }
@@ -372,7 +372,7 @@ function CategoryTrendTab() {
           <ExportCsvButton onClick={handleExport} />
         </Show>
       </div>
-      <Suspense fallback={<Skeleton class="h-72" variant="rect" />}>
+      <Suspense fallback={<Skeleton class="h-96" variant="rect" />}>
         <Show when={data()}>
           {(report) => <CategoryTrendChart data={report()!} />}
         </Show>
@@ -432,7 +432,7 @@ function CategoryTrendChart(props: { data: CategoryTrendReport }) {
 
   return (
     <div class="rounded-[var(--radius-lg)] border border-border bg-surface p-4">
-      <div ref={container} class="h-72 w-full" />
+      <div ref={container} class="h-96 w-full" />
     </div>
   );
 }
@@ -478,7 +478,7 @@ function BalanceHistoryTab() {
           <ExportCsvButton onClick={handleExport} />
         </Show>
       </div>
-      <Suspense fallback={<Skeleton class="h-72" variant="rect" />}>
+      <Suspense fallback={<Skeleton class="h-96" variant="rect" />}>
         <Show when={data.error}>
           <p class="text-sm text-danger">{t("reports.error") ?? "Failed to load."}</p>
         </Show>
@@ -549,7 +549,7 @@ function BalanceHistoryChart(props: { data: BalanceHistoryReport }) {
 
   return (
     <div class="rounded-[var(--radius-lg)] border border-border bg-surface p-4">
-      <div ref={container} class="h-72 w-full" />
+      <div ref={container} class="h-96 w-full" />
     </div>
   );
 }
@@ -594,7 +594,7 @@ function CashFlowTab() {
           <ExportCsvButton onClick={handleExport} />
         </Show>
       </div>
-      <Suspense fallback={<Skeleton class="h-72" variant="rect" />}>
+      <Suspense fallback={<Skeleton class="h-96" variant="rect" />}>
         <Show when={data.error}>
           <p class="text-sm text-danger">{t("reports.error") ?? "Failed to load."}</p>
         </Show>
@@ -681,7 +681,7 @@ function CashFlowChart(props: { data: CashFlowReport }) {
         </div>
       </div>
       <div class="rounded-[var(--radius-lg)] border border-border bg-surface p-4">
-        <div ref={container} class="h-72 w-full" />
+        <div ref={container} class="h-96 w-full" />
       </div>
     </div>
   );

@@ -589,6 +589,7 @@ export default function TransactionsPage() {
                     onClick={() => setDetailTxId(tx.id)}
                     categoryName={categoryName(tx.category_id)}
                     accountName={accountName(tx.account_id)}
+                    isInternalTransfer={tx.transaction_type === "transfer" && !!accounts()?.some((a) => a.id === tx.account_id)}
                   />
                 </SwipeableRow>
               )}
@@ -750,14 +751,21 @@ export default function TransactionsPage() {
       {/* Transaction detail slide-over (outside PullToRefresh scroll container) */}
       <Show when={detailTxId()}>
         {(id) => (
-          <TransactionDetail
-            transactionId={id()}
-            onClose={() => setDetailTxId(null)}
-            onUpdated={() => loadTransactions(false)}
-            categories={categories() ?? []}
-            accounts={accounts() ?? []}
-            tags={tags() ?? []}
-          />
+          <>
+            {/* Backdrop scrim */}
+            <div
+              class="fixed inset-0 z-[calc(var(--z-modal)-1)] bg-black/40 animate-fade-in"
+              onClick={() => setDetailTxId(null)}
+            />
+            <TransactionDetail
+              transactionId={id()}
+              onClose={() => setDetailTxId(null)}
+              onUpdated={() => loadTransactions(false)}
+              categories={categories() ?? []}
+              accounts={accounts() ?? []}
+              tags={tags() ?? []}
+            />
+          </>
         )}
       </Show>
     </>
@@ -773,8 +781,20 @@ function TransactionRow(props: {
   onClick: () => void;
   categoryName: string;
   accountName: string;
+  isInternalTransfer: boolean;
 }) {
-  const isIncome = () => parseFloat(props.tx.amount) >= 0 || props.tx.transaction_type === "income";
+  const amountColor = () => {
+    if (props.tx.transaction_type === "income") return "text-income";
+    if (props.isInternalTransfer) return "text-text-secondary";
+    return "text-expense";
+  };
+
+  const formattedAmount = () => {
+    const { currency, amount, transaction_type } = props.tx;
+    if (transaction_type === "income") return `${currency}\u00a0${amount}`;
+    if (props.isInternalTransfer) return `${currency}\u00a0${amount}`;
+    return `−${currency}\u00a0${amount}`;
+  };
 
   return (
     <div
@@ -805,13 +825,16 @@ function TransactionRow(props: {
       <div class="w-36 hidden md:block">
         <span class="text-xs text-text-secondary truncate block">{props.accountName}</span>
       </div>
-      <div class={`w-24 text-right text-sm font-medium tabular-nums ${
-        isIncome() ? "text-income" : "text-expense"
-      }`}>
-        {props.tx.currency} {props.tx.amount}
+      <div class={`w-24 text-right text-sm font-medium tabular-nums ${amountColor()}`}>
+        {formattedAmount()}
       </div>
-      <div class="w-8 flex items-center justify-center">
-        <Show when={props.tx.is_reviewed}>
+      <div class="w-7 flex items-center justify-center flex-shrink-0">
+        <Show
+          when={props.tx.is_reviewed}
+          fallback={
+            <span class="h-2 w-2 rounded-full bg-amber-400" title="Unreviewed" />
+          }
+        >
           <CheckCircle2 size={14} class="text-income" />
         </Show>
       </div>
@@ -932,9 +955,17 @@ function TransactionDetail(props: {
               {/* Amount display */}
               <div class="text-center py-2">
                 <p class={`text-3xl font-bold tabular-nums ${
-                  parseFloat(txData().amount) >= 0 ? "text-income" : "text-expense"
+                  txData().transaction_type === "income"
+                    ? "text-income"
+                    : txData().transaction_type === "transfer"
+                      ? "text-text-secondary"
+                      : "text-expense"
                 }`}>
-                  {txData().currency} {txData().amount}
+                  {txData().transaction_type === "income"
+                    ? `${txData().currency}\u00a0${txData().amount}`
+                    : txData().transaction_type === "transfer"
+                      ? `${txData().currency}\u00a0${txData().amount}`
+                      : `−${txData().currency}\u00a0${txData().amount}`}
                 </p>
                 <p class="text-sm text-text-secondary mt-1">{txData().date}</p>
               </div>
@@ -972,22 +1003,31 @@ function TransactionDetail(props: {
                 value={editDesc()}
                 onInput={(e) => setEditDesc(e.currentTarget.value)}
               />
-              <TextField
-                name="editPayee"
-                label={t("transactions.form.payee") ?? "Payee"}
-                value={editPayee()}
-                onInput={(e) => setEditPayee(e.currentTarget.value)}
-              />
-              <Select
-                name="editCategory"
-                label={t("transactions.form.category") ?? "Category"}
-                options={[
-                  { value: "", label: "—" },
-                  ...props.categories.map((c) => ({ value: c.id, label: c.name })),
-                ]}
-                value={editCategory()}
-                onChange={setEditCategory}
-              />
+
+              {/* Payee — not applicable to transfers */}
+              <Show when={txData().transaction_type !== "transfer"}>
+                <TextField
+                  name="editPayee"
+                  label={t("transactions.form.payee") ?? "Payee"}
+                  value={editPayee()}
+                  onInput={(e) => setEditPayee(e.currentTarget.value)}
+                />
+              </Show>
+
+              {/* Category — not applicable to transfers */}
+              <Show when={txData().transaction_type !== "transfer"}>
+                <Select
+                  name="editCategory"
+                  label={t("transactions.form.category") ?? "Category"}
+                  options={[
+                    { value: "", label: "—" },
+                    ...props.categories.map((c) => ({ value: c.id, label: c.name })),
+                  ]}
+                  value={editCategory()}
+                  onChange={setEditCategory}
+                />
+              </Show>
+
               <TextField
                 name="editNotes"
                 label={t("transactions.form.notes") ?? "Notes"}
@@ -995,17 +1035,25 @@ function TransactionDetail(props: {
                 onInput={(e) => setEditNotes(e.currentTarget.value)}
               />
 
-              {/* Account & reference (read-only info) */}
-              <div class="text-sm space-y-1 text-text-secondary">
-                <p>
-                  <span class="font-medium">{t("transactions.form.account") ?? "Account"}:</span>{" "}
-                  {props.accounts.find((a) => a.id === txData().account_id)?.name ?? "—"}
-                </p>
+              {/* Account — shown inline for transfers, in footer otherwise */}
+              <div class="rounded-[var(--radius-md)] border border-border bg-surface-hover px-3 py-2.5 text-sm space-y-1.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-text-secondary w-20 flex-shrink-0 font-medium">
+                    {txData().transaction_type === "transfer"
+                      ? "Account"
+                      : (t("transactions.form.account") ?? "Account")}
+                  </span>
+                  <span class="text-text font-medium">
+                    {props.accounts.find((a) => a.id === txData().account_id)?.name ?? txData().account_id}
+                  </span>
+                </div>
                 <Show when={txData().reference}>
-                  <p>
-                    <span class="font-medium">{t("transactions.detail.reference") ?? "Reference"}:</span>{" "}
-                    {txData().reference}
-                  </p>
+                  <div class="flex items-center gap-2">
+                    <span class="text-text-secondary w-20 flex-shrink-0 font-medium">
+                      {t("transactions.detail.reference") ?? "Ref"}
+                    </span>
+                    <span class="text-text text-xs font-mono">{txData().reference}</span>
+                  </div>
                 </Show>
               </div>
             </>
