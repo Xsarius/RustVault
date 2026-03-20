@@ -1690,9 +1690,52 @@ docs/
 - [ ] **P7.9** Add WebSocket support for real-time updates:
   - When one user imports transactions, others see dashboard update.
   - Import progress (for large files).
-- [ ] **P7.10** Implement **data export**: full account history as CSV/JSON/QIF for portability.
+- [x] **P7.10** Implement **data export**: full account history as CSV/JSON/QIF for portability.
+  - `GET /api/export?format=csv|json|qif&date_from=…&date_to=…&account_id=…`
+  - `crates/rustvault-core/src/services/export.rs` — `ExportFormat` enum, RFC 4180 CSV, QIF, JSON
+  - `crates/rustvault-server/src/routes/export.rs` — binary response with `Content-Disposition: attachment`
 - [ ] **P7.11** Implement **backup & restore**: DB dump/restore endpoint (admin only).
 - [ ] **P7.12** Set up Docker Hub / GHCR image publishing in CI.
+
+### Phase 7 — Completed Items (out-of-plan)
+
+- [x] **P7.1-partial** HTTP security headers middleware:
+  - `crates/rustvault-server/src/middleware/security_headers.rs`
+  - Applied as outermost Axum layer; sets `X-Content-Type-Options`, `X-Frame-Options`,
+    `Referrer-Policy`, `Permissions-Policy`, `X-XSS-Protection: 0`.
+- [x] **P4.6** Recurring budget generation:
+  - `POST /api/budgets/{id}/generate-next` — creates next period budget with copied lines.
+  - `services/budget.rs`: `generate_next_period()`, `advance_period()`, `days_in_month()`.
+
+### Demo Mode (DEMO)
+
+> **Goal:** Allow the app to run entirely in-browser without a backend for demos and evaluations.
+> Activated via `VITE_DEMO_MODE=true` at build time.
+
+- [x] **DEMO.1** Vite build flag `__DEMO_MODE__` injected via `define` in `vite.config.ts`.
+- [x] **DEMO.2** Seed data:
+  - `web/src/api/mock/data/banks.ts` — 3 demo banks
+  - `web/src/api/mock/data/accounts.ts` — 6 demo accounts (EUR/DKK/USD, various types)
+  - `web/src/api/mock/data/categories.ts` — 15 categories (income + expense hierarchy)
+  - `web/src/api/mock/data/misc.ts` — 8 tags, UserSettings, DashboardSummary
+  - `web/src/api/mock/data/transactions.ts` — 74 transactions spanning Oct 2025–Mar 2026
+  - `web/src/api/mock/data/budgets.ts` — 2 budgets + 6 budget lines + 5 auto-rules
+- [x] **DEMO.3** In-memory SolidJS store (`web/src/api/mock/store.ts`) — all writes mutate session-scoped state.
+- [x] **DEMO.4** Simulated latency helper (`web/src/api/mock/latency.ts`) — 50–300ms random delay.
+- [x] **DEMO.5** Mock API modules (`web/src/api/mock/*.mock.ts`):
+  - `auth.mock.ts` — auto-authenticated demo user, login always succeeds
+  - `client.mock.ts` — low-level stub helpers matching `client.ts` signatures
+  - `banks.mock.ts`, `accounts.mock.ts`, `categories.mock.ts`, `tags.mock.ts`
+  - `transactions.mock.ts` — full filter support (account, category, date, type, tag, fulltext)
+  - `imports.mock.ts` — simulated upload/execute flow with preview rows
+  - `rules.mock.ts` — full CRUD + test rule heuristic
+  - `budgets.mock.ts` — full CRUD + lines + summary + copy + generate-next
+  - `reports.mock.ts` — all 5 report endpoints derived from demo transaction data
+  - `settings.mock.ts`
+- [x] **DEMO.6** Mock barrel `web/src/api/mock/index.ts` — re-exports all mocks.
+- [x] **DEMO.7** `web/src/api/index.ts` updated — conditionally exports real or mock client via `__DEMO_MODE__`.
+- [x] **DEMO.8** `DemoBanner` component (`web/src/components/DemoBanner.tsx`) — dismissible amber banner
+  mounted in `App.tsx` via `<Show when={__DEMO_MODE__}>`.
 
 ### Documentation Deliverables (P7 — Final)
 - [ ] Complete mdBook user guide — all chapters written, screenshots included, proofread.
