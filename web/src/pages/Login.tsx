@@ -6,16 +6,22 @@ import { createSignal, Show } from "solid-js";
 import { A, useNavigate } from "@solidjs/router";
 import { Button, TextField } from "~/components/ui";
 import { AuthLayout } from "~/components/layout";
-import { authStore } from "~/stores";
+import { authStore, serverStore } from "~/stores";
+import { isMobile } from "~/mobile/useMobile";
 import { useI18n } from "~/i18n";
 import { ApiError } from "~/api/client";
+
+declare const __DEMO_MODE__: boolean;
+
+const DEMO_EMAIL = "demo@rustvault.app";
+const DEMO_PASSWORD = "demo";
 
 export default function LoginPage() {
   const t = useI18n();
   const navigate = useNavigate();
 
-  const [email, setEmail] = createSignal("");
-  const [password, setPassword] = createSignal("");
+  const [email, setEmail] = createSignal(__DEMO_MODE__ ? DEMO_EMAIL : "");
+  const [password, setPassword] = createSignal(__DEMO_MODE__ ? DEMO_PASSWORD : "");
   const [error, setError] = createSignal("");
 
   const handleSubmit = async (e: Event) => {
@@ -40,6 +46,17 @@ export default function LoginPage() {
         <h2 class="text-lg font-semibold text-text text-center">
           {t("auth.login.title") ?? "Sign in to RustVault"}
         </h2>
+
+        <Show when={__DEMO_MODE__}>
+          <div class="p-3 rounded-[var(--radius-md)] text-sm" style={{ background: "rgba(217,119,6,0.10)", border: "1px solid rgba(217,119,6,0.35)" }}>
+            <p class="font-semibold mb-1" style={{ color: "#92400e" }}>Demo mode — use these credentials:</p>
+            <div class="font-mono text-xs space-y-0.5" style={{ color: "#78350f" }}>
+              <p>Email: <strong>{DEMO_EMAIL}</strong></p>
+              <p>Password: <strong>{DEMO_PASSWORD}</strong></p>
+            </div>
+            <p class="mt-1 text-xs" style={{ color: "#a16207" }}>Fields are pre-filled. Just click <em>Sign in</em>.</p>
+          </div>
+        </Show>
 
         <Show when={error()}>
           <div class="p-3 rounded-[var(--radius-md)] bg-danger/10 text-danger text-sm">
@@ -84,6 +101,15 @@ export default function LoginPage() {
               : "Create an account"}
           </A>
         </p>
+
+        {/* On mobile, allow switching the server without going through Settings */}
+        <Show when={isMobile()}>
+          <p class="text-center text-xs text-text-tertiary">
+            <A href="/server-setup" class="hover:underline">
+              {t("auth.login.changeServer") ?? serverStore.serverUrl() ?? "Change server"}
+            </A>
+          </p>
+        </Show>
       </form>
     </AuthLayout>
   );
