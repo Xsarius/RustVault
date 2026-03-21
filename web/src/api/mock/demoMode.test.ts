@@ -272,7 +272,7 @@ describe("fetchDashboardSummary()", () => {
     // if it were wrapped, summary.savings_rate would be undefined
     expect(summary.savings_rate).not.toBeUndefined();
     // the object should NOT have a 'data' key at the top level
-    expect((summary as Record<string, unknown>).data).toBeUndefined();
+    expect((summary as unknown as Record<string, unknown>).data).toBeUndefined();
   });
 });
 
@@ -297,7 +297,7 @@ describe("fetchIncomeExpenseReport()", () => {
 
   it("is not wrapped in an ApiResponse", async () => {
     const report = await fetchIncomeExpenseReport("2025-10-01", "2025-12-31");
-    expect((report as Record<string, unknown>).data).toBeUndefined();
+    expect((report as unknown as Record<string, unknown>).data).toBeUndefined();
   });
 });
 
@@ -334,7 +334,7 @@ describe("getBudgetSummary()", () => {
   it("returns a BudgetSummary with a lines array", async () => {
     const summary = await getBudgetSummary("budget-mar-2026");
     expect(Array.isArray(summary.lines)).toBe(true);
-    expect((summary as Record<string, unknown>).data).toBeUndefined();
+    expect((summary as unknown as Record<string, unknown>).data).toBeUndefined();
   });
 });
 

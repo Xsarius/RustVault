@@ -8,10 +8,9 @@
  *   - Unreviewed transaction badge
  */
 
+import type { JSX } from "solid-js";
 import {
   createResource,
-  createEffect,
-  onCleanup,
   Show,
   Suspense,
   For,
@@ -313,7 +312,7 @@ function AccountsSection(props: { banks: Bank[]; accounts: Account[]; locale: st
                             <span class="truncate">{acc.name}</span>
                             <Show when={isCreditOrLoan}>
                               <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-danger/10 text-danger shrink-0">
-                                {acc.type === "loan" ? (t("accounts.type.loan") ?? "Loan") : (t("accounts.type.credit") ?? "Credit")}
+                                {acc.type === "loan" ? "Loan" : "Credit"}
                               </span>
                             </Show>
                           </div>

@@ -14,6 +14,7 @@
 //! because it requires tuning per deployment (inline scripts, external CDNs,
 //! etc.). It should be configured at the reverse-proxy layer (nginx / Caddy).
 
+use axum::body::Body;
 use axum::http::Request;
 use axum::middleware::Next;
 use axum::response::Response;
@@ -22,9 +23,9 @@ use axum::response::Response;
 ///
 /// Mount this as the **outermost** layer so headers are present on every
 /// response, including error responses.
-pub async fn security_headers_middleware<B>(
-    req: Request<B>,
-    next: Next<B>,
+pub async fn security_headers_middleware(
+    req: Request<Body>,
+    next: Next,
 ) -> Response {
     let mut response = next.run(req).await;
 
